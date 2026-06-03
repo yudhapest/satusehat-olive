@@ -1,0 +1,198 @@
+---
+const { title, icon } = Astro.props;
+---
+
+<header class="header glass">
+  <div class="header-left">
+    <button id="menu-toggle" class="menu-toggle" aria-label="Buka navigasi">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <div class="page-title">
+      <div class="title-icon">
+        <i class={`fa-solid ${icon}`}></i>
+      </div>
+      <h2>{title}</h2>
+    </div>
+  </div>
+  
+  <div class="user-profile">
+    <div class="user-info">
+      <span class="user-name">Tim IT RS</span>
+      <span class="user-role">RSU SEBENING KASIH</span>
+    </div>
+    <div class="avatar">
+      <img src="https://ui-avatars.com/api/?name=Tim+IT&background=C0392B&color=fff&rounded=true&bold=true" alt="Avatar" />
+    </div>
+  </div>
+</header>
+
+<style>
+  .header {
+    height: 72px;
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.6);
+    flex-shrink: 0;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  /* Hamburger — hidden on desktop */
+  .menu-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border: 1.5px solid var(--color-border-secondary);
+    background: white;
+    border-radius: 10px;
+    cursor: pointer;
+    color: var(--color-text-main);
+    font-size: 15px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .menu-toggle:hover {
+    background: var(--color-primary-light);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .page-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .title-icon {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    background: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    border: 1px solid var(--color-border);
+  }
+
+  .title-icon i {
+    color: var(--color-primary);
+    font-size: 16px;
+  }
+
+  .page-title h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--color-text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 16px 6px 6px;
+    background: white;
+    border-radius: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    border: 1px solid var(--color-border);
+    cursor: pointer;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .user-profile:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-right: 4px;
+  }
+
+  .user-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-main);
+    line-height: 1.2;
+  }
+
+  .user-role {
+    font-size: 11px;
+    color: var(--color-text-muted);
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    order: -1;
+    flex-shrink: 0;
+  }
+
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+
+  /* ── Mobile ─────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .header {
+      padding: 0 16px;
+      height: 60px;
+    }
+
+    .menu-toggle {
+      display: flex;
+    }
+
+    .page-title h2 {
+      font-size: 15px;
+    }
+
+    .title-icon {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+    }
+
+    .user-info {
+      display: none;
+    }
+
+    .user-profile {
+      padding: 5px;
+      border-radius: 50%;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .page-title h2 {
+      font-size: 13px;
+    }
+  }
+</style>

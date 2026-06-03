@@ -1,0 +1,106 @@
+---
+import { ViewTransitions } from 'astro:transitions';
+import Sidebar from '../components/Sidebar.astro';
+import Header from '../components/Header.astro';
+import '../styles/global.css';
+
+const { title, pageTitle, icon } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} | Integrasi SATUSEHAT</title>
+    <meta name="description" content="Panduan Implementasi Alur Data SATUSEHAT: Rawat Jalan, IGD, Rawat Inap, Questionnaire, & Immunization." />
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <!-- Astro View Transitions -->
+    <ViewTransitions />
+  </head>
+  <body>
+    <!-- Mobile sidebar overlay -->
+    <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+
+    <div id="app-container">
+      <Sidebar currentPath={currentPath} />
+      
+      <main class="main-content">
+        <Header title={pageTitle} icon={icon} />
+        
+        <div class="page-content" transition:animate="fade">
+          <slot />
+        </div>
+      </main>
+    </div>
+
+    <script>
+      function initSidebarToggle() {
+        const toggle   = document.getElementById('menu-toggle');
+        const closeBtn = document.getElementById('sidebar-close');
+        const sidebar  = document.getElementById('sidebar');
+        const overlay  = document.getElementById('sidebar-overlay');
+
+        if (!toggle || !sidebar || !overlay) return;
+
+        function openSidebar() {
+          sidebar.classList.add('sidebar-open');
+          overlay.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+          sidebar.classList.remove('sidebar-open');
+          overlay.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+
+        toggle.addEventListener('click', openSidebar);
+        overlay.addEventListener('click', closeSidebar);
+        closeBtn?.addEventListener('click', closeSidebar);
+
+        // Auto-close when navigating via any sidebar link
+        sidebar.querySelectorAll('a').forEach(a =>
+          a.addEventListener('click', closeSidebar)
+        );
+      }
+
+      // Run on initial load AND after every Astro view-transition
+      document.addEventListener('astro:page-load', initSidebarToggle);
+    </script>
+
+    <style>
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        position: relative;
+        min-width: 0;
+      }
+
+      .page-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 32px;
+        scroll-behavior: smooth;
+      }
+
+      @media (max-width: 768px) {
+        .page-content {
+          padding: 16px;
+        }
+      }
+
+      @media (min-width: 769px) and (max-width: 1024px) {
+        .page-content {
+          padding: 20px;
+        }
+      }
+    </style>
+  </body>
+</html>

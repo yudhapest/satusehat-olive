@@ -1,0 +1,272 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Resource Pelengkap" pageTitle="Resource Pelengkap" icon="fa-puzzle-piece">
+  <div class="wrap">
+    <div class="page-intro">
+      <p class="eyebrow">Checklist implementasi</p>
+      <h2>Resource SATUSEHAT yang Perlu Dilengkapi</h2>
+      <p>
+        Halaman ini melengkapi gap dari alur Rajal, IGD, Ranap, Questionnaire, dan Imunisasi.
+        Tidak berisi contoh JSON, hanya resource, fungsi, field penting, dan urutan implementasi.
+      </p>
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab on" onclick="showResourceGroup('all', this)"><i class="fa-solid fa-border-all"></i> Semua</button>
+      <button class="tab" onclick="showResourceGroup('p0', this)"><i class="fa-solid fa-key"></i> P0 Prasyarat</button>
+      <button class="tab" onclick="showResourceGroup('p1', this)"><i class="fa-solid fa-hospital-user"></i> P1 Klinis</button>
+      <button class="tab" onclick="showResourceGroup('p2', this)"><i class="fa-solid fa-shield-heart"></i> P2 SNARS</button>
+      <button class="tab" onclick="showResourceGroup('billing', this)"><i class="fa-solid fa-file-invoice-dollar"></i> Billing</button>
+    </div>
+
+    <div class="resource-summary-grid">
+      <div class="summary-card">
+        <strong>5</strong>
+        <span>P0 wajib sebelum Encounter</span>
+      </div>
+      <div class="summary-card">
+        <strong>11</strong>
+        <span>P1 perlu sebelum go-live RS</span>
+      </div>
+      <div class="summary-card">
+        <strong>10</strong>
+        <span>P2 untuk SNARS/medikolegal</span>
+      </div>
+      <div class="summary-card">
+        <strong>7</strong>
+        <span>Resource billing & klaim</span>
+      </div>
+    </div>
+
+    <section class="resource-section" data-group="p0">
+      <div class="section-heading">
+        <h3>P0 - Prasyarat Wajib</h3>
+        <p>Resource ini harus siap dulu sebelum tim mengirim Encounter pertama.</p>
+      </div>
+      <div class="resource-grid">
+        <button class="resource-tile rn" data-id="patient" type="button"><i class="fa-solid fa-user-injured"></i><span>Patient</span><small>Identitas pasien / IHS Number</small></button>
+        <button class="resource-tile rn" data-id="organization" type="button"><i class="fa-solid fa-hospital"></i><span>Organization</span><small>Fasyankes / RS pengirim</small></button>
+        <button class="resource-tile rn" data-id="location" type="button"><i class="fa-solid fa-location-dot"></i><span>Location</span><small>Poli, ruang, kamar, bed</small></button>
+        <button class="resource-tile rn" data-id="practitioner" type="button"><i class="fa-solid fa-user-doctor"></i><span>Practitioner</span><small>Dokter, perawat, apoteker</small></button>
+        <button class="resource-tile rn" data-id="practitioner_role" type="button"><i class="fa-solid fa-id-badge"></i><span>PractitionerRole</span><small>Role Nakes per unit layanan</small></button>
+      </div>
+    </section>
+
+    <section class="resource-section" data-group="p1">
+      <div class="section-heading">
+        <h3>P1 - Pelengkap Klinis Sebelum Go-Live</h3>
+        <p>Resource ini menutup gap utama di Rajal, IGD, Ranap, dan Imunisasi.</p>
+      </div>
+      <div class="resource-grid">
+        <button class="resource-tile rn" data-id="med_admin" type="button"><i class="fa-solid fa-syringe"></i><span>MedicationAdministration</span><small>Obat IV/infus benar-benar diberikan</small></button>
+        <button class="resource-tile rn" data-id="document_reference" type="button"><i class="fa-solid fa-file-pdf"></i><span>DocumentReference</span><small>PDF hasil, surat rujuk, consent scan</small></button>
+        <button class="resource-tile rn" data-id="coverage" type="button"><i class="fa-solid fa-id-card"></i><span>Coverage</span><small>BPJS/JKN/asuransi pasien</small></button>
+        <button class="resource-tile rn" data-id="related_person" type="button"><i class="fa-solid fa-people-arrows"></i><span>RelatedPerson</span><small>Wali, keluarga, kontak darurat</small></button>
+        <button class="resource-tile rn" data-id="nutrition_order" type="button"><i class="fa-solid fa-bowl-food"></i><span>NutritionOrder</span><small>Order diet dan terapi gizi</small></button>
+        <button class="resource-tile rn" data-id="composition_rajal" type="button"><i class="fa-solid fa-file-medical"></i><span>Composition Rajal</span><small>Ringkasan kunjungan rawat jalan</small></button>
+        <button class="resource-tile rn" data-id="composition_igd" type="button"><i class="fa-solid fa-file-waveform"></i><span>Composition IGD</span><small>Resume IGD / ringkasan rujuk</small></button>
+        <button class="resource-tile rn" data-id="clinical_ranap" type="button"><i class="fa-solid fa-notes-medical"></i><span>ClinicalImpression Ranap</span><small>Asesmen DPJP / visite</small></button>
+        <button class="resource-tile rn" data-id="medstat_ranap" type="button"><i class="fa-solid fa-tablets"></i><span>MedicationStatement Ranap</span><small>Rekonsiliasi obat masuk</small></button>
+        <button class="resource-tile rn" data-id="appointment" type="button"><i class="fa-solid fa-calendar-check"></i><span>Appointment</span><small>Penjadwalan kunjungan pasien</small></button>
+        <button class="resource-tile rn" data-id="task" type="button"><i class="fa-solid fa-list-check"></i><span>Task</span><small>Alur kerja klinis & instruksi</small></button>
+      </div>
+    </section>
+
+    <section class="resource-section" data-group="p2">
+      <div class="section-heading">
+        <h3>P2 - SNARS, Medikolegal, dan Patient Safety</h3>
+        <p>Resource ini memperkuat audit klinis, patient safety, dan dokumentasi legal.</p>
+      </div>
+      <div class="resource-grid">
+        <button class="resource-tile rn" data-id="careplan_rajal_igd" type="button"><i class="fa-solid fa-clipboard-list"></i><span>CarePlan Rajal/IGD</span><small>Rencana tindak lanjut</small></button>
+        <button class="resource-tile rn" data-id="episode_rajal_igd" type="button"><i class="fa-solid fa-folder-open"></i><span>EpisodeOfCare Rajal/IGD</span><small>Episode pasien kronis/rujukan</small></button>
+        <button class="resource-tile rn" data-id="communication" type="button"><i class="fa-solid fa-comments"></i><span>Communication</span><small>Edukasi pasien/keluarga</small></button>
+        <button class="resource-tile rn" data-id="consent" type="button"><i class="fa-solid fa-signature"></i><span>Consent</span><small>Persetujuan tindakan</small></button>
+        <button class="resource-tile rn" data-id="device_use" type="button"><i class="fa-solid fa-laptop-medical"></i><span>DeviceUseStatement</span><small>Ventilator, kateter, monitor</small></button>
+        <button class="resource-tile rn" data-id="risk_assessment" type="button"><i class="fa-solid fa-triangle-exclamation"></i><span>RiskAssessment</span><small>Risiko jatuh / dekubitus</small></button>
+        <button class="resource-tile rn" data-id="flag" type="button"><i class="fa-solid fa-flag"></i><span>Flag</span><small>Alert klinis pasien</small></button>
+        <button class="resource-tile rn" data-id="media" type="button"><i class="fa-solid fa-camera"></i><span>Media</span><small>Foto luka / dermatologi / trauma</small></button>
+        <button class="resource-tile rn" data-id="goal" type="button"><i class="fa-solid fa-bullseye"></i><span>Goal</span><small>Target klinis dalam CarePlan</small></button>
+        <button class="resource-tile rn" data-id="device" type="button"><i class="fa-solid fa-microscope"></i><span>Device</span><small>Master data alat medis</small></button>
+      </div>
+    </section>
+
+    <section class="resource-section" data-group="billing">
+      <div class="section-heading">
+        <h3>Billing, Klaim, dan Administrasi</h3>
+        <p>Resource ini tersedia di profil SATUSEHAT dan bisa disiapkan sebagai fase billing/klaim.</p>
+      </div>
+      <div class="resource-grid">
+        <button class="resource-tile rn" data-id="healthcare_service" type="button"><i class="fa-solid fa-briefcase-medical"></i><span>HealthcareService</span><small>Master layanan/poli/unit</small></button>
+        <button class="resource-tile rn" data-id="account" type="button"><i class="fa-solid fa-wallet"></i><span>Account</span><small>Akun pembiayaan encounter</small></button>
+        <button class="resource-tile rn" data-id="charge_item" type="button"><i class="fa-solid fa-receipt"></i><span>ChargeItem</span><small>Item biaya layanan</small></button>
+        <button class="resource-tile rn" data-id="claim" type="button"><i class="fa-solid fa-file-invoice"></i><span>Claim</span><small>Pengajuan klaim</small></button>
+        <button class="resource-tile rn" data-id="claim_response" type="button"><i class="fa-solid fa-file-circle-check"></i><span>ClaimResponse</span><small>Response klaim</small></button>
+        <button class="resource-tile rn" data-id="invoice" type="button"><i class="fa-solid fa-file-invoice-dollar"></i><span>Invoice</span><small>Tagihan layanan</small></button>
+        <button class="resource-tile rn" data-id="coverage_eligibility" type="button"><i class="fa-solid fa-clipboard-check"></i><span>CoverageEligibility</span><small>Cek eligibilitas penjamin</small></button>
+      </div>
+    </section>
+
+    <div class="info" id="info">
+      <span class="hint"><i class="fa-solid fa-hand-pointer"></i> Klik salah satu resource di atas untuk melihat fungsi, field penting, modul yang memakai, dan catatan implementasi.</span>
+    </div>
+  </div>
+
+  <script>
+    import { attachResourceCards } from '../scripts/resourceCard.js';
+
+    document.addEventListener('astro:page-load', () => {
+      const D = {
+        patient:{t:"Patient",phase:"P0 Prasyarat",m:"GET/POST /Patient",s:"WAJIB",c:"#C0392B",
+          desc:"Identitas pasien yang menjadi subject semua resource klinis. Tim harus memastikan Patient sudah punya IHS Number sebelum membuat Encounter.",
+          fields:["identifier: NIK / No RM / IHS Number","name: nama sesuai Dukcapil/RM","gender: male / female / other / unknown","birthDate: tanggal lahir","address: alamat pasien","telecom: nomor kontak","managingOrganization: Organization fasyankes"],
+          note:"Urutan implementasi: lookup Patient berdasarkan NIK/IHS terlebih dahulu. Jika belum ada dan fasyankes punya kewenangan, lakukan registrasi sesuai alur SATUSEHAT. Semua Encounter.subject harus refer ke Patient ini."},
+        organization:{t:"Organization",phase:"P0 Prasyarat",m:"GET /Organization",s:"WAJIB",c:"#C0392B",
+          desc:"Data fasyankes/RS/klinik sebagai pengirim dan penanggung jawab layanan. Biasanya ID Organization sudah diberikan oleh SATUSEHAT.",
+          fields:["identifier: kode fasyankes/Kemenkes","name: nama fasyankes","type: hospital / clinic / department","address: alamat fasyankes","telecom: kontak fasyankes","partOf: parent organization jika unit bagian RS"],
+          note:"Dipakai di Encounter.serviceProvider, Location.managingOrganization, HealthcareService.providedBy, dan beberapa resource administratif. Tanpa Organization ID, Encounter tidak siap dikirim."},
+        location:{t:"Location",phase:"P0 Prasyarat",m:"GET/POST /Location",s:"WAJIB",c:"#C0392B",
+          desc:"Master lokasi layanan seperti poli, IGD, lab, radiologi, kamar, bangsal, dan bed. Encounter wajib memiliki Location yang benar.",
+          fields:["status: active","name: nama lokasi","mode: instance / kind","type: jenis lokasi (poli, bed, room, ward)","physicalType: building / room / bed","managingOrganization: Organization ID","partOf: parent location (bed -> kamar -> bangsal)"],
+          note:"Buat hierarki Location sejak awal: RS -> instalasi -> ruangan -> bed. Rajal memakai poli, IGD memakai triase/ruang tindakan, Ranap memakai kamar/bed aktif."},
+        practitioner:{t:"Practitioner",phase:"P0 Prasyarat",m:"GET /Practitioner",s:"WAJIB",c:"#C0392B",
+          desc:"Identitas tenaga kesehatan SATUSEHAT: dokter, perawat, apoteker, analis lab, radiografer, ahli gizi, bidan, dan vaksinator.",
+          fields:["identifier: SATUSEHAT ID Nakes / NIK / STR/SIP","name: nama Nakes","gender: jenis kelamin","qualification: STR/SIP/profesi","telecom: kontak jika tersedia"],
+          note:"Dipakai di Encounter.participant, Observation.performer, Procedure.performer, MedicationRequest.requester, MedicationDispense.performer, QuestionnaireResponse.author, Immunization.performer.actor."},
+        practitioner_role:{t:"PractitionerRole",phase:"P0 Prasyarat",m:"GET/POST /PractitionerRole",s:"WAJIB",c:"#C0392B",
+          desc:"Menghubungkan Practitioner dengan Organization, role, specialty, dan location tempat ia bertugas.",
+          fields:["active: true","practitioner: Practitioner ID","organization: Organization ID","code: role (doctor, nurse, pharmacist, dietician)","specialty: spesialisasi jika ada","location: Location ID tempat bertugas","healthcareService: HealthcareService ID"],
+          note:"Penting untuk validasi siapa Nakes yang bertugas di poli/unit tertentu. Siapkan mapping sebelum tim mengirim resource clinical."},
+
+        med_admin:{t:"MedicationAdministration",phase:"P1 Klinis",m:"POST /MedicationAdministration",s:"WAJIB untuk IGD/Ranap IV",c:"#C0392B",
+          desc:"Mencatat obat benar-benar diberikan ke pasien, terutama injeksi, infus, drip, bolus, obat cito IGD, dan pemberian perawat di ranap.",
+          fields:["status: in-progress / completed / stopped","medication[x]: obat yang diberikan","subject: Patient","context: Encounter ID","effectiveDateTime / effectivePeriod: waktu pemberian","performer: Practitioner pemberi obat","request: MedicationRequest ID","dosage.route: IV/IM/PO/SC","dosage.dose: dosis aktual"],
+          note:"MedicationDispense mencatat obat diserahkan. MedicationAdministration mencatat obat masuk/teradministrasi ke pasien. Untuk IGD cito dan ranap infus, resource ini sebaiknya ditambahkan."},
+        document_reference:{t:"DocumentReference",phase:"P1 Klinis",m:"POST /DocumentReference",s:"DIREKOMENDASIKAN",c:"#E67E22",
+          desc:"Menyimpan referensi dokumen klinis seperti PDF hasil lab/radiologi, surat rujukan, informed consent scan, laporan operasi, atau resume eksternal.",
+          fields:["status: current","type: jenis dokumen (LOINC/SNOMED)","subject: Patient","context.encounter: Encounter ID","date: waktu dokumen dibuat","author: Practitioner/Organization","content.attachment.url/data: lokasi file atau base64","content.attachment.contentType: application/pdf / image/jpeg"],
+          note:"DiagnosticReport.presentedForm bisa menaruh PDF, tetapi DocumentReference lebih fleksibel untuk dokumen non-lab/rad seperti surat rujuk dan consent."},
+        coverage:{t:"Coverage",phase:"P1 Klinis",m:"GET/POST /Coverage",s:"DIREKOMENDASIKAN",c:"#1A5276",
+          desc:"Informasi penjamin pasien seperti BPJS/JKN, asuransi swasta, perusahaan, atau pembayaran mandiri.",
+          fields:["status: active","beneficiary: Patient","payor: Organization penjamin","class: kelas rawat/hak kelas","period: masa berlaku","identifier: nomor peserta / nomor polis","relationship: hubungan peserta dengan pemegang polis"],
+          note:"Diperlukan bila tim juga menyiapkan klaim, eligibilitas, atau integrasi BPJS. Relevan untuk Rajal dan terutama Ranap."},
+        related_person:{t:"RelatedPerson",phase:"P1 Klinis",m:"POST /RelatedPerson",s:"DIREKOMENDASIKAN",c:"#6C3483",
+          desc:"Keluarga, wali, penanggung jawab, orang tua pasien anak, atau sumber informasi saat pasien tidak sadar.",
+          fields:["patient: Patient","relationship: hubungan (ibu, ayah, pasangan, wali)","name: nama keluarga/wali","telecom: kontak darurat","address: alamat","gender: jenis kelamin jika tersedia"],
+          note:"Penting untuk IGD, imunisasi anak, pasien tidak sadar, consent keluarga, dan MedicationStatement yang informasinya berasal dari keluarga."},
+        nutrition_order:{t:"NutritionOrder",phase:"P1 Ranap/Gizi",m:"POST /NutritionOrder",s:"DIREKOMENDASIKAN",c:"#117A65",
+          desc:"Order diet dan terapi nutrisi dari DPJP/ahli gizi, terutama setelah skrining gizi menunjukkan risiko malnutrisi.",
+          fields:["status: active / completed / cancelled","intent: order","patient: Patient","encounter: Encounter ID","dateTime: waktu order","orderer: Practitioner","allergyIntolerance: referensi alergi makanan","oralDiet: jenis diet oral","enteralFormula: formula enteral jika ada","supplement: suplementasi gizi"],
+          note:"QuestionnaireResponse gizi dan CarePlan belum cukup untuk instruksi diet operasional. NutritionOrder menutup alur gizi ranap."},
+        composition_rajal:{t:"Composition — Ringkasan Kunjungan Rajal",phase:"P1 Rajal",m:"POST /Composition",s:"DIREKOMENDASIKAN",c:"#1F618D",
+          desc:"Ringkasan kunjungan rawat jalan yang mengumpulkan Encounter, diagnosa, tindakan, resep, lab/rad, dan instruksi kontrol.",
+          fields:["status: final","type: summary of episode note / outpatient note","subject: Patient","encounter: Encounter ID (AMB)","date: waktu selesai kunjungan","author: Practitioner dokter","title: Ringkasan Kunjungan Rawat Jalan","section.entry: Condition, Procedure, MedicationRequest, DiagnosticReport, CarePlan"],
+          note:"Tidak wajib untuk alur minimum, tetapi sangat membantu tim implementasi karena menjadi dokumen ringkas yang bisa dikonsumsi sistem lain."},
+        composition_igd:{t:"Composition — Resume IGD / Rujukan",phase:"P1 IGD",m:"POST /Composition",s:"DIREKOMENDASIKAN",c:"#922B21",
+          desc:"Resume IGD saat pasien pulang, dirujuk, masuk ranap, atau meninggal. Mengumpulkan triase, tindakan, obat cito, lab/rad, dan disposisi.",
+          fields:["status: final","type: emergency department note / transfer summary","subject: Patient","encounter: Encounter ID (EMER)","date: waktu disposisi","author: dokter IGD","section.entry: ClinicalImpression, Condition, Procedure, MedicationAdministration, DiagnosticReport, Encounter"],
+          note:"Jika pasien dirujuk atau pindah ranap, Composition IGD menjadi dokumen transisi sebelum Encounter IGD finished dan Encounter ranap baru dibuat."},
+        clinical_ranap:{t:"ClinicalImpression — Asesmen/Visite Ranap",phase:"P1 Ranap",m:"POST /ClinicalImpression",s:"DIREKOMENDASIKAN",c:"#6C3483",
+          desc:"Catatan asesmen DPJP/visite harian, perubahan kondisi, evaluasi respons terapi, dan ringkasan klinis selama ranap.",
+          fields:["status: completed / in-progress","subject: Patient","encounter: Encounter ID (IMP)","date: waktu asesmen/visite","assessor: Practitioner DPJP","summary: ringkasan SOAP/evaluasi","finding.item: Condition/Observation terkait","prognosisCodeableConcept: prognosis jika ada"],
+          note:"Ranap saat ini punya Condition dan Observation, tetapi ClinicalImpression membantu menulis konteks klinis dokter yang tidak selalu cocok dimasukkan ke Condition."},
+        appointment:{t:"Appointment",phase:"P1 Scheduling",m:"POST /Appointment",s:"DIREKOMENDASIKAN",c:"#1F618D",
+          desc:"Penjadwalan kunjungan pasien ke poli, spesialis, atau unit layanan. Resource ini dibuat sebelum pasien tiba; setelah layanan selesai, Encounter dibuat dan merujuk ke Appointment yang sudah ada.",
+          fields:["status: proposed / pending / booked / arrived / fulfilled / cancelled","serviceType: jenis layanan/poli (CodeableConcept)","specialty: spesialisasi dokter","appointmentType: ROUTINE / WALKIN / FOLLOWUP / CHECKUP / EMERGENCY","reasonCode / reasonReference: keluhan atau Condition","participant: [{actor: Patient}, {actor: Practitioner}, {actor: Location}]","start / end: waktu jadwal (ISO 8601)","slot: Slot ID jika sistem memakai manajemen slot","comment: instruksi ke pasien / catatan jadwal","patientInstruction: instruksi pra-kunjungan"],
+          note:"Alur: Schedule → Slot → Appointment → (pasien tiba) Appointment.status=arrived → buat Encounter dengan Encounter.appointment=Appointment ID. Setelah selesai, update Appointment.status=fulfilled."},
+        task:{t:"Task",phase:"P1 Workflow",m:"POST /Task",s:"DIREKOMENDASIKAN",c:"#0E6655",
+          desc:"Instruksi alur kerja klinis seperti permintaan lab, radiologi, konsul, farmasi, atau tindakan keperawatan yang perlu dilacak statusnya.",
+          fields:["status: requested / in-progress / completed / rejected / cancelled","intent: order / plan / proposal","priority: routine / urgent / stat","code: jenis task (SNOMED/LOINC/lokal)","description: deskripsi tugas","for: Patient","encounter: Encounter ID","executionPeriod: batas waktu pelaksanaan","requester: Practitioner peminta","owner: Practitioner/Organization pelaksana","input: parameter awal task","output: hasil task","basedOn: ServiceRequest / MedicationRequest / Appointment"],
+          note:"Task dipakai untuk tracking instruksi klinis di luar lab/rad, misalnya konsultasi antar dokter, followup farmasi, edukasi keperawatan, atau permintaan transport pasien. Hubungkan ke ServiceRequest jika ada order formal."},
+        medstat_ranap:{t:"MedicationStatement — Rekonsiliasi Obat Masuk Ranap",phase:"P1 Ranap",m:"POST /MedicationStatement",s:"WAJIB secara klinis",c:"#117A65",
+          desc:"Obat yang sedang dikonsumsi pasien sebelum masuk rawat inap. Dipakai untuk rekonsiliasi obat, mencegah duplikasi, dan menentukan obat yang dilanjutkan/dihentikan.",
+          fields:["status: active / completed / stopped","medication[x]: obat rutin pasien","subject: Patient","context: Encounter ID (IMP)","dateAsserted: waktu rekonsiliasi","informationSource: Patient / RelatedPerson","reasonCode: indikasi obat jika ada","note: sumber informasi / kepatuhan"],
+          note:"Tambahkan di awal ranap bersamaan dengan asesmen masuk dan kajian resep farmasi. Ini gap penting untuk keselamatan obat."},
+
+        careplan_rajal_igd:{t:"CarePlan — Rajal/IGD",phase:"P2 SNARS",m:"POST /CarePlan",s:"OPSIONAL",c:"#888",
+          desc:"Rencana tindak lanjut rajal atau rencana penanganan IGD, seperti kontrol ulang, edukasi, rujukan, diet, terapi, atau monitoring.",
+          fields:["status: active / completed","intent: plan","subject: Patient","encounter: Encounter ID","addresses: Condition ID","activity.reference: ServiceRequest / MedicationRequest / Procedure","period: periode rencana","author: Practitioner"],
+          note:"Ranap sudah punya CarePlan. Tambahkan untuk Rajal jika ada rencana kontrol/rujukan, dan untuk IGD jika pasien observasi atau menunggu disposisi."},
+        episode_rajal_igd:{t:"EpisodeOfCare — Rajal/IGD",phase:"P2 SNARS",m:"POST/PUT /EpisodeOfCare",s:"OPSIONAL",c:"#888",
+          desc:"Mengelompokkan beberapa Encounter dalam satu episode penyakit, terutama pasien kronis rajal, rujukan serial, atau pasien IGD yang berlanjut ke ranap.",
+          fields:["status: active / finished","patient: Patient","managingOrganization: Organization","type: jenis episode","diagnosis.condition: Condition utama","period.start: mulai episode","period.end: selesai episode"],
+          note:"Tidak perlu untuk setiap kunjungan. Gunakan untuk pasien kronis/longitudinal atau saat butuh menghubungkan Encounter lintas unit."},
+        communication:{t:"Communication",phase:"P2 SNARS",m:"POST /Communication",s:"OPSIONAL",c:"#888",
+          desc:"Dokumentasi komunikasi/edukasi ke pasien atau keluarga: instruksi pulang, edukasi obat, hasil kritis yang sudah diberitahu, atau konseling.",
+          fields:["status: completed","category: education / alert / instruction","subject: Patient","encounter: Encounter ID","sent: waktu komunikasi","sender: Practitioner/Organization","recipient: Patient/RelatedPerson","payload.contentString: isi edukasi/komunikasi"],
+          note:"Berguna untuk bukti edukasi pasien, konseling farmasi, dan komunikasi nilai kritis kepada dokter/keluarga."},
+        consent:{t:"Consent",phase:"P2 Medikolegal",m:"POST /Consent",s:"DIREKOMENDASIKAN",c:"#7B241C",
+          desc:"Persetujuan tindakan medis, operasi, anestesi, transfusi, tindakan invasif, atau penggunaan data sesuai kebutuhan regulasi.",
+          fields:["status: active","scope: patient-privacy / treatment","category: informed consent / treatment consent","patient: Patient","dateTime: waktu persetujuan","performer: Patient / RelatedPerson","organization: Organization","provision: batasan/izin tindakan","sourceReference: DocumentReference scan form"],
+          note:"Untuk operasi dan tindakan invasif, Consent sebaiknya punya DocumentReference formulir persetujuan yang ditandatangani."},
+        device_use:{t:"DeviceUseStatement",phase:"P2 Patient Safety",m:"POST /DeviceUseStatement",s:"OPSIONAL",c:"#888",
+          desc:"Mencatat penggunaan alat medis pada pasien seperti ventilator, kateter urin, CVC, NGT, monitor, atau implantable device.",
+          fields:["status: active / completed","subject: Patient","context: Encounter ID","device: Device ID / device reference","timingPeriod: waktu mulai-selesai penggunaan","source: Practitioner","reasonReference: Condition/Procedure"],
+          note:"Relevan untuk IGD, ICU, HCU, dan ranap pasien kritis. Membantu audit HAIs, patient safety, dan penggunaan alat invasif."},
+        risk_assessment:{t:"RiskAssessment",phase:"P2 Patient Safety",m:"POST /RiskAssessment",s:"OPSIONAL",c:"#888",
+          desc:"Penilaian risiko klinis seperti risiko jatuh, dekubitus, aspirasi, delirium, atau risiko memburuk.",
+          fields:["status: final","subject: Patient","encounter: Encounter ID","occurrenceDateTime: waktu penilaian","performer: Practitioner","condition: Condition terkait","prediction.outcome: outcome risiko","prediction.probability: skor/persentase risiko","basis: Observation/QuestionnaireResponse"],
+          note:"Braden Scale yang sekarang ada sebagai QuestionnaireResponse bisa juga direferensikan sebagai basis RiskAssessment untuk dokumentasi patient safety."},
+        flag:{t:"Flag",phase:"P2 Patient Safety",m:"POST /Flag",s:"OPSIONAL",c:"#888",
+          desc:"Alert aktif pada pasien seperti alergi berat, risiko jatuh, isolasi TB, nilai kritis, atau pasien infeksius.",
+          fields:["status: active / inactive","category: safety / clinical / infection-control","code: jenis alert","subject: Patient","encounter: Encounter ID jika spesifik kunjungan","period: masa berlaku alert","author: Practitioner/Organization"],
+          note:"Gunakan Flag agar alert pasien terlihat lintas modul, bukan hanya tersimpan di catatan teks."},
+        media:{t:"Media",phase:"P2 Dokumentasi Klinis",m:"POST /Media",s:"OPSIONAL",c:"#888",
+          desc:"Dokumentasi gambar klinis seperti foto luka, dermatologi, trauma IGD, kondisi decubitus, atau dokumentasi pra/pasca tindakan.",
+          fields:["status: completed","type: photo / image","subject: Patient","encounter: Encounter ID","createdDateTime: waktu pengambilan","operator: Practitioner","reasonCode: indikasi foto","bodySite: lokasi anatomi","content: attachment gambar"],
+          note:"Untuk file besar atau dokumen multi-halaman, gunakan DocumentReference. Media cocok untuk gambar klinis spesifik."},
+        goal:{t:"Goal",phase:"P2 Care Plan",m:"POST /Goal",s:"OPSIONAL",c:"#888",
+          desc:"Target klinis yang ingin dicapai dalam CarePlan, misalnya target tekanan darah, target glukosa, mobilisasi, nutrisi, atau penyembuhan luka.",
+          fields:["lifecycleStatus: active / completed","achievementStatus: improving / achieved","description: target klinis","subject: Patient","startDate: mulai target","target.measure: parameter target","target.detail[x]: nilai target","addresses: Condition ID"],
+          note:"Gunakan bersama CarePlan. Membuat rencana perawatan lebih terukur dan mudah dievaluasi."},
+        device:{t:"Device",phase:"P2 Patient Safety",m:"GET/POST /Device",s:"OPSIONAL",c:"#888",
+          desc:"Master data alat medis yang dipakai pada pasien: ventilator, monitor ICU, pompa infus, kateter, NGT, pulse oximeter, implan, atau alat invasif lain. Device diperlukan sebagai referensi di DeviceUseStatement.",
+          fields:["status: active / inactive","type: jenis alat (SNOMED CT)","identifier: nomor seri / inventaris / UDI","manufacturer: nama pabrikan","serialNumber: nomor seri alat","modelNumber: model / tipe alat","distinctIdentifier: UDI (Unique Device Identifier) jika tersedia","owner: Organization pemilik alat","location: Location tempat alat biasanya berada","patient: Patient jika alat implantable atau personal","note: keterangan tambahan"],
+          note:"Buat master Device untuk alat yang sering dipakai di ICU/HCU/IGD (ventilator, monitor bedside, syringe pump, infusion pump). Saat membuat DeviceUseStatement, field 'device' merujuk ke Device ID ini."},
+
+        healthcare_service:{t:"HealthcareService",phase:"Billing/Master",m:"GET/POST /HealthcareService",s:"DIREKOMENDASIKAN",c:"#1A5276",
+          desc:"Master layanan yang disediakan fasyankes: poli, IGD, ranap, lab, radiologi, farmasi, imunisasi, gizi.",
+          fields:["active: true","providedBy: Organization","category: clinical service","type: jenis layanan","specialty: spesialisasi","location: Location layanan","name: nama layanan","availableTime: jam layanan"],
+          note:"Membantu konsistensi Encounter.serviceType, PractitionerRole.healthcareService, dan mapping poli/unit."},
+        account:{t:"Account",phase:"Billing",m:"POST /Account",s:"OPSIONAL",c:"#888",
+          desc:"Akun pembiayaan yang mengelompokkan biaya dan klaim dari satu Encounter atau episode perawatan.",
+          fields:["status: active","type: billing account","subject: Patient","servicePeriod: periode layanan","coverage: Coverage penjamin","owner: Organization","guarantor: penanggung biaya"],
+          note:"Gunakan jika sistem billing ingin menautkan ChargeItem, Invoice, dan Claim ke episode/encounter yang sama."},
+        charge_item:{t:"ChargeItem",phase:"Billing",m:"POST /ChargeItem",s:"OPSIONAL",c:"#888",
+          desc:"Item biaya layanan seperti tindakan, obat, lab, radiologi, kamar, alat, dan jasa dokter.",
+          fields:["status: billable / billed","code: kode item layanan","subject: Patient","context: Encounter ID","occurrenceDateTime: waktu layanan","performer: pelaksana layanan","quantity: jumlah","priceOverride: harga jika digunakan"],
+          note:"ChargeItem adalah jembatan klinis ke billing. Bisa dibuat dari Procedure, MedicationDispense, DiagnosticReport, atau penggunaan kamar."},
+        claim:{t:"Claim",phase:"Billing/Klaim",m:"POST /Claim",s:"OPSIONAL",c:"#888",
+          desc:"Pengajuan klaim ke penjamin/asuransi berdasarkan layanan yang sudah diberikan.",
+          fields:["status: active","type: institutional / professional","use: claim / preauthorization","patient: Patient","created: tanggal klaim","insurer: Organization penjamin","provider: Organization fasyankes","priority: normal / urgent","item: daftar layanan/biaya"],
+          note:"Untuk BPJS/JKN, pastikan sinkron dengan alur klaim nasional yang berlaku. SATUSEHAT menyediakan profil, tetapi implementasi klaim bisa tergantung integrasi payer."},
+        claim_response:{t:"ClaimResponse",phase:"Billing/Klaim",m:"GET/POST /ClaimResponse",s:"OPSIONAL",c:"#888",
+          desc:"Response dari penjamin terhadap Claim: diterima, ditolak, perlu revisi, atau disetujui sebagian.",
+          fields:["status: active","type: institutional / professional","use: claim","patient: Patient","created: tanggal response","insurer: Organization penjamin","request: Claim ID","outcome: queued / complete / error","disposition: pesan hasil klaim"],
+          note:"Simpan ClaimResponse untuk audit klaim dan rekonsiliasi pembayaran."},
+        invoice:{t:"Invoice",phase:"Billing",m:"POST /Invoice",s:"OPSIONAL",c:"#888",
+          desc:"Tagihan layanan yang merangkum item biaya, total, status pembayaran, dan penanggung.",
+          fields:["status: issued / balanced / cancelled","type: invoice type","subject: Patient","recipient: Patient/Organization","date: tanggal invoice","participant: pihak terkait","lineItem: ChargeItem/biaya","totalNet: total sebelum pajak","totalGross: total tagihan"],
+          note:"Invoice cocok untuk proses billing internal atau pasien umum. Untuk klaim payer, hubungkan dengan Coverage/Claim jika diperlukan."},
+        coverage_eligibility:{t:"CoverageEligibilityRequest/Response",phase:"Billing/Eligibilitas",m:"POST /CoverageEligibilityRequest",s:"OPSIONAL",c:"#888",
+          desc:"Cek eligibilitas penjamin sebelum layanan, misalnya status aktif BPJS/asuransi dan benefit yang berlaku.",
+          fields:["CoverageEligibilityRequest.status: active","patient: Patient","created: waktu cek","insurer: Organization penjamin","provider: Organization fasyankes","insurance.coverage: Coverage ID","CoverageEligibilityResponse.outcome: complete / error","benefit: benefit yang tersedia"],
+          note:"Tambahkan bila sistem ingin verifikasi penjamin sebelum pendaftaran atau admisi, terutama ranap dan layanan mahal."}
+      };
+
+      attachResourceCards(D);
+
+      window.showResourceGroup = function(group, btn) {
+        document.querySelectorAll('.tab').forEach((tab) => tab.classList.remove('on'));
+        if (btn) btn.classList.add('on');
+
+        document.querySelectorAll('.resource-section').forEach((section) => {
+          const match = group === 'all' || section.dataset.group === group;
+          section.style.display = match ? '' : 'none';
+        });
+      };
+    });
+  </script>
+</Layout>

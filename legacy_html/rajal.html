@@ -1,0 +1,731 @@
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --font-sans: 'Poppins', sans-serif;
+  --color-bg: #f8fafc;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #94a3b8;
+  --color-border: #e2e8f0;
+  --color-border-secondary: #cbd5e1;
+  --color-border-tertiary: #e2e8f0;
+  --color-background-secondary: #ffffff;
+  --color-primary: #C0392B;
+  --color-primary-light: rgba(192,57,43,.09);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  font-size: 16px;
+}
+
+.wrap {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.header {
+  margin-bottom: 24px;
+  background: white;
+  padding: 20px 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--color-border);
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sub {
+  font-size: 15px;
+  color: var(--color-text-secondary);
+}
+
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  border: 1px solid var(--color-border);
+  background: white;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.tab:hover {
+  background: #f8fafc;
+  border-color: var(--color-border-secondary);
+  transform: translateY(-1px);
+}
+
+.tab.on {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  box-shadow: 0 2px 4px rgba(192,57,43,0.1);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+  background: white;
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--color-border);
+}
+
+.leg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.leg-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  position: relative;
+}
+
+.leg-dot.pulse::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 50%;
+  background: inherit;
+  animation: pulseDot 2s infinite ease-out;
+  z-index: -1;
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+.scroll {
+  overflow-x: auto;
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  margin-bottom: 24px;
+  border: 1px solid var(--color-border);
+}
+
+.scroll::-webkit-scrollbar {
+  height: 10px;
+}
+.scroll::-webkit-scrollbar-track {
+  background: #f1f5f9; 
+  border-radius: 5px;
+  margin: 0 10px;
+}
+.scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1; 
+  border-radius: 5px;
+}
+.scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; 
+}
+
+#svg {
+  width: 100%;
+  min-width: 900px;
+  height: auto;
+  display: block;
+}
+
+.info {
+  margin-top: 20px;
+  padding: 24px;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  min-height: 100px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.info strong {
+  color: var(--color-text-primary);
+  font-size: 20px;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.note {
+  background: #fffbeb;
+  border-left: 4px solid #f59e0b;
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  font-size: 15px;
+  margin-top: 16px;
+  color: #92400e;
+  line-height: 1.5;
+}
+
+.tag {
+  display: inline-block;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 4px 6px 4px 0;
+  color: #334155;
+}
+
+.hint {
+  color: var(--color-text-tertiary);
+  font-style: italic;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Hover effects for SVG blocks */
+.rn {
+  transition: all 0.2s ease;
+}
+.rn:hover rect {
+  stroke-width: 2px !important;
+  opacity: 0.2 !important;
+}
+
+/* Marching Ants Animation for SVG Lines */
+@keyframes dashAnim {
+  to { stroke-dashoffset: -40; }
+}
+.animated-line {
+  animation: dashAnim 1.5s linear infinite;
+}
+</style>
+
+<div class="wrap">
+  <div class="header">
+    <h2><i class="fa-solid fa-notes-medical" style="color: #C0392B;"></i> Alur SATUSEHAT Rajal — Lengkap dengan Lab, Farmasi & Radiologi</h2>
+    <div class="sub">Klik resource untuk detail implementasi · Pilih tab untuk fokus per jalur</div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab on" onclick="showPhase('all',this)"><i class="fa-solid fa-border-all"></i> Semua Jalur</button>
+    <button class="tab" onclick="showPhase('pendaftaran',this)"><i class="fa-solid fa-hospital-user"></i> Pendaftaran</button>
+    <button class="tab" onclick="showPhase('perawat',this)"><i class="fa-solid fa-user-nurse"></i> Keperawatan</button>
+    <button class="tab" onclick="showPhase('dokter',this)"><i class="fa-solid fa-user-doctor"></i> Dokter</button>
+    <button class="tab" onclick="showPhase('farmasi',this)"><i class="fa-solid fa-pills"></i> Farmasi</button>
+    <button class="tab" onclick="showPhase('lab',this)"><i class="fa-solid fa-flask-vial"></i> Laboratorium</button>
+    <button class="tab" onclick="showPhase('radiologi',this)"><i class="fa-solid fa-x-ray"></i> Radiologi</button>
+    <button class="tab" onclick="showPhase('selesai',this)"><i class="fa-solid fa-person-walking-arrow-right"></i> Selesai</button>
+  </div>
+
+  <div class="legend">
+    <div class="leg"><div class="leg-dot pulse" style="background:#1F618D"></div>Pendaftaran</div>
+    <div class="leg"><div class="leg-dot pulse" style="background:#1E8449"></div>Keperawatan</div>
+    <div class="leg"><div class="leg-dot pulse" style="background:#6C3483"></div>Dokter</div>
+    <div class="leg"><div class="leg-dot pulse" style="background:#117A65"></div>Farmasi</div>
+    <div class="leg"><div class="leg-dot pulse" style="background:#1A5276"></div>Laboratorium</div>
+    <div class="leg"><div class="leg-dot pulse" style="background:#7B241C"></div>Radiologi</div>
+    <div class="leg"><div class="leg-dot pulse" style="background:#C0392B"></div>Wajib</div>
+    <div class="leg"><div class="leg-dot" style="background:#888"></div>Opsional</div>
+    <div class="leg"><div class="leg-dot pulse" style="background:#E67E22"></div>DICOM/NIDR</div>
+  </div>
+
+  <div class="scroll">
+  <svg id="svg" width="1080" viewBox="0 0 1080 1680" role="img">
+    <title>Alur integrasi SATUSEHAT rawat jalan lengkap dengan farmasi, laboratorium, dan radiologi</title>
+    <desc>Sequence diagram FHIR resource SATUSEHAT untuk rawat jalan dengan 7 aktor: Pasien, Pendaftaran, Perawat, Dokter, Farmasi, Laboratorium, Radiologi, dan SATUSEHAT Platform</desc>
+    <defs>
+      <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+
+    <!-- ===== ACTOR HEADERS ===== -->
+    <!-- x centers: Pasien=55, Pendaftaran=160, Perawat=265, Dokter=370, Farmasi=490, Lab=605, Radiologi=720, SATUSEHAT=940 -->
+    <g>
+      <rect x="10" y="8" width="88" height="36" rx="7" fill="#2C3E50"/>
+      <text x="54" y="30" text-anchor="middle" font-size="11" font-weight="500" fill="#ECF0F1" font-family="var(--font-sans)">Pasien</text>
+
+      <rect x="114" y="8" width="94" height="36" rx="7" fill="#1F618D"/>
+      <text x="161" y="26" text-anchor="middle" font-size="10" font-weight="500" fill="#ECF0F1" font-family="var(--font-sans)">Pendaftaran</text>
+      <text x="161" y="38" text-anchor="middle" font-size="9" fill="#AED6F1" font-family="var(--font-sans)">(Loket/RME)</text>
+
+      <rect x="218" y="8" width="94" height="36" rx="7" fill="#1E8449"/>
+      <text x="265" y="26" text-anchor="middle" font-size="10" font-weight="500" fill="#ECF0F1" font-family="var(--font-sans)">Perawat</text>
+      <text x="265" y="38" text-anchor="middle" font-size="9" fill="#A9DFBF" font-family="var(--font-sans)">(Poli)</text>
+
+      <rect x="322" y="8" width="94" height="36" rx="7" fill="#6C3483"/>
+      <text x="369" y="26" text-anchor="middle" font-size="10" font-weight="500" fill="#ECF0F1" font-family="var(--font-sans)">Dokter</text>
+      <text x="369" y="38" text-anchor="middle" font-size="9" fill="#D7BDE2" font-family="var(--font-sans)">(Poli)</text>
+
+      <rect x="440" y="8" width="94" height="36" rx="7" fill="#117A65"/>
+      <text x="487" y="26" text-anchor="middle" font-size="10" font-weight="500" fill="#ECF0F1" font-family="var(--font-sans)">Farmasi</text>
+      <text x="487" y="38" text-anchor="middle" font-size="9" fill="#A2D9CE" font-family="var(--font-sans)">(Apotek)</text>
+
+      <rect x="558" y="8" width="94" height="36" rx="7" fill="#1A5276"/>
+      <text x="605" y="26" text-anchor="middle" font-size="10" font-weight="500" fill="#ECF0F1" font-family="var(--font-sans)">Laboratorium</text>
+      <text x="605" y="38" text-anchor="middle" font-size="9" fill="#AED6F1" font-family="var(--font-sans)">(Lab Klinik)</text>
+
+      <rect x="672" y="8" width="94" height="36" rx="7" fill="#7B241C"/>
+      <text x="719" y="26" text-anchor="middle" font-size="10" font-weight="500" fill="#ECF0F1" font-family="var(--font-sans)">Radiologi</text>
+      <text x="719" y="38" text-anchor="middle" font-size="9" fill="#F1948A" font-family="var(--font-sans)">(RIS/PACS)</text>
+
+      <rect x="848" y="8" width="218" height="36" rx="7" fill="#C0392B"/>
+      <text x="957" y="22" text-anchor="middle" font-size="11" font-weight="500" fill="#ECF0F1" font-family="var(--font-sans)">SATUSEHAT Platform</text>
+      <text x="957" y="36" text-anchor="middle" font-size="9" fill="#F1948A" font-family="var(--font-sans)">+ NIDR (National Imaging Data Repository)</text>
+    </g>
+
+    <!-- Lifelines -->
+    <line x1="54"  y1="44" x2="54"  y2="1672" stroke="#2C3E50" stroke-width=".8" stroke-dasharray="3 4" opacity=".25"/>
+    <line x1="161" y1="44" x2="161" y2="1672" stroke="#1F618D" stroke-width=".8" stroke-dasharray="3 4" opacity=".25"/>
+    <line x1="265" y1="44" x2="265" y2="1672" stroke="#1E8449" stroke-width=".8" stroke-dasharray="3 4" opacity=".25"/>
+    <line x1="369" y1="44" x2="369" y2="1672" stroke="#6C3483" stroke-width=".8" stroke-dasharray="3 4" opacity=".25"/>
+    <line x1="487" y1="44" x2="487" y2="1672" stroke="#117A65" stroke-width=".8" stroke-dasharray="3 4" opacity=".25"/>
+    <line x1="605" y1="44" x2="605" y2="1672" stroke="#1A5276" stroke-width=".8" stroke-dasharray="3 4" opacity=".25"/>
+    <line x1="719" y1="44" x2="719" y2="1672" stroke="#7B241C" stroke-width=".8" stroke-dasharray="3 4" opacity=".25"/>
+    <line x1="957" y1="44" x2="957" y2="1672" stroke="#C0392B" stroke-width="1.2" stroke-dasharray="3 4" opacity=".3"/>
+
+    <!-- ===== FASE 1: PENDAFTARAN ===== -->
+    <rect x="8" y="56" width="1064" height="20" rx="3" fill="#1F618D" opacity=".12"/>
+    <text x="14" y="70" font-size="10" font-weight="500" fill="#1F618D" font-family="var(--font-sans)">FASE 1 — Pendaftaran &amp; Kunjungan</text>
+
+    <text x="57" y="98" font-size="10" fill="var(--color-text-secondary)" font-family="var(--font-sans)">Datang &amp; mendaftar</text>
+    <line x1="54" y1="102" x2="154" y2="102" stroke="#1F618D" stroke-width="1.5" marker-end="url(#ar)"/>
+
+    <!-- Encounter Arrived -->
+    <g class="rn" data-id="enc1" style="cursor:pointer" data-phase="pendaftaran">
+      <rect x="118" y="110" width="950" height="44" rx="5" fill="#4A90D9" opacity=".12" stroke="#4A90D9" stroke-width="1.2" stroke-opacity=".55"/>
+      <text x="127" y="127" font-size="11" font-weight="500" fill="#1F618D" font-family="var(--font-sans)">1. Encounter</text>
+      <text x="127" y="142" font-size="10" fill="#2874A6" font-family="var(--font-sans)">status: arrived | class: AMB | serviceType: kode poli | subject: Patient (IHS Number)</text>
+      <rect x="924" y="116" width="50" height="14" rx="3" fill="#C0392B" opacity=".2"/>
+      <text x="949" y="127" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="500" font-family="var(--font-sans)">WAJIB</text>
+      <line x1="161" y1="154" x2="948" y2="154" stroke="#4A90D9" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="540" y="150" text-anchor="middle" font-size="9" fill="#4A90D9" font-family="var(--font-sans)">POST /Encounter → simpan encounter-id</text>
+    </g>
+
+    <!-- ===== FASE 2: KEPERAWATAN ===== -->
+    <rect x="8" y="168" width="1064" height="20" rx="3" fill="#1E8449" opacity=".12"/>
+    <text x="14" y="182" font-size="10" font-weight="500" fill="#1E8449" font-family="var(--font-sans)">FASE 2 — Asesmen Awal Perawat</text>
+
+    <text x="164" y="205" font-size="10" fill="var(--color-text-secondary)" font-family="var(--font-sans)">Asesmen awal</text>
+    <line x1="161" y1="209" x2="258" y2="209" stroke="#1E8449" stroke-width="1.5" marker-end="url(#ar)"/>
+
+    <g class="rn" data-id="obs_vital" style="cursor:pointer" data-phase="perawat">
+      <rect x="222" y="216" width="846" height="44" rx="5" fill="#27AE60" opacity=".1" stroke="#27AE60" stroke-width="1.2" stroke-opacity=".5"/>
+      <text x="231" y="233" font-size="11" font-weight="500" fill="#1E8449" font-family="var(--font-sans)">2. Observation — Tanda Vital</text>
+      <text x="231" y="248" font-size="10" fill="#1A7A42" font-family="var(--font-sans)">Tensi, suhu, nadi, BB, TB, saturasi O2 | 1 Observation per parameter | kode LOINC</text>
+      <rect x="924" y="222" width="50" height="14" rx="3" fill="#C0392B" opacity=".2"/>
+      <text x="949" y="233" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="500" font-family="var(--font-sans)">WAJIB</text>
+      <line x1="265" y1="260" x2="948" y2="260" stroke="#27AE60" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="600" y="256" text-anchor="middle" font-size="9" fill="#27AE60" font-family="var(--font-sans)">POST /Observation (multiple)</text>
+    </g>
+
+    <g class="rn" data-id="allergy" style="cursor:pointer" data-phase="perawat">
+      <rect x="222" y="272" width="846" height="44" rx="5" fill="#27AE60" opacity=".1" stroke="#27AE60" stroke-width="1.2" stroke-opacity=".5"/>
+      <text x="231" y="289" font-size="11" font-weight="500" fill="#1E8449" font-family="var(--font-sans)">3. AllergyIntolerance — Riwayat Alergi</text>
+      <text x="231" y="304" font-size="10" fill="#1A7A42" font-family="var(--font-sans)">Alergi obat/makanan/lingkungan | jika tidak ada: kode NKA (No Known Allergy)</text>
+      <rect x="924" y="278" width="50" height="14" rx="3" fill="#C0392B" opacity=".2"/>
+      <text x="949" y="289" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="500" font-family="var(--font-sans)">WAJIB</text>
+      <line x1="265" y1="316" x2="948" y2="316" stroke="#27AE60" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="600" y="312" text-anchor="middle" font-size="9" fill="#27AE60" font-family="var(--font-sans)">POST /AllergyIntolerance</text>
+    </g>
+
+    <g class="rn" data-id="fmhist" style="cursor:pointer" data-phase="perawat">
+      <rect x="222" y="328" width="846" height="40" rx="5" fill="#27AE60" opacity=".06" stroke="#27AE60" stroke-width="1" stroke-opacity=".35" stroke-dasharray="4 3"/>
+      <text x="231" y="344" font-size="11" font-weight="500" fill="#1E8449" font-family="var(--font-sans)">4. FamilyMemberHistory — Riwayat Keluarga</text>
+      <text x="231" y="358" font-size="10" fill="#1A7A42" font-family="var(--font-sans)">Penyakit herediter keluarga (DM, hipertensi, kanker) | opsional</text>
+      <rect x="906" y="334" width="66" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="939" y="345" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="265" y1="368" x2="948" y2="368" stroke="#27AE60" stroke-width="1" marker-end="url(#ar)" stroke-dasharray="3 4" stroke-opacity=".5"/>
+    </g>
+
+    <g class="rn" data-id="medstat" style="cursor:pointer" data-phase="perawat">
+      <rect x="222" y="376" width="846" height="40" rx="5" fill="#27AE60" opacity=".06" stroke="#27AE60" stroke-width="1" stroke-opacity=".35" stroke-dasharray="4 3"/>
+      <text x="231" y="392" font-size="11" font-weight="500" fill="#1E8449" font-family="var(--font-sans)">5. MedicationStatement — Obat Sedang Dikonsumsi</text>
+      <text x="231" y="406" font-size="10" fill="#1A7A42" font-family="var(--font-sans)">Obat rutin / swamedikasi pasien sebelum kunjungan | opsional</text>
+      <rect x="906" y="382" width="66" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="939" y="393" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="265" y1="416" x2="948" y2="416" stroke="#27AE60" stroke-width="1" marker-end="url(#ar)" stroke-dasharray="3 4" stroke-opacity=".5"/>
+    </g>
+
+    <!-- ===== FASE 3: DOKTER ===== -->
+    <rect x="8" y="428" width="1064" height="20" rx="3" fill="#6C3483" opacity=".12"/>
+    <text x="14" y="442" font-size="10" font-weight="500" fill="#6C3483" font-family="var(--font-sans)">FASE 3 — Pemeriksaan Dokter</text>
+
+    <text x="372" y="464" font-size="10" fill="var(--color-text-secondary)" font-family="var(--font-sans)">Pemeriksaan</text>
+    <line x1="369" y1="468" x2="369" y2="468" stroke="#6C3483" stroke-width="1.5"/>
+
+    <g class="rn" data-id="clinical" style="cursor:pointer" data-phase="dokter">
+      <rect x="326" y="472" width="742" height="40" rx="5" fill="#9B6BBE" opacity=".06" stroke="#9B6BBE" stroke-width="1" stroke-opacity=".35" stroke-dasharray="4 3"/>
+      <text x="335" y="488" font-size="11" font-weight="500" fill="#6C3483" font-family="var(--font-sans)">6. ClinicalImpression — Catatan SOAP / Anamnesis</text>
+      <text x="335" y="502" font-size="10" fill="#7D3C98" font-family="var(--font-sans)">Riwayat penyakit sekarang, SOAP note, ringkasan klinis dokter | opsional</text>
+      <rect x="906" y="478" width="66" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="939" y="489" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="369" y1="512" x2="948" y2="512" stroke="#9B6BBE" stroke-width="1" marker-end="url(#ar)" stroke-dasharray="3 4" stroke-opacity=".5"/>
+    </g>
+
+    <g class="rn" data-id="condition" style="cursor:pointer" data-phase="dokter">
+      <rect x="326" y="522" width="742" height="44" rx="5" fill="#9B6BBE" opacity=".12" stroke="#9B6BBE" stroke-width="1.2" stroke-opacity=".55"/>
+      <text x="335" y="539" font-size="11" font-weight="500" fill="#6C3483" font-family="var(--font-sans)">7. Condition — Diagnosa Utama &amp; Sekunder</text>
+      <text x="335" y="554" font-size="10" fill="#7D3C98" font-family="var(--font-sans)">Kode ICD-10 wajib | clinicalStatus: active | dikirim SEBELUM Procedure</text>
+      <rect x="924" y="528" width="50" height="14" rx="3" fill="#C0392B" opacity=".2"/>
+      <text x="949" y="539" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="500" font-family="var(--font-sans)">WAJIB</text>
+      <line x1="369" y1="566" x2="948" y2="566" stroke="#9B6BBE" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="660" y="562" text-anchor="middle" font-size="9" fill="#9B6BBE" font-family="var(--font-sans)">POST /Condition → simpan condition-id</text>
+    </g>
+
+    <g class="rn" data-id="procedure" style="cursor:pointer" data-phase="dokter">
+      <rect x="326" y="576" width="742" height="44" rx="5" fill="#9B6BBE" opacity=".12" stroke="#9B6BBE" stroke-width="1.2" stroke-opacity=".55"/>
+      <text x="335" y="593" font-size="11" font-weight="500" fill="#6C3483" font-family="var(--font-sans)">8. Procedure — Tindakan Medis di Poli</text>
+      <text x="335" y="608" font-size="10" fill="#7D3C98" font-family="var(--font-sans)">Kode ICD-9-CM | reasonReference → Condition ID | performer: Dokter</text>
+      <rect x="924" y="582" width="50" height="14" rx="3" fill="#C0392B" opacity=".2"/>
+      <text x="949" y="593" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="500" font-family="var(--font-sans)">WAJIB</text>
+      <line x1="369" y1="620" x2="948" y2="620" stroke="#9B6BBE" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="660" y="616" text-anchor="middle" font-size="9" fill="#9B6BBE" font-family="var(--font-sans)">POST /Procedure (setelah Condition)</text>
+    </g>
+
+    <!-- ===== FASE 4A: FARMASI ===== -->
+    <rect x="8" y="638" width="1064" height="20" rx="3" fill="#117A65" opacity=".14"/>
+    <text x="14" y="652" font-size="10" font-weight="500" fill="#117A65" font-family="var(--font-sans)">FASE 4A — Order &amp; Penyerahan Obat (Farmasi)</text>
+
+    <text x="372" y="675" font-size="10" fill="var(--color-text-secondary)" font-family="var(--font-sans)">Order resep</text>
+    <line x1="369" y1="679" x2="480" y2="679" stroke="#117A65" stroke-width="1.5" marker-end="url(#ar)"/>
+
+    <g class="rn" data-id="medrq" style="cursor:pointer" data-phase="farmasi">
+      <rect x="444" y="686" width="624" height="44" rx="5" fill="#1ABC9C" opacity=".1" stroke="#1ABC9C" stroke-width="1.2" stroke-opacity=".5"/>
+      <text x="453" y="703" font-size="11" font-weight="500" fill="#117A65" font-family="var(--font-sans)">9. MedicationRequest — E-Resep (Medication contained)</text>
+      <text x="453" y="718" font-size="10" fill="#0E6655" font-family="var(--font-sans)">Medication di dalam contained | kode obat Kemenkes | dosageInstruction | dispenseRequest</text>
+      <rect x="924" y="692" width="50" height="14" rx="3" fill="#C0392B" opacity=".2"/>
+      <text x="949" y="703" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="500" font-family="var(--font-sans)">WAJIB</text>
+      <line x1="487" y1="730" x2="948" y2="730" stroke="#1ABC9C" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="715" y="726" text-anchor="middle" font-size="9" fill="#1ABC9C" font-family="var(--font-sans)">POST /MedicationRequest → simpan medrq-id</text>
+    </g>
+
+    <g class="rn" data-id="meddisp" style="cursor:pointer" data-phase="farmasi">
+      <rect x="444" y="742" width="624" height="44" rx="5" fill="#1ABC9C" opacity=".1" stroke="#1ABC9C" stroke-width="1.2" stroke-opacity=".5"/>
+      <text x="453" y="759" font-size="11" font-weight="500" fill="#117A65" font-family="var(--font-sans)">10. MedicationDispense — Obat Fisik Diserahkan</text>
+      <text x="453" y="774" font-size="10" fill="#0E6655" font-family="var(--font-sans)">authorizingPrescription → MedicationRequest ID | whenHandedOver | receiver: Patient</text>
+      <rect x="924" y="748" width="50" height="14" rx="3" fill="#C0392B" opacity=".2"/>
+      <text x="949" y="759" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="500" font-family="var(--font-sans)">WAJIB</text>
+      <line x1="487" y1="786" x2="948" y2="786" stroke="#1ABC9C" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="715" y="782" text-anchor="middle" font-size="9" fill="#1ABC9C" font-family="var(--font-sans)">POST /MedicationDispense</text>
+    </g>
+    <!-- Serahkan ke pasien -->
+    <line x1="487" y1="798" x2="62" y2="798" stroke="#1ABC9C" stroke-width="1.2" marker-end="url(#ar)" stroke-dasharray="3 3" stroke-opacity=".5"/>
+    <text x="270" y="810" text-anchor="middle" font-size="9" fill="var(--color-text-secondary)" font-family="var(--font-sans)">Serahkan obat ke pasien</text>
+
+    <!-- ===== FASE 4B: LABORATORIUM ===== -->
+    <rect x="8" y="822" width="1064" height="20" rx="3" fill="#1A5276" opacity=".14"/>
+    <text x="14" y="836" font-size="10" font-weight="500" fill="#1A5276" font-family="var(--font-sans)">FASE 4B — Pemeriksaan Laboratorium (jika ada order lab)</text>
+
+    <text x="372" y="860" font-size="10" fill="var(--color-text-secondary)" font-family="var(--font-sans)">Order lab</text>
+    <line x1="369" y1="864" x2="596" y2="864" stroke="#1A5276" stroke-width="1.5" marker-end="url(#ar)"/>
+
+    <g class="rn" data-id="svcreq_lab" style="cursor:pointer" data-phase="lab">
+      <rect x="562" y="870" width="506" height="44" rx="5" fill="#2E86C1" opacity=".1" stroke="#2E86C1" stroke-width="1.2" stroke-opacity=".5"/>
+      <text x="571" y="887" font-size="11" font-weight="500" fill="#1A5276" font-family="var(--font-sans)">11. ServiceRequest — Order Pemeriksaan Lab</text>
+      <text x="571" y="902" font-size="10" fill="#154360" font-family="var(--font-sans)">category: laboratory | kode LOINC panel | reasonReference → Condition ID</text>
+      <rect x="924" y="876" width="50" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="949" y="887" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="605" y1="914" x2="948" y2="914" stroke="#2E86C1" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="775" y="910" text-anchor="middle" font-size="9" fill="#2E86C1" font-family="var(--font-sans)">POST /ServiceRequest → simpan svcreq-id</text>
+    </g>
+
+    <g class="rn" data-id="specimen" style="cursor:pointer" data-phase="lab">
+      <rect x="562" y="924" width="506" height="40" rx="5" fill="#2E86C1" opacity=".08" stroke="#2E86C1" stroke-width="1" stroke-opacity=".4" stroke-dasharray="4 3"/>
+      <text x="571" y="940" font-size="11" font-weight="500" fill="#1A5276" font-family="var(--font-sans)">12. Specimen — Sampel Biologis</text>
+      <text x="571" y="954" font-size="10" fill="#154360" font-family="var(--font-sans)">type: darah/urin/dll (SNOMED) | request → ServiceRequest ID | collectedDateTime</text>
+      <rect x="906" y="930" width="66" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="939" y="941" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="605" y1="964" x2="948" y2="964" stroke="#2E86C1" stroke-width="1" marker-end="url(#ar)" stroke-dasharray="3 4" stroke-opacity=".6"/>
+      <text x="775" y="960" text-anchor="middle" font-size="9" fill="#2E86C1" font-family="var(--font-sans)" opacity=".8">POST /Specimen → simpan specimen-id</text>
+    </g>
+
+    <g class="rn" data-id="obs_lab" style="cursor:pointer" data-phase="lab">
+      <rect x="562" y="972" width="506" height="40" rx="5" fill="#2E86C1" opacity=".08" stroke="#2E86C1" stroke-width="1" stroke-opacity=".4" stroke-dasharray="4 3"/>
+      <text x="571" y="988" font-size="11" font-weight="500" fill="#1A5276" font-family="var(--font-sans)">13. Observation — Hasil Per Parameter Lab</text>
+      <text x="571" y="1002" font-size="10" fill="#154360" font-family="var(--font-sans)">1 Obs/parameter | basedOn → ServiceRequest | specimen → Specimen | kode LOINC</text>
+      <rect x="906" y="978" width="66" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="939" y="989" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="605" y1="1012" x2="948" y2="1012" stroke="#2E86C1" stroke-width="1" marker-end="url(#ar)" stroke-dasharray="3 4" stroke-opacity=".6"/>
+      <text x="775" y="1008" text-anchor="middle" font-size="9" fill="#2E86C1" font-family="var(--font-sans)" opacity=".8">POST /Observation (1 per parameter)</text>
+    </g>
+
+    <g class="rn" data-id="diagrpt_lab" style="cursor:pointer" data-phase="lab">
+      <rect x="562" y="1020" width="506" height="44" rx="5" fill="#2E86C1" opacity=".12" stroke="#2E86C1" stroke-width="1.2" stroke-opacity=".5"/>
+      <text x="571" y="1037" font-size="11" font-weight="500" fill="#1A5276" font-family="var(--font-sans)">14. DiagnosticReport — Laporan Hasil Lab</text>
+      <text x="571" y="1052" font-size="10" fill="#154360" font-family="var(--font-sans)">category: LAB | result → Observation IDs | conclusion: kesimpulan | PDF base64 opsional</text>
+      <rect x="924" y="1026" width="50" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="949" y="1037" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="605" y1="1064" x2="948" y2="1064" stroke="#2E86C1" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="775" y="1060" text-anchor="middle" font-size="9" fill="#2E86C1" font-family="var(--font-sans)">POST /DiagnosticReport (setelah semua Observation)</text>
+    </g>
+    <!-- Return hasil lab ke dokter -->
+    <line x1="605" y1="1076" x2="376" y2="1076" stroke="#2E86C1" stroke-width="1.2" marker-end="url(#ar)" stroke-dasharray="3 3" stroke-opacity=".45"/>
+    <text x="490" y="1088" text-anchor="middle" font-size="9" fill="var(--color-text-secondary)" font-family="var(--font-sans)">Hasil lab → dikembalikan ke Dokter/RME</text>
+
+    <!-- ===== FASE 4C: RADIOLOGI ===== -->
+    <rect x="8" y="1100" width="1064" height="20" rx="3" fill="#7B241C" opacity=".14"/>
+    <text x="14" y="1114" font-size="10" font-weight="500" fill="#7B241C" font-family="var(--font-sans)">FASE 4C — Pemeriksaan Radiologi &amp; Imaging (jika ada order radiologi)</text>
+
+    <text x="372" y="1138" font-size="10" fill="var(--color-text-secondary)" font-family="var(--font-sans)">Order radiologi</text>
+    <line x1="369" y1="1142" x2="710" y2="1142" stroke="#7B241C" stroke-width="1.5" marker-end="url(#ar)"/>
+
+    <g class="rn" data-id="svcreq_rad" style="cursor:pointer" data-phase="radiologi">
+      <rect x="676" y="1148" width="392" height="44" rx="5" fill="#E74C3C" opacity=".1" stroke="#E74C3C" stroke-width="1.2" stroke-opacity=".5"/>
+      <text x="685" y="1165" font-size="11" font-weight="500" fill="#7B241C" font-family="var(--font-sans)">15. ServiceRequest — Order Radiologi</text>
+      <text x="685" y="1180" font-size="10" fill="#641E16" font-family="var(--font-sans)">category: imaging | kode LOINC modalitas | reasonReference → Condition</text>
+      <rect x="924" y="1154" width="50" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="949" y="1165" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="719" y1="1192" x2="948" y2="1192" stroke="#E74C3C" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="835" y="1188" text-anchor="middle" font-size="9" fill="#E74C3C" font-family="var(--font-sans)">POST /ServiceRequest → simpan svcreq-id</text>
+    </g>
+
+    <!-- DICOM flow box -->
+    <rect x="676" y="1202" width="392" height="84" rx="5" fill="#E67E22" opacity=".09" stroke="#E67E22" stroke-width="1.2" stroke-opacity=".55" stroke-dasharray="5 3"/>
+    <text x="685" y="1218" font-size="10" font-weight="500" fill="#784212" font-family="var(--font-sans)">🔶 Alur DICOM (via DICOM Router &amp; PACS)</text>
+    <text x="685" y="1232" font-size="9" fill="#6E2F01" font-family="var(--font-sans)">1. Modalitas ambil citra → simpan ke PACS</text>
+    <text x="685" y="1246" font-size="9" fill="#6E2F01" font-family="var(--font-sans)">2. DICOM Router kirim file DICOM → NIDR (National Imaging Data Repository)</text>
+    <text x="685" y="1260" font-size="9" fill="#6E2F01" font-family="var(--font-sans)">3. NIDR mengembalikan Wado URL (akses citra)</text>
+    <text x="685" y="1274" font-size="9" fill="#6E2F01" font-family="var(--font-sans)">4. DICOM Router POST ImagingStudy ke SATUSEHAT (bukan dari SIMRS)</text>
+    <line x1="719" y1="1285" x2="948" y2="1285" stroke="#E67E22" stroke-width="1.2" marker-end="url(#ar)" stroke-dasharray="4 3" stroke-opacity=".7"/>
+    <text x="835" y="1281" text-anchor="middle" font-size="9" fill="#E67E22" font-family="var(--font-sans)">DICOM Router → POST /ImagingStudy (ke NIDR)</text>
+
+    <g class="rn" data-id="imaging" style="cursor:pointer" data-phase="radiologi">
+      <rect x="676" y="1296" width="392" height="44" rx="5" fill="#E74C3C" opacity=".12" stroke="#E74C3C" stroke-width="1.5" stroke-opacity=".6"/>
+      <text x="685" y="1313" font-size="11" font-weight="500" fill="#7B241C" font-family="var(--font-sans)">16. ImagingStudy — Data Studi DICOM</text>
+      <text x="685" y="1328" font-size="10" fill="#641E16" font-family="var(--font-sans)">Dikirim oleh DICOM Router | basedOn → ServiceRequest | Wado URL dari NIDR</text>
+      <rect x="924" y="1302" width="50" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="949" y="1313" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="719" y1="1340" x2="948" y2="1340" stroke="#E74C3C" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="835" y="1336" text-anchor="middle" font-size="9" fill="#E74C3C" font-family="var(--font-sans)">POST /ImagingStudy → simpan imagingstudy-id</text>
+    </g>
+
+    <g class="rn" data-id="obs_rad" style="cursor:pointer" data-phase="radiologi">
+      <rect x="676" y="1352" width="392" height="40" rx="5" fill="#E74C3C" opacity=".08" stroke="#E74C3C" stroke-width="1" stroke-opacity=".4" stroke-dasharray="4 3"/>
+      <text x="685" y="1368" font-size="11" font-weight="500" fill="#7B241C" font-family="var(--font-sans)">17. Observation — Bacaan / Ekspertise Radiologi</text>
+      <text x="685" y="1382" font-size="10" fill="#641E16" font-family="var(--font-sans)">Temuan klinis per organ | derivedFrom → ImagingStudy ID | dokter radiologi</text>
+      <rect x="906" y="1358" width="66" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="939" y="1369" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="719" y1="1392" x2="948" y2="1392" stroke="#E74C3C" stroke-width="1" marker-end="url(#ar)" stroke-dasharray="3 4" stroke-opacity=".6"/>
+    </g>
+
+    <g class="rn" data-id="diagrpt_rad" style="cursor:pointer" data-phase="radiologi">
+      <rect x="676" y="1402" width="392" height="44" rx="5" fill="#E74C3C" opacity=".12" stroke="#E74C3C" stroke-width="1.5" stroke-opacity=".6"/>
+      <text x="685" y="1419" font-size="11" font-weight="500" fill="#7B241C" font-family="var(--font-sans)">18. DiagnosticReport — Laporan Radiologi</text>
+      <text x="685" y="1434" font-size="10" fill="#641E16" font-family="var(--font-sans)">category: RAD | imagingStudy → ImagingStudy ID | result → Observation | conclusion</text>
+      <rect x="924" y="1408" width="50" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="949" y="1419" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="719" y1="1446" x2="948" y2="1446" stroke="#E74C3C" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="835" y="1442" text-anchor="middle" font-size="9" fill="#E74C3C" font-family="var(--font-sans)">POST /DiagnosticReport (setelah ImagingStudy &amp; Observation)</text>
+    </g>
+    <!-- Return hasil rad ke dokter -->
+    <line x1="719" y1="1458" x2="376" y2="1458" stroke="#E74C3C" stroke-width="1.2" marker-end="url(#ar)" stroke-dasharray="3 3" stroke-opacity=".45"/>
+    <text x="547" y="1470" text-anchor="middle" font-size="9" fill="var(--color-text-secondary)" font-family="var(--font-sans)">Hasil radiologi → dikembalikan ke Dokter/RME</text>
+
+    <!-- ===== FASE 5: SELESAI ===== -->
+    <rect x="8" y="1482" width="1064" height="20" rx="3" fill="#2C3E50" opacity=".12"/>
+    <text x="14" y="1496" font-size="10" font-weight="500" fill="#2C3E50" font-family="var(--font-sans)">FASE 5 — Selesai Kunjungan</text>
+
+    <text x="164" y="1518" font-size="10" fill="var(--color-text-secondary)" font-family="var(--font-sans)">Selesai berobat / pulang</text>
+    <line x1="161" y1="1522" x2="57" y2="1522" stroke="#2C3E50" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="3 3" stroke-opacity=".5"/>
+
+    <g class="rn" data-id="enc2" style="cursor:pointer" data-phase="selesai">
+      <rect x="118" y="1530" width="950" height="44" rx="5" fill="#4A90D9" opacity=".12" stroke="#4A90D9" stroke-width="1.5" stroke-opacity=".6"/>
+      <text x="127" y="1547" font-size="11" font-weight="500" fill="#1F618D" font-family="var(--font-sans)">19. Encounter — Update Status Finished</text>
+      <text x="127" y="1562" font-size="10" fill="#2874A6" font-family="var(--font-sans)">status: finished | period.end WAJIB diisi | PUT /Encounter/{encounter-id} (bukan POST)</text>
+      <rect x="924" y="1536" width="50" height="14" rx="3" fill="#C0392B" opacity=".2"/>
+      <text x="949" y="1547" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="500" font-family="var(--font-sans)">WAJIB</text>
+      <line x1="161" y1="1574" x2="948" y2="1574" stroke="#4A90D9" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="540" y="1570" text-anchor="middle" font-size="9" fill="#4A90D9" font-family="var(--font-sans)">PUT /Encounter/{encounter-id} → status: finished</text>
+    </g>
+
+    <!-- Footer note -->
+    <rect x="8" y="1596" width="1064" height="72" rx="6" fill="none" stroke="var(--color-border-tertiary)" stroke-width=".8"/>
+    <text x="18" y="1614" font-size="10" font-weight="500" fill="var(--color-text-secondary)" font-family="var(--font-sans)">⚠️ Urutan pengiriman wajib diperhatikan:</text>
+    <text x="18" y="1628" font-size="9" fill="var(--color-text-tertiary)" font-family="var(--font-sans)">① Encounter (arrived) → ② Observation + AllergyIntolerance → ③ Condition → ④ Procedure → ⑤ MedicationRequest → ⑥ ServiceRequest (lab/rad)</text>
+    <text x="18" y="1642" font-size="9" fill="var(--color-text-tertiary)" font-family="var(--font-sans)">→ ⑦ Specimen (lab) / ImagingStudy (rad, via DICOM Router) → ⑧ Observation hasil → ⑨ DiagnosticReport → ⑩ MedicationDispense → ⑪ Encounter (finished)</text>
+    <text x="18" y="1658" font-size="9" fill="var(--color-text-tertiary)" font-family="var(--font-sans)">🔶 ImagingStudy TIDAK dikirim oleh SIMRS/RME — dikirim otomatis oleh DICOM Router setelah citra tersimpan di PACS dan Wado URL diterima dari NIDR.</text>
+  </svg>
+  </div>
+
+  <div class="info" id="info"><span class="hint"><i class="fa-solid fa-hand-pointer"></i> Klik salah satu kotak resource di atas untuk melihat detail field, urutan, dan catatan implementasi khusus Rajal.</span></div>
+</div>
+
+<script>
+const D={
+  enc1:{t:"1. Encounter (Status: Arrived)",phase:"Pendaftaran",m:"POST /Encounter",s:"WAJIB",c:"#C0392B",
+    desc:"Resource pertama yang harus dikirim. Menjadi anchor bagi semua resource berikutnya. Encounter ID wajib disimpan.",
+    fields:["status: arrived","class: AMB","serviceType: kode poli (contoh: 168)","subject: Patient IHS Number","participant: Practitioner (dokter/perawat)","location: Location ID"],
+    note:"⚠️ Simpan encounter-id dari response SATUSEHAT. Digunakan di semua resource berikutnya."},
+  obs_vital:{t:"2. Observation — Tanda Vital",phase:"Keperawatan",m:"POST /Observation (multiple)",s:"WAJIB",c:"#C0392B",
+    desc:"Kirim 1 Observation per parameter vital sign. Semua harus mereferensikan Encounter.",
+    fields:["code: LOINC (8480-6 sistolik, 8462-4 diastolik, 8310-5 suhu, 29463-7 BB, 8302-2 TB, 59408-5 SpO2)","status: final","effectiveDateTime: waktu ukur","valueQuantity: nilai + satuan (mmHg, °C, kg, cm, %)","encounter: Encounter ID"],
+    note:"💡 BB dan TB selalu kirim — SATUSEHAT menggunakan untuk hitung BMI otomatis."},
+  allergy:{t:"3. AllergyIntolerance — Riwayat Alergi",phase:"Keperawatan",m:"POST /AllergyIntolerance",s:"WAJIB",c:"#C0392B",
+    desc:"Wajib dikirim meskipun tidak ada riwayat alergi. Jika tidak ada alergi gunakan kode NKA.",
+    fields:["clinicalStatus: active / resolved","verificationStatus: confirmed","category: food / medication / environment","code: SNOMED (716186003 = NKA jika tidak ada alergi)","patient: Patient","recorder: Practitioner"],
+    note:"⚠️ Jangan lewati resource ini walau pasien tidak alergi. Gunakan code 716186003 (No Known Allergy)."},
+  fmhist:{t:"4. FamilyMemberHistory — Riwayat Keluarga",phase:"Keperawatan",m:"POST /FamilyMemberHistory",s:"OPSIONAL",c:"#888",
+    desc:"Riwayat penyakit herediter dalam keluarga. Kirim jika relevan dengan diagnosis.",
+    fields:["status: completed / partial","patient: Patient","relationship: kode SNOMED hubungan (contoh: 72705000 = ibu)","condition.code: ICD-10 penyakit keluarga"],
+    note:"💡 Opsional, namun direkomendasikan untuk penyakit metabolik, kardiovaskular, atau kanker."},
+  medstat:{t:"5. MedicationStatement — Obat Dikonsumsi",phase:"Keperawatan",m:"POST /MedicationStatement",s:"OPSIONAL",c:"#888",
+    desc:"Obat yang sedang atau pernah dikonsumsi pasien sebelum kunjungan ini.",
+    fields:["status: active / completed / stopped","medication: kode obat","subject: Patient","context: Encounter","dateAsserted: tanggal pencatatan"],
+    note:"💡 Berguna untuk deteksi potensi interaksi obat saat dokter meresepkan."},
+  clinical:{t:"6. ClinicalImpression — SOAP / Anamnesis",phase:"Dokter",m:"POST /ClinicalImpression",s:"OPSIONAL",c:"#888",
+    desc:"Catatan klinis dokter: anamnesis, SOAP note, ringkasan klinis. Kirim sebelum Condition.",
+    fields:["status: completed","subject: Patient","encounter: Encounter","summary: teks SOAP (S/O/A/P)","finding.item: referensi Condition (isi setelah Condition dikirim)","date: waktu pemeriksaan"],
+    note:"💡 Kirim sebelum Condition. Boleh diupdate setelah Condition tersedia dengan referensi finding.item."},
+  condition:{t:"7. Condition — Diagnosa",phase:"Dokter",m:"POST /Condition",s:"WAJIB",c:"#C0392B",
+    desc:"Diagnosa utama dan sekunder. Harus menggunakan ICD-10 valid. Dikirim SEBELUM Procedure.",
+    fields:["clinicalStatus: active","verificationStatus: confirmed","category: encounter-diagnosis","code: ICD-10 (contoh: J06.9 ISPA, I10 Hipertensi)","subject: Patient","encounter: Encounter ID","onsetDateTime: tanggal onset","recorder: Practitioner (dokter)"],
+    note:"⚠️ Wajib dikirim SEBELUM Procedure karena Procedure.reasonReference → Condition ID."},
+  procedure:{t:"8. Procedure — Tindakan Medis",phase:"Dokter",m:"POST /Procedure",s:"WAJIB",c:"#C0392B",
+    desc:"Semua tindakan medis yang dilakukan dokter di poli.",
+    fields:["status: completed","code: ICD-9-CM kode tindakan","subject: Patient","encounter: Encounter ID","performedDateTime: waktu tindakan","performer: Practitioner","reasonReference: Condition ID (wajib)"],
+    note:"⚠️ reasonReference WAJIB diisi dengan Condition ID. Kirim Condition lebih dulu."},
+  medrq:{t:"9. MedicationRequest — E-Resep",phase:"Farmasi",m:"POST /MedicationRequest",s:"WAJIB",c:"#C0392B",
+    desc:"Resep elektronik. Medication HARUS dalam MedicationRequest.contained (1x POST). Jangan kirim Medication terpisah.",
+    fields:["status: active","intent: order","medication[x]: Medication di dalam contained (2025+)","subject: Patient","encounter: Encounter ID","requester: Practitioner (dokter)","dosageInstruction: aturan pakai","dispenseRequest.quantity: jumlah obat","dispenseRequest.validityPeriod: masa berlaku resep"],
+    note:"🆕 UPDATE 2025: Medication tidak boleh dikirim terpisah. Harus ada di dalam MedicationRequest.contained dalam 1 kali POST."},
+  meddisp:{t:"10. MedicationDispense — Obat Diserahkan",phase:"Farmasi",m:"POST /MedicationDispense",s:"WAJIB",c:"#C0392B",
+    desc:"Konfirmasi obat secara fisik telah diserahkan ke pasien. Wajib jika MedicationRequest telah dibuat.",
+    fields:["status: completed","medication: contained (sama seperti MedicationRequest)","subject: Patient","context: Encounter ID","authorizingPrescription: MedicationRequest ID (wajib)","quantity: jumlah diserahkan","whenHandedOver: waktu penyerahan","receiver: Patient"],
+    note:"⚠️ authorizingPrescription WAJIB mereferensikan MedicationRequest ID. Tanpa ini e-resep dianggap belum selesai."},
+  svcreq_lab:{t:"11. ServiceRequest — Order Lab",phase:"Laboratorium",m:"POST /ServiceRequest",s:"OPSIONAL",c:"#888",
+    desc:"Permintaan pemeriksaan laboratorium dari dokter. Menjadi acuan untuk Specimen, Observation, dan DiagnosticReport.",
+    fields:["status: active","intent: order","category: laboratory","code: LOINC panel (contoh: 58410-2 CBC panel)","subject: Patient","encounter: Encounter ID","requester: Practitioner (dokter)","reasonReference: Condition ID"],
+    note:"💡 Simpan ServiceRequest ID — menjadi basedOn di Specimen, Observation hasil, dan DiagnosticReport."},
+  specimen:{t:"12. Specimen — Sampel Lab",phase:"Laboratorium",m:"POST /Specimen",s:"OPSIONAL",c:"#888",
+    desc:"Data spesimen biologis yang diambil untuk pemeriksaan laboratorium.",
+    fields:["type: SNOMED jenis spesimen (contoh: 119297000 = darah, 122575003 = urin)","subject: Patient","request: ServiceRequest ID","collection.collectedDateTime: waktu ambil sampel","collection.collector: petugas lab","container.type: jenis wadah","status: available"],
+    note:"💡 Kirim setelah ServiceRequest, sebelum Observation hasil lab."},
+  obs_lab:{t:"13. Observation — Hasil Parameter Lab",phase:"Laboratorium",m:"POST /Observation",s:"OPSIONAL",c:"#888",
+    desc:"Nilai hasil per parameter pemeriksaan lab. Kirim 1 Observation per parameter.",
+    fields:["status: final","category: laboratory","code: LOINC kode parameter (contoh: 2345-7 glukosa serum)","subject: Patient","encounter: Encounter ID","basedOn: ServiceRequest ID","specimen: Specimen ID","valueQuantity: nilai + satuan","referenceRange: nilai normal","interpretation: H/L/N (High/Low/Normal)"],
+    note:"💡 Contoh panel elektrolit (Na, K, Cl) → kirim 3 Observation terpisah dengan kode LOINC masing-masing."},
+  diagrpt_lab:{t:"14. DiagnosticReport — Laporan Lab",phase:"Laboratorium",m:"POST /DiagnosticReport",s:"OPSIONAL",c:"#888",
+    desc:"Laporan keseluruhan hasil laboratorium. Dikirim setelah semua Observation hasil tersedia.",
+    fields:["status: final","category: LAB","code: LOINC panel (contoh: 58410-2)","subject: Patient","encounter: Encounter","basedOn: ServiceRequest ID","result: array Observation IDs","conclusion: kesimpulan teks","presentedForm: PDF base64 (opsional)"],
+    note:"* Wajib jika ada pemeriksaan lab. Kirim paling akhir setelah semua Observation hasil tersedia."},
+  svcreq_rad:{t:"15. ServiceRequest — Order Radiologi",phase:"Radiologi",m:"POST /ServiceRequest",s:"OPSIONAL",c:"#888",
+    desc:"Permintaan pemeriksaan radiologi dari dokter. Menjadi acuan untuk ImagingStudy dan DiagnosticReport.",
+    fields:["status: active","intent: order","category: imaging","code: LOINC modalitas (contoh: 24627-2 Chest X-Ray, 36643-5 Chest CT)","subject: Patient","encounter: Encounter","requester: Practitioner (dokter)","reasonReference: Condition ID","bodySite: lokasi anatomi (SNOMED)"],
+    note:"💡 Simpan ServiceRequest ID — digunakan sebagai basedOn di ImagingStudy dan DiagnosticReport."},
+  imaging:{t:"16. ImagingStudy — Data Studi DICOM",phase:"Radiologi",m:"POST /ImagingStudy (oleh DICOM Router)",s:"OPSIONAL",c:"#888",
+    desc:"Metadata studi DICOM. TIDAK dikirim oleh SIMRS/RME — dikirim otomatis oleh DICOM Router setelah citra tersimpan di PACS dan Wado URL diterima dari NIDR.",
+    fields:["status: available","modality: kode modalitas (CR, CT, MR, US, dll)","subject: Patient","encounter: Encounter","basedOn: ServiceRequest ID","series.uid: UID seri DICOM","series.instance: instance DICOM per gambar","series.endpoint: Wado URL dari NIDR","location: lokasi unit radiologi","reasonReference: Condition ID"],
+    note:"🔶 PENTING: ImagingStudy dikirim oleh DICOM Router (bukan SIMRS). Alur: Modalitas → PACS → DICOM Router → NIDR (dapat Wado URL) → POST /ImagingStudy ke SATUSEHAT. Simpan ImagingStudy ID untuk DiagnosticReport."},
+  obs_rad:{t:"17. Observation — Bacaan / Ekspertise Radiologi",phase:"Radiologi",m:"POST /Observation",s:"OPSIONAL",c:"#888",
+    desc:"Temuan klinis hasil pembacaan dokter radiologi, per organ atau per temuan.",
+    fields:["status: final","category: imaging","code: LOINC temuan (contoh: 18782-3 Radiology study observation)","subject: Patient","encounter: Encounter","basedOn: ServiceRequest ID","derivedFrom: ImagingStudy ID","valueString: deskripsi temuan teks","performer: Practitioner (dokter radiologi)"],
+    note:"💡 derivedFrom wajib merujuk ke ImagingStudy ID yang sudah diterima dari SATUSEHAT."},
+  diagrpt_rad:{t:"18. DiagnosticReport — Laporan Radiologi",phase:"Radiologi",m:"POST /DiagnosticReport",s:"OPSIONAL",c:"#888",
+    desc:"Laporan keseluruhan pemeriksaan radiologi. Dikirim setelah ImagingStudy dan Observation bacaan tersedia.",
+    fields:["status: final","category: RAD","code: LOINC laporan (contoh: 18748-4 Diagnostic imaging study)","subject: Patient","encounter: Encounter","basedOn: ServiceRequest ID","imagingStudy: ImagingStudy ID (wajib)","result: Observation ID (bacaan radiologi)","conclusion: kesan/kesimpulan teks","presentedForm: PDF hasil (base64, opsional)"],
+    note:"⚠️ imagingStudy WAJIB mereferensikan ImagingStudy ID. Kirim setelah ImagingStudy dan Observation bacaan selesai."},
+  enc2:{t:"19. Encounter — Update Status Finished",phase:"Selesai",m:"PUT /Encounter/{encounter-id}",s:"WAJIB",c:"#C0392B",
+    desc:"Menutup kunjungan. Dikirim SETELAH semua resource (termasuk MedicationDispense dan DiagnosticReport) selesai.",
+    fields:["status: finished (diubah dari arrived)","period.end: datetime selesai kunjungan (WAJIB)"],
+    note:"⚠️ Gunakan PUT (bukan POST). period.end wajib diisi. Kirim paling akhir setelah semua resource lain sudah dikirim ke SATUSEHAT."}
+};
+
+// Tambahkan animasi ke semua garis putus-putus (dashed lines)
+document.querySelectorAll('line[stroke-dasharray]').forEach(line => {
+  line.classList.add('animated-line');
+});
+
+const panel=document.getElementById('info');
+document.querySelectorAll('.rn').forEach(el=>{
+  const id=el.dataset.id, d=D[id];
+  if(!d) return;
+  el.addEventListener('click',()=>{
+    const tags=d.fields.map(f=>`<span class="tag"><i class="fa-solid fa-check" style="color: #64748b;"></i> ${f}</span>`).join('');
+    
+    // Highlight efek untuk kotak yang diklik
+    document.querySelectorAll('.rn rect').forEach(r => {
+      r.style.strokeWidth = r.getAttribute('stroke-width'); // reset
+    });
+    const rect = el.querySelector('rect');
+    if (rect) rect.style.strokeWidth = '2px';
+    
+    panel.innerHTML=`<strong><i class="fa-solid fa-file-code" style="color: ${d.c}"></i> ${d.t}</strong>
+      <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <span style="background:${d.c};color:#fff;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;"><i class="fa-solid fa-circle-exclamation"></i> ${d.s}</span>
+        <span style="color:var(--color-text-tertiary);font-size:12px;font-weight:500;"><i class="fa-solid fa-layer-group"></i> Fase: ${d.phase}</span>
+        <span style="color:var(--color-text-tertiary);font-size:12px;font-weight:500;">|</span>
+        <span style="color:var(--color-text-tertiary);font-size:12px;font-weight:500;"><i class="fa-solid fa-network-wired"></i> ${d.m}</span>
+      </div>
+      <div style="margin:12px 0 16px;font-size:14px;color:var(--color-text-secondary); line-height: 1.6;">${d.desc}</div>
+      <div style="margin-bottom:12px">${tags}</div>
+      <div class="note" style="border-left-color:${d.c}"><i class="fa-solid fa-lightbulb"></i> ${d.note}</div>`;
+      
+    // Scroll smoothly to info panel
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+});
+
+function showPhase(p, btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  else if (event && event.target && event.target.classList.contains('tab')) event.target.classList.add('on');
+
+  document.querySelectorAll('.rn').forEach(el=>{
+    const ep=el.dataset.phase;
+    if(p==='all' || ep===p) {
+      el.style.opacity = '1';
+      el.style.pointerEvents = 'auto';
+    } else {
+      el.style.opacity = '0.08';
+      el.style.pointerEvents = 'none';
+    }
+  });
+}
+</script>

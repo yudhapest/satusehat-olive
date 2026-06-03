@@ -1,0 +1,537 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="IGD" pageTitle="IGD" icon="fa-truck-medical">
+  <div class="wrap">
+  <div class="header">
+    <h2><i class="fa-solid fa-heart-pulse" style="color: #C0392B;"></i> Alur SATUSEHAT Instalasi Gawat Darurat (IGD)</h2>
+    <div class="sub">Lengkap per Aktor · Klik resource untuk detail implementasi · Tab untuk fokus per fase · class Encounter: EMER</div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab on" onclick="showPhase('all',this)"><i class="fa-solid fa-border-all"></i> Semua</button>
+    <button class="tab" onclick="showPhase('triase',this)"><i class="fa-solid fa-truck-medical"></i> Triase</button>
+    <button class="tab" onclick="showPhase('asesmen',this)"><i class="fa-solid fa-stethoscope"></i> Asesmen Awal</button>
+    <button class="tab" onclick="showPhase('penanganan',this)"><i class="fa-solid fa-user-nurse"></i> Penanganan</button>
+    <button class="tab" onclick="showPhase('farmasi',this)"><i class="fa-solid fa-pills"></i> Farmasi</button>
+    <button class="tab" onclick="showPhase('lab',this)"><i class="fa-solid fa-flask-vial"></i> Laboratorium</button>
+    <button class="tab" onclick="showPhase('radiologi',this)"><i class="fa-solid fa-x-ray"></i> Radiologi</button>
+    <button class="tab" onclick="showPhase('disposisi',this)"><i class="fa-solid fa-person-walking-arrow-right"></i> Disposisi</button>
+  </div>
+
+  <div class="legend">
+    <div class="leg"><div class="leg-dot pulse" style="background:#922B21"></div>IGD/Triase</div>
+    <div class="leg"><div class="leg-dot pulse" style="background:#1E8449"></div>Perawat IGD</div>
+    <div class="leg"><div class="leg-dot pulse" style="background:#6C3483"></div>Dokter IGD</div>
+    <div class="leg"><div class="leg-dot pulse" style="background:#117A65"></div>Farmasi</div>
+    <div class="leg"><div class="leg-dot pulse" style="background:#1A5276"></div>Laboratorium</div>
+    <div class="leg"><div class="leg-dot pulse" style="background:#7B241C"></div>Radiologi</div>
+    <div class="leg"><div class="leg-dot pulse" style="background:#C0392B"></div>Wajib</div>
+    <div class="leg"><div class="leg-dot" style="background:#888"></div>Opsional</div>
+  </div>
+
+  <div class="scroll">
+  <svg id="svg" width="1100" viewBox="0 0 1100 2080" role="img">
+    <title>Alur SATUSEHAT IGD lengkap</title>
+    <defs>
+      <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+
+    <!-- ACTORS: Pasien=54, Triase=162, Perawat=272, Dokter=382, Farmasi=497, Lab=612, Rad=724, SS=960 -->
+    <rect x="10" y="8" width="86" height="38" rx="7" fill="#2C3E50"/>
+    <text x="53" y="31" text-anchor="middle" font-size="11" font-weight="500" fill="#ECF0F1" font-family="var(--font-sans)">Pasien /</text>
+    <text x="53" y="43" text-anchor="middle" font-size="10" fill="#BDC3C7" font-family="var(--font-sans)">Keluarga</text>
+
+    <rect x="112" y="8" width="100" height="38" rx="7" fill="#922B21"/>
+    <text x="162" y="26" text-anchor="middle" font-size="10" font-weight="500" fill="#ECF0F1" font-family="var(--font-sans)">Triase IGD</text>
+    <text x="162" y="40" text-anchor="middle" font-size="9" fill="#F1948A" font-family="var(--font-sans)">(Perawat Triase)</text>
+
+    <rect x="222" y="8" width="100" height="38" rx="7" fill="#1E8449"/>
+    <text x="272" y="26" text-anchor="middle" font-size="10" font-weight="500" fill="#ECF0F1" font-family="var(--font-sans)">Perawat IGD</text>
+    <text x="272" y="40" text-anchor="middle" font-size="9" fill="#A9DFBF" font-family="var(--font-sans)">(Ruang Tindakan)</text>
+
+    <rect x="334" y="8" width="98" height="38" rx="7" fill="#6C3483"/>
+    <text x="383" y="26" text-anchor="middle" font-size="10" font-weight="500" fill="#ECF0F1" font-family="var(--font-sans)">Dokter IGD</text>
+    <text x="383" y="40" text-anchor="middle" font-size="9" fill="#D7BDE2" font-family="var(--font-sans)">(Jaga / Spesialis)</text>
+
+    <rect x="449" y="8" width="96" height="38" rx="7" fill="#117A65"/>
+    <text x="497" y="26" text-anchor="middle" font-size="10" font-weight="500" fill="#ECF0F1" font-family="var(--font-sans)">Farmasi IGD</text>
+    <text x="497" y="40" text-anchor="middle" font-size="9" fill="#A2D9CE" font-family="var(--font-sans)">(Depo IGD)</text>
+
+    <rect x="562" y="8" width="100" height="38" rx="7" fill="#1A5276"/>
+    <text x="612" y="26" text-anchor="middle" font-size="10" font-weight="500" fill="#ECF0F1" font-family="var(--font-sans)">Laboratorium</text>
+    <text x="612" y="40" text-anchor="middle" font-size="9" fill="#AED6F1" font-family="var(--font-sans)">(Lab Cito)</text>
+
+    <rect x="676" y="8" width="100" height="38" rx="7" fill="#7B241C"/>
+    <text x="726" y="26" text-anchor="middle" font-size="10" font-weight="500" fill="#ECF0F1" font-family="var(--font-sans)">Radiologi</text>
+    <text x="726" y="40" text-anchor="middle" font-size="9" fill="#F1948A" font-family="var(--font-sans)">(Cito/PACS)</text>
+
+    <rect x="848" y="8" width="230" height="38" rx="7" fill="#C0392B"/>
+    <text x="963" y="24" text-anchor="middle" font-size="11" font-weight="500" fill="#ECF0F1" font-family="var(--font-sans)">SATUSEHAT Platform</text>
+    <text x="963" y="38" text-anchor="middle" font-size="9" fill="#F1948A" font-family="var(--font-sans)">+ NIDR (untuk Radiologi)</text>
+
+    <!-- Lifelines -->
+    <line x1="53"  y1="46" x2="53"  y2="2072" stroke="#2C3E50" stroke-width=".7" stroke-dasharray="3 4" opacity=".22"/>
+    <line x1="162" y1="46" x2="162" y2="2072" stroke="#922B21" stroke-width=".7" stroke-dasharray="3 4" opacity=".22"/>
+    <line x1="272" y1="46" x2="272" y2="2072" stroke="#1E8449" stroke-width=".7" stroke-dasharray="3 4" opacity=".22"/>
+    <line x1="383" y1="46" x2="383" y2="2072" stroke="#6C3483" stroke-width=".7" stroke-dasharray="3 4" opacity=".22"/>
+    <line x1="497" y1="46" x2="497" y2="2072" stroke="#117A65" stroke-width=".7" stroke-dasharray="3 4" opacity=".22"/>
+    <line x1="612" y1="46" x2="612" y2="2072" stroke="#1A5276" stroke-width=".7" stroke-dasharray="3 4" opacity=".22"/>
+    <line x1="726" y1="46" x2="726" y2="2072" stroke="#7B241C" stroke-width=".7" stroke-dasharray="3 4" opacity=".22"/>
+    <line x1="963" y1="46" x2="963" y2="2072" stroke="#C0392B" stroke-width="1.1" stroke-dasharray="3 4" opacity=".28"/>
+
+    <!-- ===== FASE 1: TRIASE ===== -->
+    <rect x="8" y="58" width="1080" height="19" rx="3" fill="#922B21" opacity=".13"/>
+    <text x="14" y="71" font-size="10" font-weight="500" fill="#922B21" font-family="var(--font-sans)">FASE 1 — Kedatangan &amp; Triase IGD</text>
+
+    <text x="56" y="96" font-size="10" fill="var(--color-text-secondary)" font-family="var(--font-sans)">Masuk IGD</text>
+    <line x1="53" y1="100" x2="155" y2="100" stroke="#922B21" stroke-width="1.5" marker-end="url(#ar)"/>
+
+    <!-- Encounter IGD -->
+    <g class="rn" data-id="enc_igd" data-phase="triase" style="cursor:pointer">
+      <rect x="120" y="106" width="957" height="44" rx="5" fill="#E74C3C" opacity=".12" stroke="#E74C3C" stroke-width="1.3" stroke-opacity=".6"/>
+      <text x="129" y="123" font-size="11" font-weight="500" fill="#922B21" font-family="var(--font-sans)">1. Encounter — Kunjungan IGD</text>
+      <text x="129" y="138" font-size="10" fill="#7B241C" font-family="var(--font-sans)">status: arrived | class: EMER | serviceType: 117 (Emergency) | location: ruang triase</text>
+      <rect x="934" y="112" width="46" height="14" rx="3" fill="#C0392B" opacity=".2"/>
+      <text x="957" y="123" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="500" font-family="var(--font-sans)">WAJIB</text>
+      <line x1="162" y1="150" x2="954" y2="150" stroke="#E74C3C" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="555" y="146" text-anchor="middle" font-size="9" fill="#E74C3C" font-family="var(--font-sans)">POST /Encounter → simpan encounter-id (dipakai seluruh IGD)</text>
+    </g>
+
+    <!-- ClinicalImpression Triase -->
+    <g class="rn" data-id="clinical_triase" data-phase="triase" style="cursor:pointer">
+      <rect x="120" y="160" width="957" height="44" rx="5" fill="#E74C3C" opacity=".1" stroke="#E74C3C" stroke-width="1.2" stroke-opacity=".5"/>
+      <text x="129" y="177" font-size="11" font-weight="500" fill="#922B21" font-family="var(--font-sans)">2. ClinicalImpression — Triase IGD</text>
+      <text x="129" y="192" font-size="10" fill="#7B241C" font-family="var(--font-sans)">Kategori triase: P1/P2/P3/P4 (merah/kuning/hijau/hitam) | keluhan utama | LOINC 11283-9</text>
+      <rect x="934" y="166" width="46" height="14" rx="3" fill="#C0392B" opacity=".2"/>
+      <text x="957" y="177" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="500" font-family="var(--font-sans)">WAJIB</text>
+      <line x1="162" y1="204" x2="954" y2="204" stroke="#E74C3C" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="555" y="200" text-anchor="middle" font-size="9" fill="#E74C3C" font-family="var(--font-sans)">POST /ClinicalImpression → simpan ci-id</text>
+    </g>
+
+    <!-- Observation Tanda Vital Cito -->
+    <g class="rn" data-id="obs_triase" data-phase="triase" style="cursor:pointer">
+      <rect x="120" y="214" width="957" height="44" rx="5" fill="#E74C3C" opacity=".1" stroke="#E74C3C" stroke-width="1.2" stroke-opacity=".5"/>
+      <text x="129" y="231" font-size="11" font-weight="500" fill="#922B21" font-family="var(--font-sans)">3. Observation — Tanda Vital Cito (Saat Triase)</text>
+      <text x="129" y="246" font-size="10" fill="#7B241C" font-family="var(--font-sans)">Tensi, nadi, suhu, RR, SpO2, GCS, skala nyeri | kode LOINC | 1 Obs per parameter</text>
+      <rect x="934" y="220" width="46" height="14" rx="3" fill="#C0392B" opacity=".2"/>
+      <text x="957" y="231" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="500" font-family="var(--font-sans)">WAJIB</text>
+      <line x1="162" y1="258" x2="954" y2="258" stroke="#E74C3C" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="555" y="254" text-anchor="middle" font-size="9" fill="#E74C3C" font-family="var(--font-sans)">POST /Observation (multiple, cito)</text>
+    </g>
+
+    <!-- ===== FASE 2: ASESMEN AWAL ===== -->
+    <rect x="8" y="272" width="1080" height="19" rx="3" fill="#1E8449" opacity=".13"/>
+    <text x="14" y="285" font-size="10" font-weight="500" fill="#1E8449" font-family="var(--font-sans)">FASE 2 — Asesmen Awal Medis (Perawat &amp; Dokter IGD)</text>
+
+    <text x="165" y="308" font-size="10" fill="var(--color-text-secondary)" font-family="var(--font-sans)">Asesmen awal pasien</text>
+    <line x1="162" y1="312" x2="265" y2="312" stroke="#1E8449" stroke-width="1.5" marker-end="url(#ar)"/>
+
+    <g class="rn" data-id="allergy_igd" data-phase="asesmen" style="cursor:pointer">
+      <rect x="230" y="318" width="847" height="42" rx="5" fill="#27AE60" opacity=".1" stroke="#27AE60" stroke-width="1.2" stroke-opacity=".5"/>
+      <text x="239" y="334" font-size="11" font-weight="500" fill="#1E8449" font-family="var(--font-sans)">4. AllergyIntolerance — Riwayat Alergi</text>
+      <text x="239" y="349" font-size="10" fill="#1A7A42" font-family="var(--font-sans)">Alergi obat/makanan | NKA jika tidak ada | dikumpulkan dari pasien/keluarga saat asesmen</text>
+      <rect x="934" y="324" width="46" height="14" rx="3" fill="#C0392B" opacity=".2"/>
+      <text x="957" y="334" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="500" font-family="var(--font-sans)">WAJIB</text>
+      <line x1="272" y1="360" x2="954" y2="360" stroke="#27AE60" stroke-width="1.4" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+    </g>
+
+    <g class="rn" data-id="fmhist_igd" data-phase="asesmen" style="cursor:pointer">
+      <rect x="230" y="368" width="847" height="40" rx="5" fill="#27AE60" opacity=".07" stroke="#27AE60" stroke-width="1" stroke-opacity=".35" stroke-dasharray="4 3"/>
+      <text x="239" y="384" font-size="11" font-weight="500" fill="#1E8449" font-family="var(--font-sans)">5. FamilyMemberHistory — Riwayat Keluarga</text>
+      <text x="239" y="398" font-size="10" fill="#1A7A42" font-family="var(--font-sans)">Penyakit herediter relevan | dikumpulkan dari keluarga | opsional di IGD</text>
+      <rect x="921" y="374" width="66" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="954" y="385" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="272" y1="408" x2="954" y2="408" stroke="#27AE60" stroke-width="1" marker-end="url(#ar)" stroke-dasharray="3 4" stroke-opacity=".5"/>
+    </g>
+
+    <g class="rn" data-id="medstat_igd" data-phase="asesmen" style="cursor:pointer">
+      <rect x="230" y="416" width="847" height="40" rx="5" fill="#27AE60" opacity=".07" stroke="#27AE60" stroke-width="1" stroke-opacity=".35" stroke-dasharray="4 3"/>
+      <text x="239" y="432" font-size="11" font-weight="500" fill="#1E8449" font-family="var(--font-sans)">6. MedicationStatement — Obat yang Sedang Dikonsumsi</text>
+      <text x="239" y="446" font-size="10" fill="#1A7A42" font-family="var(--font-sans)">Obat rutin/swamedikasi sebelum masuk IGD | informasi penting untuk tindakan emergency</text>
+      <rect x="921" y="422" width="66" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="954" y="433" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="272" y1="456" x2="954" y2="456" stroke="#27AE60" stroke-width="1" marker-end="url(#ar)" stroke-dasharray="3 4" stroke-opacity=".5"/>
+    </g>
+
+    <!-- ===== FASE 3: PENANGANAN ===== -->
+    <rect x="8" y="468" width="1080" height="19" rx="3" fill="#6C3483" opacity=".13"/>
+    <text x="14" y="481" font-size="10" font-weight="500" fill="#6C3483" font-family="var(--font-sans)">FASE 3 — Penanganan &amp; Pemeriksaan Dokter IGD</text>
+
+    <text x="386" y="504" font-size="10" fill="var(--color-text-secondary)" font-family="var(--font-sans)">Penanganan &amp; pemeriksaan</text>
+    <line x1="383" y1="508" x2="275" y2="508" stroke="#6C3483" stroke-width="1.2" marker-end="url(#ar)" stroke-dasharray="3 3" stroke-opacity=".5"/>
+
+    <!-- Update Encounter in-progress -->
+    <g class="rn" data-id="enc_inprogress" data-phase="penanganan" style="cursor:pointer">
+      <rect x="120" y="514" width="957" height="42" rx="5" fill="#4A90D9" opacity=".1" stroke="#4A90D9" stroke-width="1.2" stroke-opacity=".5" stroke-dasharray="5 3"/>
+      <text x="129" y="530" font-size="11" font-weight="500" fill="#1F618D" font-family="var(--font-sans)">7. Encounter — Update Status In-Progress (Mulai Penanganan)</text>
+      <text x="129" y="545" font-size="10" fill="#2874A6" font-family="var(--font-sans)">PUT Encounter | status: in-progress | location: ruang tindakan/resusitasi | period.start diupdate</text>
+      <rect x="921" y="520" width="66" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="954" y="531" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="162" y1="556" x2="954" y2="556" stroke="#4A90D9" stroke-width="1.2" marker-end="url(#ar)" stroke-dasharray="4 3" stroke-opacity=".6"/>
+      <text x="555" y="552" text-anchor="middle" font-size="9" fill="#4A90D9" font-family="var(--font-sans)">PUT /Encounter/&#123;id&#125; → status: in-progress</text>
+    </g>
+
+    <!-- Condition Diagnosa Awal -->
+    <g class="rn" data-id="cond_igd" data-phase="penanganan" style="cursor:pointer">
+      <rect x="120" y="564" width="957" height="44" rx="5" fill="#9B6BBE" opacity=".12" stroke="#9B6BBE" stroke-width="1.3" stroke-opacity=".55"/>
+      <text x="129" y="581" font-size="11" font-weight="500" fill="#6C3483" font-family="var(--font-sans)">8. Condition — Diagnosa Awal / Kerja IGD</text>
+      <text x="129" y="596" font-size="10" fill="#7D3C98" font-family="var(--font-sans)">ICD-10 wajib | verificationStatus: provisional (bisa berubah) | dikirim SEBELUM Procedure</text>
+      <rect x="934" y="570" width="46" height="14" rx="3" fill="#C0392B" opacity=".2"/>
+      <text x="957" y="581" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="500" font-family="var(--font-sans)">WAJIB</text>
+      <line x1="383" y1="608" x2="954" y2="608" stroke="#9B6BBE" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="668" y="604" text-anchor="middle" font-size="9" fill="#9B6BBE" font-family="var(--font-sans)">POST /Condition → simpan condition-id</text>
+    </g>
+
+    <!-- Procedure Tindakan Cito/Resusitasi -->
+    <g class="rn" data-id="proc_igd" data-phase="penanganan" style="cursor:pointer">
+      <rect x="120" y="618" width="957" height="44" rx="5" fill="#9B6BBE" opacity=".12" stroke="#9B6BBE" stroke-width="1.3" stroke-opacity=".55"/>
+      <text x="129" y="635" font-size="11" font-weight="500" fill="#6C3483" font-family="var(--font-sans)">9. Procedure — Tindakan Cito / Resusitasi</text>
+      <text x="129" y="650" font-size="10" fill="#7D3C98" font-family="var(--font-sans)">Resusitasi, stabilisasi, tindakan cito | ICD-9-CM | reasonReference → Condition ID | emergency flag</text>
+      <rect x="934" y="624" width="46" height="14" rx="3" fill="#C0392B" opacity=".2"/>
+      <text x="957" y="635" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="500" font-family="var(--font-sans)">WAJIB</text>
+      <line x1="383" y1="662" x2="954" y2="662" stroke="#9B6BBE" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="668" y="658" text-anchor="middle" font-size="9" fill="#9B6BBE" font-family="var(--font-sans)">POST /Procedure (setelah Condition)</text>
+    </g>
+
+    <!-- Observation Monitoring -->
+    <g class="rn" data-id="obs_monitor" data-phase="penanganan" style="cursor:pointer">
+      <rect x="120" y="672" width="957" height="40" rx="5" fill="#27AE60" opacity=".08" stroke="#27AE60" stroke-width="1" stroke-opacity=".4" stroke-dasharray="4 3"/>
+      <text x="129" y="688" font-size="11" font-weight="500" fill="#1E8449" font-family="var(--font-sans)">10. Observation — Monitoring Berkala Selama di IGD</text>
+      <text x="129" y="702" font-size="10" fill="#1A7A42" font-family="var(--font-sans)">Re-asesmen tanda vital berkala | GCS, EWS (Early Warning Score) | monitor respons terapi</text>
+      <rect x="921" y="678" width="66" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="954" y="689" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="272" y1="712" x2="954" y2="712" stroke="#27AE60" stroke-width="1" marker-end="url(#ar)" stroke-dasharray="3 4" stroke-opacity=".5"/>
+      <text x="614" y="708" text-anchor="middle" font-size="9" fill="#27AE60" font-family="var(--font-sans)" opacity=".8">POST /Observation (berkala selama di IGD)</text>
+    </g>
+
+    <!-- ===== FASE 4A: FARMASI IGD ===== -->
+    <rect x="8" y="724" width="1080" height="19" rx="3" fill="#117A65" opacity=".14"/>
+    <text x="14" y="737" font-size="10" font-weight="500" fill="#117A65" font-family="var(--font-sans)">FASE 4A — Farmasi Depo IGD (Order &amp; Pemberian Obat Cito)</text>
+
+    <text x="386" y="760" font-size="10" fill="var(--color-text-secondary)" font-family="var(--font-sans)">Order obat cito</text>
+    <line x1="383" y1="764" x2="490" y2="764" stroke="#117A65" stroke-width="1.5" marker-end="url(#ar)"/>
+
+    <g class="rn" data-id="medrq_igd" data-phase="farmasi" style="cursor:pointer">
+      <rect x="453" y="770" width="624" height="44" rx="5" fill="#1ABC9C" opacity=".1" stroke="#1ABC9C" stroke-width="1.3" stroke-opacity=".52"/>
+      <text x="462" y="787" font-size="11" font-weight="500" fill="#117A65" font-family="var(--font-sans)">11. MedicationRequest — Resep Cito / Obat Emergency</text>
+      <text x="462" y="802" font-size="10" fill="#0E6655" font-family="var(--font-sans)">priority: urgent | Medication dalam contained | route: IV/IM/SC | dosageInstruction</text>
+      <rect x="934" y="776" width="46" height="14" rx="3" fill="#C0392B" opacity=".2"/>
+      <text x="957" y="787" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="500" font-family="var(--font-sans)">WAJIB</text>
+      <line x1="497" y1="814" x2="954" y2="814" stroke="#1ABC9C" stroke-width="1.4" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="727" y="810" text-anchor="middle" font-size="9" fill="#1ABC9C" font-family="var(--font-sans)">POST /MedicationRequest → simpan id</text>
+    </g>
+
+    <g class="rn" data-id="meddisp_igd" data-phase="farmasi" style="cursor:pointer">
+      <rect x="453" y="824" width="624" height="44" rx="5" fill="#1ABC9C" opacity=".1" stroke="#1ABC9C" stroke-width="1.3" stroke-opacity=".52"/>
+      <text x="462" y="841" font-size="11" font-weight="500" fill="#117A65" font-family="var(--font-sans)">12. MedicationDispense — Obat Diberikan ke Pasien IGD</text>
+      <text x="462" y="856" font-size="10" fill="#0E6655" font-family="var(--font-sans)">authorizingPrescription → MedicationRequest ID | whenHandedOver | performer: perawat/farmasi</text>
+      <rect x="934" y="830" width="46" height="14" rx="3" fill="#C0392B" opacity=".2"/>
+      <text x="957" y="841" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="500" font-family="var(--font-sans)">WAJIB</text>
+      <line x1="272" y1="868" x2="954" y2="868" stroke="#1ABC9C" stroke-width="1.4" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="614" y="864" text-anchor="middle" font-size="9" fill="#1ABC9C" font-family="var(--font-sans)">POST /MedicationDispense</text>
+    </g>
+
+    <!-- ===== FASE 4B: LAB CITO ===== -->
+    <rect x="8" y="882" width="1080" height="19" rx="3" fill="#1A5276" opacity=".14"/>
+    <text x="14" y="895" font-size="10" font-weight="500" fill="#1A5276" font-family="var(--font-sans)">FASE 4B — Pemeriksaan Laboratorium Cito</text>
+
+    <text x="386" y="918" font-size="10" fill="var(--color-text-secondary)" font-family="var(--font-sans)">Order lab cito</text>
+    <line x1="383" y1="922" x2="605" y2="922" stroke="#1A5276" stroke-width="1.5" marker-end="url(#ar)"/>
+
+    <g class="rn" data-id="svcreq_lab" data-phase="lab" style="cursor:pointer">
+      <rect x="569" y="928" width="509" height="42" rx="5" fill="#2E86C1" opacity=".1" stroke="#2E86C1" stroke-width="1.2" stroke-opacity=".5"/>
+      <text x="578" y="944" font-size="11" font-weight="500" fill="#1A5276" font-family="var(--font-sans)">13. ServiceRequest — Order Lab Cito</text>
+      <text x="578" y="959" font-size="10" fill="#154360" font-family="var(--font-sans)">priority: urgent | category: laboratory | LOINC panel | reasonReference Condition</text>
+      <rect x="921" y="934" width="66" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="954" y="945" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="612" y1="970" x2="954" y2="970" stroke="#2E86C1" stroke-width="1.4" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="785" y="966" text-anchor="middle" font-size="9" fill="#2E86C1" font-family="var(--font-sans)">POST /ServiceRequest (cito)</text>
+    </g>
+
+    <g class="rn" data-id="specimen_igd" data-phase="lab" style="cursor:pointer">
+      <rect x="569" y="978" width="509" height="40" rx="5" fill="#2E86C1" opacity=".07" stroke="#2E86C1" stroke-width="1" stroke-opacity=".38" stroke-dasharray="4 3"/>
+      <text x="578" y="994" font-size="11" font-weight="500" fill="#1A5276" font-family="var(--font-sans)">14. Specimen — Sampel Cito</text>
+      <text x="578" y="1008" font-size="10" fill="#154360" font-family="var(--font-sans)">Darah, urin darurat | collectedDateTime | request → ServiceRequest ID</text>
+      <rect x="921" y="984" width="66" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="954" y="995" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="612" y1="1018" x2="954" y2="1018" stroke="#2E86C1" stroke-width="1" marker-end="url(#ar)" stroke-dasharray="3 4" stroke-opacity=".55"/>
+    </g>
+
+    <g class="rn" data-id="obs_lab_igd" data-phase="lab" style="cursor:pointer">
+      <rect x="569" y="1026" width="509" height="40" rx="5" fill="#2E86C1" opacity=".07" stroke="#2E86C1" stroke-width="1" stroke-opacity=".38" stroke-dasharray="4 3"/>
+      <text x="578" y="1042" font-size="11" font-weight="500" fill="#1A5276" font-family="var(--font-sans)">15. Observation — Hasil Parameter Lab Cito</text>
+      <text x="578" y="1056" font-size="10" fill="#154360" font-family="var(--font-sans)">1 Obs/parameter | LOINC | basedOn ServiceRequest | specimen Specimen ID | nilai kritis → flag</text>
+      <rect x="921" y="1032" width="66" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="954" y="1043" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="612" y1="1066" x2="954" y2="1066" stroke="#2E86C1" stroke-width="1" marker-end="url(#ar)" stroke-dasharray="3 4" stroke-opacity=".55"/>
+    </g>
+
+    <g class="rn" data-id="diagrpt_lab_igd" data-phase="lab" style="cursor:pointer">
+      <rect x="569" y="1074" width="509" height="42" rx="5" fill="#2E86C1" opacity=".12" stroke="#2E86C1" stroke-width="1.3" stroke-opacity=".52"/>
+      <text x="578" y="1090" font-size="11" font-weight="500" fill="#1A5276" font-family="var(--font-sans)">16. DiagnosticReport — Laporan Lab Cito</text>
+      <text x="578" y="1105" font-size="10" fill="#154360" font-family="var(--font-sans)">category: LAB | result → Observation IDs | conclusion | status: final</text>
+      <rect x="921" y="1080" width="66" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="954" y="1091" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="612" y1="1116" x2="954" y2="1116" stroke="#2E86C1" stroke-width="1.4" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="785" y="1112" text-anchor="middle" font-size="9" fill="#2E86C1" font-family="var(--font-sans)">POST /DiagnosticReport</text>
+    </g>
+    <!-- return hasil ke dokter -->
+    <line x1="612" y1="1128" x2="390" y2="1128" stroke="#2E86C1" stroke-width="1.1" marker-end="url(#ar)" stroke-dasharray="3 3" stroke-opacity=".45"/>
+    <text x="500" y="1140" text-anchor="middle" font-size="9" fill="var(--color-text-secondary)" font-family="var(--font-sans)">Hasil lab cito → Dokter IGD</text>
+
+    <!-- ===== FASE 4C: RADIOLOGI CITO ===== -->
+    <rect x="8" y="1152" width="1080" height="19" rx="3" fill="#7B241C" opacity=".14"/>
+    <text x="14" y="1165" font-size="10" font-weight="500" fill="#7B241C" font-family="var(--font-sans)">FASE 4C — Pemeriksaan Radiologi Cito (jika ada)</text>
+
+    <text x="386" y="1188" font-size="10" fill="var(--color-text-secondary)" font-family="var(--font-sans)">Order radiologi cito</text>
+    <line x1="383" y1="1192" x2="719" y2="1192" stroke="#7B241C" stroke-width="1.5" marker-end="url(#ar)"/>
+
+    <g class="rn" data-id="svcreq_rad_igd" data-phase="radiologi" style="cursor:pointer">
+      <rect x="683" y="1198" width="395" height="42" rx="5" fill="#E74C3C" opacity=".1" stroke="#E74C3C" stroke-width="1.2" stroke-opacity=".5"/>
+      <text x="692" y="1214" font-size="11" font-weight="500" fill="#7B241C" font-family="var(--font-sans)">17. ServiceRequest — Order Radiologi Cito</text>
+      <text x="692" y="1229" font-size="10" fill="#641E16" font-family="var(--font-sans)">priority: urgent | LOINC modalitas | bodySite SNOMED | reasonReference Condition</text>
+      <rect x="921" y="1204" width="66" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="954" y="1215" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="726" y1="1240" x2="954" y2="1240" stroke="#E74C3C" stroke-width="1.4" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+    </g>
+
+    <!-- DICOM box -->
+    <rect x="683" y="1250" width="395" height="68" rx="5" fill="#E67E22" opacity=".08" stroke="#E67E22" stroke-width="1.1" stroke-opacity=".5" stroke-dasharray="5 3"/>
+    <text x="692" y="1266" font-size="10" font-weight="500" fill="#784212" font-family="var(--font-sans)">🔶 Alur DICOM Cito (via DICOM Router &amp; PACS)</text>
+    <text x="692" y="1280" font-size="9" fill="#6E2F01" font-family="var(--font-sans)">1. Modalitas cito (X-Ray/CT) → PACS</text>
+    <text x="692" y="1294" font-size="9" fill="#6E2F01" font-family="var(--font-sans)">2. DICOM Router → NIDR → terima Wado URL</text>
+    <text x="692" y="1308" font-size="9" fill="#6E2F01" font-family="var(--font-sans)">3. DICOM Router POST ImagingStudy ke SATUSEHAT (bukan SIMRS)</text>
+    <line x1="726" y1="1316" x2="954" y2="1316" stroke="#E67E22" stroke-width="1.1" marker-end="url(#ar)" stroke-dasharray="4 3" stroke-opacity=".65"/>
+
+    <g class="rn" data-id="imaging_igd" data-phase="radiologi" style="cursor:pointer">
+      <rect x="683" y="1326" width="395" height="42" rx="5" fill="#E74C3C" opacity=".12" stroke="#E74C3C" stroke-width="1.4" stroke-opacity=".58"/>
+      <text x="692" y="1343" font-size="11" font-weight="500" fill="#7B241C" font-family="var(--font-sans)">18. ImagingStudy — Metadata DICOM Cito</text>
+      <text x="692" y="1358" font-size="10" fill="#641E16" font-family="var(--font-sans)">Dikirim DICOM Router | basedOn ServiceRequest | Wado URL NIDR | encounter: IGD</text>
+      <rect x="921" y="1332" width="66" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="954" y="1343" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="726" y1="1368" x2="954" y2="1368" stroke="#E74C3C" stroke-width="1.4" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+    </g>
+
+    <g class="rn" data-id="obs_rad_igd" data-phase="radiologi" style="cursor:pointer">
+      <rect x="683" y="1378" width="395" height="40" rx="5" fill="#E74C3C" opacity=".07" stroke="#E74C3C" stroke-width="1" stroke-opacity=".38" stroke-dasharray="4 3"/>
+      <text x="692" y="1394" font-size="11" font-weight="500" fill="#7B241C" font-family="var(--font-sans)">19. Observation — Ekspertise Radiologi</text>
+      <text x="692" y="1408" font-size="10" fill="#641E16" font-family="var(--font-sans)">Temuan cito per organ | derivedFrom ImagingStudy ID | dokter radiologi</text>
+      <rect x="921" y="1384" width="66" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="954" y="1395" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="726" y1="1418" x2="954" y2="1418" stroke="#E74C3C" stroke-width="1" marker-end="url(#ar)" stroke-dasharray="3 4" stroke-opacity=".55"/>
+    </g>
+
+    <g class="rn" data-id="diagrpt_rad_igd" data-phase="radiologi" style="cursor:pointer">
+      <rect x="683" y="1426" width="395" height="42" rx="5" fill="#E74C3C" opacity=".12" stroke="#E74C3C" stroke-width="1.4" stroke-opacity=".58"/>
+      <text x="692" y="1443" font-size="11" font-weight="500" fill="#7B241C" font-family="var(--font-sans)">20. DiagnosticReport — Laporan Radiologi Cito</text>
+      <text x="692" y="1458" font-size="10" fill="#641E16" font-family="var(--font-sans)">category: RAD | imagingStudy ID wajib | result Observation | conclusion</text>
+      <rect x="921" y="1432" width="66" height="14" rx="3" fill="#888" opacity=".2"/>
+      <text x="954" y="1443" text-anchor="middle" font-size="9" fill="#666" font-weight="500" font-family="var(--font-sans)">OPSIONAL</text>
+      <line x1="726" y1="1468" x2="954" y2="1468" stroke="#E74C3C" stroke-width="1.4" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+    </g>
+    <line x1="726" y1="1480" x2="390" y2="1480" stroke="#E74C3C" stroke-width="1.1" marker-end="url(#ar)" stroke-dasharray="3 3" stroke-opacity=".45"/>
+    <text x="557" y="1492" text-anchor="middle" font-size="9" fill="var(--color-text-secondary)" font-family="var(--font-sans)">Hasil radiologi cito → Dokter IGD</text>
+
+    <!-- ===== FASE 5: DISPOSISI ===== -->
+    <rect x="8" y="1502" width="1080" height="19" rx="3" fill="#2C3E50" opacity=".13"/>
+    <text x="14" y="1515" font-size="10" font-weight="500" fill="#2C3E50" font-family="var(--font-sans)">FASE 5 — Keputusan &amp; Disposisi (KRS / Rawat Inap / Rujuk / Meninggal)</text>
+
+    <!-- Condition Diagnosis Akhir IGD -->
+    <g class="rn" data-id="cond_final_igd" data-phase="disposisi" style="cursor:pointer">
+      <rect x="120" y="1522" width="957" height="44" rx="5" fill="#9B6BBE" opacity=".13" stroke="#9B6BBE" stroke-width="1.4" stroke-opacity=".6"/>
+      <text x="129" y="1539" font-size="11" font-weight="500" fill="#6C3483" font-family="var(--font-sans)">21. Condition — Diagnosa Akhir / Final IGD</text>
+      <text x="129" y="1554" font-size="10" fill="#7D3C98" font-family="var(--font-sans)">ICD-10 diagnosa final saat keluar IGD | verificationStatus: confirmed | bisa berbeda dari diagnosa awal</text>
+      <rect x="934" y="1528" width="46" height="14" rx="3" fill="#C0392B" opacity=".2"/>
+      <text x="957" y="1539" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="500" font-family="var(--font-sans)">WAJIB</text>
+      <line x1="383" y1="1566" x2="954" y2="1566" stroke="#9B6BBE" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+    </g>
+
+    <!-- 4 jalur disposisi -->
+    <rect x="8" y="1578" width="1080" height="14" rx="3" fill="#2C3E50" opacity=".06"/>
+    <text x="14" y="1589" font-size="9" fill="#555" font-family="var(--font-sans)">Pilih jalur disposisi sesuai keputusan dokter ↓</text>
+
+    <!-- Kotak 4 disposisi -->
+    <rect x="12" y="1598" width="248" height="90" rx="6" fill="#1E8449" opacity=".08" stroke="#1E8449" stroke-width="1" stroke-opacity=".4"/>
+    <text x="136" y="1614" text-anchor="middle" font-size="10" font-weight="500" fill="#1E8449" font-family="var(--font-sans)">✅ KRS (Pulang)</text>
+    <text x="136" y="1628" text-anchor="middle" font-size="9" fill="#1E8449" font-family="var(--font-sans)">dischargeDisposition:</text>
+    <text x="136" y="1640" text-anchor="middle" font-size="9" fill="#1E8449" font-family="var(--font-sans)">home / discharge</text>
+    <text x="136" y="1654" text-anchor="middle" font-size="9" fill="#555" font-family="var(--font-sans)">Encounter → finished</text>
+    <text x="136" y="1668" text-anchor="middle" font-size="9" fill="#555" font-family="var(--font-sans)">period.end diisi</text>
+    <text x="136" y="1681" text-anchor="middle" font-size="9" fill="#888" font-family="var(--font-sans)">(+ Resep pulang jika ada)</text>
+
+    <rect x="272" y="1598" width="248" height="90" rx="6" fill="#1A5276" opacity=".08" stroke="#1A5276" stroke-width="1" stroke-opacity=".4"/>
+    <text x="396" y="1614" text-anchor="middle" font-size="10" font-weight="500" fill="#1A5276" font-family="var(--font-sans)">🏥 Rawat Inap</text>
+    <text x="396" y="1628" text-anchor="middle" font-size="9" fill="#1A5276" font-family="var(--font-sans)">dischargeDisposition:</text>
+    <text x="396" y="1640" text-anchor="middle" font-size="9" fill="#1A5276" font-family="var(--font-sans)">other-hcf / inpatient</text>
+    <text x="396" y="1654" text-anchor="middle" font-size="9" fill="#555" font-family="var(--font-sans)">Encounter IGD → finished</text>
+    <text x="396" y="1668" text-anchor="middle" font-size="9" fill="#555" font-family="var(--font-sans)">Buat Encounter BARU (IMP)</text>
+    <text x="396" y="1681" text-anchor="middle" font-size="9" fill="#888" font-family="var(--font-sans)">Encounter ranap referensikan IGD</text>
+
+    <rect x="532" y="1598" width="248" height="90" rx="6" fill="#E67E22" opacity=".08" stroke="#E67E22" stroke-width="1" stroke-opacity=".4"/>
+    <text x="656" y="1614" text-anchor="middle" font-size="10" font-weight="500" fill="#784212" font-family="var(--font-sans)">🚑 Rujuk RS Lain</text>
+    <text x="656" y="1628" text-anchor="middle" font-size="9" fill="#784212" font-family="var(--font-sans)">dischargeDisposition:</text>
+    <text x="656" y="1640" text-anchor="middle" font-size="9" fill="#784212" font-family="var(--font-sans)">other-hcf / transfer</text>
+    <text x="656" y="1654" text-anchor="middle" font-size="9" fill="#555" font-family="var(--font-sans)">Encounter IGD → finished</text>
+    <text x="656" y="1668" text-anchor="middle" font-size="9" fill="#555" font-family="var(--font-sans)">+ Composition surat rujukan</text>
+    <text x="656" y="1681" text-anchor="middle" font-size="9" fill="#888" font-family="var(--font-sans)">Modul Rujukan terpisah</text>
+
+    <rect x="792" y="1598" width="248" height="90" rx="6" fill="#7B241C" opacity=".08" stroke="#7B241C" stroke-width="1" stroke-opacity=".4"/>
+    <text x="916" y="1614" text-anchor="middle" font-size="10" font-weight="500" fill="#7B241C" font-family="var(--font-sans)">💀 Meninggal di IGD</text>
+    <text x="916" y="1628" text-anchor="middle" font-size="9" fill="#7B241C" font-family="var(--font-sans)">dischargeDisposition:</text>
+    <text x="916" y="1640" text-anchor="middle" font-size="9" fill="#7B241C" font-family="var(--font-sans)">exp (expired)</text>
+    <text x="916" y="1654" text-anchor="middle" font-size="9" fill="#555" font-family="var(--font-sans)">Encounter → finished</text>
+    <text x="916" y="1668" text-anchor="middle" font-size="9" fill="#555" font-family="var(--font-sans)">+ Modul Kematian Maternal</text>
+    <text x="916" y="1681" text-anchor="middle" font-size="9" fill="#888" font-family="var(--font-sans)">/ Perinatal jika relevan</text>
+
+    <!-- Encounter Finished IGD -->
+    <g class="rn" data-id="enc_finished_igd" data-phase="disposisi" style="cursor:pointer">
+      <rect x="120" y="1700" width="957" height="44" rx="5" fill="#4A90D9" opacity=".15" stroke="#4A90D9" stroke-width="1.5" stroke-opacity=".65"/>
+      <text x="129" y="1717" font-size="11" font-weight="500" fill="#1F618D" font-family="var(--font-sans)">22. Encounter — Update Status Finished (Keluar IGD)</text>
+      <text x="129" y="1732" font-size="10" fill="#2874A6" font-family="var(--font-sans)">status: finished | period.end WAJIB | hospitalization.dischargeDisposition | PUT (bukan POST)</text>
+      <rect x="934" y="1706" width="46" height="14" rx="3" fill="#C0392B" opacity=".2"/>
+      <text x="957" y="1717" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="500" font-family="var(--font-sans)">WAJIB</text>
+      <line x1="162" y1="1744" x2="954" y2="1744" stroke="#4A90D9" stroke-width="1.5" marker-end="url(#ar)" stroke-dasharray="5 3"/>
+      <text x="555" y="1740" text-anchor="middle" font-size="9" fill="#4A90D9" font-family="var(--font-sans)">PUT /Encounter/&#123;encounter-id&#125; → status: finished (paling terakhir)</text>
+    </g>
+
+    <!-- Footer -->
+    <rect x="8" y="1762" width="1080" height="112" rx="6" fill="none" stroke="var(--color-border-tertiary)" stroke-width=".8"/>
+    <text x="18" y="1780" font-size="10" font-weight="500" fill="var(--color-text-secondary)" font-family="var(--font-sans)">⚠️ Perbedaan kritis IGD vs Rajal vs Ranap:</text>
+    <text x="18" y="1796" font-size="9" fill="var(--color-text-tertiary)" font-family="var(--font-sans)">🔴 Encounter class: EMER (berbeda dari AMB=rajal, IMP=ranap) | serviceType: 117 (Emergency)</text>
+    <text x="18" y="1810" font-size="9" fill="var(--color-text-tertiary)" font-family="var(--font-sans)">🔴 ClinicalImpression WAJIB di IGD untuk data triase (kategori P1-P4) — berbeda dari rajal/ranap yang opsional</text>
+    <text x="18" y="1824" font-size="9" fill="var(--color-text-tertiary)" font-family="var(--font-sans)">🔴 Condition awal bisa verificationStatus: provisional (belum confirmed) — dikonfirmasi saat diagnosa final</text>
+    <text x="18" y="1838" font-size="9" fill="var(--color-text-tertiary)" font-family="var(--font-sans)">🔴 MedicationRequest priority: urgent | ServiceRequest priority: urgent (cito)</text>
+    <text x="18" y="1852" font-size="9" fill="var(--color-text-tertiary)" font-family="var(--font-sans)">🔴 Disposisi: jika masuk ranap → Encounter IGD finished DULU, lalu buat Encounter BARU class IMP untuk ranap</text>
+    <text x="18" y="1866" font-size="9" fill="var(--color-text-tertiary)" font-family="var(--font-sans)">✅ Urutan: Encounter(EMER) → ClinicalImpression → Obs vital → AllergyIntolerance → Condition → Procedure → MedReq → Lab/Rad → Condition final → Encounter(finished)</text>
+  </svg>
+  </div>
+
+  <div class="info" id="info"><span class="hint"><i class="fa-solid fa-hand-pointer"></i> Klik salah satu kotak resource di atas untuk melihat detail field, urutan, dan catatan implementasi khusus IGD.</span></div>
+</div>
+
+
+  
+<script>
+  import { attachResourceCards } from '../scripts/resourceCard.js';
+
+  document.addEventListener('astro:page-load', () => {
+    const D={
+  enc_igd:{t:"1. Encounter — Kunjungan IGD",phase:"Triase",m:"POST /Encounter",s:"WAJIB",c:"#C0392B",
+    desc:"Resource pertama IGD. Class EMER membedakan dari rajal (AMB) dan ranap (IMP). Dibuat saat pasien pertama kali terdaftar di triase.",
+    fields:["status: arrived (saat triase)","class: EMER (Emergency)","serviceType: 117 (Emergency Medical Services)","subject: Patient IHS Number","participant: Practitioner (perawat triase / dokter jaga)","location: ruang triase (Location ID)","period.start: waktu masuk IGD","priority: urgent / stat"],
+    note:"⚠️ Class EMER wajib. Simpan encounter-id — dipakai di semua resource IGD. Status dimulai arrived, diupdate in-progress saat penanganan, dan finished saat keluar."},
+  clinical_triase:{t:"2. ClinicalImpression — Triase IGD",phase:"Triase",m:"POST /ClinicalImpression",s:"WAJIB",c:"#C0392B",
+    desc:"Di IGD, ClinicalImpression WAJIB (bukan opsional seperti di rajal) karena memuat data triase termasuk kategori kegawatan pasien.",
+    fields:["status: completed","subject: Patient","encounter: Encounter ID","summary: keluhan utama + kategori triase (P1 Merah/P2 Kuning/P3 Hijau/P4 Hitam)","date: waktu triase","assessor: Practitioner (perawat triase)","prognosisCodeableConcept: kode prognosis triase"],
+    note:"🔴 BERBEDA dari rajal: di IGD ClinicalImpression WAJIB karena memuat kategori triase. Kirim segera setelah Encounter terbuat."},
+  obs_triase:{t:"3. Observation — Tanda Vital Saat Triase",phase:"Triase",m:"POST /Observation (multiple)",s:"WAJIB",c:"#C0392B",
+    desc:"Tanda vital yang diambil saat triase. Harus cepat karena kondisi darurat. Kirim 1 Observation per parameter.",
+    fields:["code: LOINC (8480-6 sistolik, 8462-4 diastolik, 8310-5 suhu, 9279-1 RR, 8867-4 nadi, 59408-5 SpO2)","Tambahan IGD: 9269-2 GCS total, 72514-3 skor nyeri (0-10), Sub-komponen GCS: 9267-6 Eye opening, 9270-0 Verbal, 9268-4 Motor","status: final","effectiveDateTime: waktu triase","encounter: Encounter ID"],
+    note:"💡 Tambahkan GCS (Glasgow Coma Scale) untuk semua pasien IGD — penting untuk menentukan level kegawatan."},
+  allergy_igd:{t:"4. AllergyIntolerance — Riwayat Alergi",phase:"Asesmen Awal",m:"POST /AllergyIntolerance",s:"WAJIB",c:"#C0392B",
+    desc:"Wajib dikumpulkan meski kondisi darurat. Jika pasien tidak sadar, informasi dari keluarga. Gunakan NKA jika tidak diketahui.",
+    fields:["clinicalStatus: active / resolved","verificationStatus: confirmed / unconfirmed (jika dari keluarga)","code: SNOMED (716186003 NKA jika tidak ada/tidak diketahui)","patient: Patient","recorder: Practitioner","encounter: Encounter ID"],
+    note:"💡 Jika pasien tidak sadar dan tidak ada informasi alergi, gunakan NKA + catatan bahwa informasi dari keluarga belum tersedia."},
+  fmhist_igd:{t:"5. FamilyMemberHistory — Riwayat Keluarga",phase:"Asesmen Awal",m:"POST /FamilyMemberHistory",s:"OPSIONAL",c:"#888",
+    desc:"Opsional di IGD. Kirim jika tersedia dan relevan (misal: pasien jantung dengan riwayat keluarga PJK).",
+    fields:["status: partial (karena kondisi darurat, informasi mungkin tidak lengkap)","patient: Patient","relationship: kode SNOMED","condition.code: ICD-10 penyakit keluarga"],
+    note:"💡 Di IGD bisa dikirim belakangan saat kondisi pasien sudah stabil dan informasi dari keluarga sudah lengkap."},
+  medstat_igd:{t:"6. MedicationStatement — Obat yang Dikonsumsi",phase:"Asesmen Awal",m:"POST /MedicationStatement",s:"OPSIONAL",c:"#888",
+    desc:"Obat rutin yang dikonsumsi pasien sebelum masuk IGD. Kritis untuk pasien dengan komorbid (DM, HT, jantung).",
+    fields:["status: active / stopped","medication: kode obat","subject: Patient","context: Encounter ID","informationSource: RelatedPerson (jika dari keluarga)","dateAsserted: tanggal pencatatan"],
+    note:"⚠️ PENTING di IGD: obat pengencer darah, insulin, antihipertensi, dll bisa mempengaruhi tindakan darurat."},
+  enc_inprogress:{t:"7. Encounter — Update Status In-Progress",phase:"Penanganan",m:"PUT /Encounter/{encounter-id}",s:"OPSIONAL",c:"#888",
+    desc:"Update status Encounter dari 'arrived' menjadi 'in-progress' saat pasien mulai ditangani di ruang tindakan.",
+    fields:["status: in-progress","location: update ke ruang tindakan / resusitasi (Location ID baru)","location.status: active"],
+    note:"💡 Opsional tapi direkomendasikan untuk tracking lokasi pasien di IGD (triase → ruang tindakan → observasi)."},
+  cond_igd:{t:"8. Condition — Diagnosa Awal / Kerja IGD",phase:"Penanganan",m:"POST /Condition",s:"WAJIB",c:"#C0392B",
+    desc:"Diagnosa kerja awal dokter IGD. Bisa berstatus provisional karena menunggu hasil lab/rad.",
+    fields:["clinicalStatus: active","verificationStatus: provisional (awal) → confirmed (setelah lab/rad)","category: encounter-diagnosis","code: ICD-10 diagnosa kerja","subject: Patient","encounter: Encounter ID","onsetDateTime: perkiraan onset","recorder: Practitioner (dokter IGD)"],
+    note:"⚠️ Gunakan verificationStatus: provisional dulu. Update menjadi confirmed setelah diagnosa final. Kirim SEBELUM Procedure."},
+  proc_igd:{t:"9. Procedure — Tindakan Cito / Resusitasi",phase:"Penanganan",m:"POST /Procedure",s:"WAJIB",c:"#C0392B",
+    desc:"Semua tindakan darurat termasuk resusitasi, intubasi, defibrilasi, jahit luka, dll.",
+    fields:["status: completed / in-progress (jika tindakan masih berlangsung)","code: ICD-9-CM tindakan darurat","subject: Patient","encounter: Encounter ID","performedDateTime / performedPeriod: waktu tindakan","performer: Practitioner (dokter IGD)","reasonReference: Condition ID (wajib)","note: catatan tindakan darurat"],
+    note:"💡 Untuk tindakan yang masih berlangsung (misal ventilator), gunakan status: in-progress dan performedPeriod tanpa end time."},
+  obs_monitor:{t:"10. Observation — Monitoring Berkala",phase:"Penanganan",m:"POST /Observation (berkala)",s:"OPSIONAL",c:"#888",
+    desc:"Re-asesmen tanda vital selama di IGD untuk monitoring respons terapi dan perubahan kondisi.",
+    fields:["Sama seperti Obs triase + tambahan EWS (Early Warning Score)","code LOINC 9269-2 GCS total jika pasien tidak sadar (sub-komponen: 9267-6 Eye, 9270-0 Verbal, 9268-4 Motor)","effectiveDateTime: waktu re-asesmen","performer: Practitioner (perawat IGD)"],
+    note:"💡 Kirim tiap ada perubahan signifikan kondisi pasien atau sesuai protokol re-asesmen IGD (mis: tiap 30 menit untuk P1)."},
+  medrq_igd:{t:"11. MedicationRequest — Resep Cito",phase:"Farmasi",m:"POST /MedicationRequest",s:"WAJIB",c:"#C0392B",
+    desc:"Order obat darurat dari dokter IGD. Priority: urgent. Medication harus dalam contained.",
+    fields:["status: active","intent: order","priority: urgent (cito)","medication: Medication dalam contained","subject: Patient","encounter: Encounter ID","requester: Practitioner (dokter IGD)","dosageInstruction.route: IV/IM/SC/SL","dosageInstruction.doseAndRate: dosis darurat"],
+    note:"🆕 2025: Medication tetap dalam contained. priority: urgent membedakan dari resep biasa."},
+  meddisp_igd:{t:"12. MedicationDispense — Obat Diberikan",phase:"Farmasi",m:"POST /MedicationDispense",s:"WAJIB",c:"#C0392B",
+    desc:"Konfirmasi obat darurat sudah diberikan ke pasien. Waktu pemberian sangat penting di IGD.",
+    fields:["status: completed","medication: Medication contained","subject: Patient","context: Encounter ID","authorizingPrescription: MedicationRequest ID","quantity: dosis diberikan","whenHandedOver: waktu pemberian (kritis untuk audit)","performer: Practitioner (perawat/farmasi IGD)"],
+    note:"⚠️ whenHandedOver sangat kritis di IGD untuk dokumentasi waktu pemberian obat darurat (medikolegal)."},
+  svcreq_lab:{t:"13. ServiceRequest — Order Lab Cito",phase:"Laboratorium",m:"POST /ServiceRequest",s:"OPSIONAL",c:"#888",
+    desc:"Permintaan laboratorium cito. Priority urgent mempercepat proses di laboratorium.",
+    fields:["status: active","intent: order","priority: urgent (cito)","category: laboratory","code: LOINC panel (AGD, DPL, elektrolit, troponin, dll)","subject: Patient","encounter: Encounter ID","requester: Practitioner (dokter IGD)","reasonReference: Condition ID"],
+    note:"💡 Panel umum IGD: AGD (analisa gas darah), troponin, D-dimer, gula darah cito, elektrolit cito."},
+  specimen_igd:{t:"14. Specimen — Sampel Cito",phase:"Laboratorium",m:"POST /Specimen",s:"OPSIONAL",c:"#888",
+    desc:"Sampel yang diambil untuk lab cito.",
+    fields:["type: SNOMED jenis spesimen (119297000 darah, 122575003 urin)","subject: Patient","request: ServiceRequest ID","collection.collectedDateTime: waktu ambil (penting untuk AGD)","collection.collector: perawat IGD / petugas lab","status: available"],
+    note:"💡 Untuk AGD (analisa gas darah): waktu pengambilan sangat kritis — harus dicatat akurat karena mempengaruhi hasil."},
+  obs_lab_igd:{t:"15. Observation — Hasil Lab Cito",phase:"Laboratorium",m:"POST /Observation",s:"OPSIONAL",c:"#888",
+    desc:"Hasil per parameter lab cito. Nilai kritis harus diflag dan dilaporkan ke dokter IGD segera.",
+    fields:["Sama seperti Obs lab biasa","interpretation: HH (critically high) / LL (critically low) untuk nilai kritis","referenceRange: nilai normal","note: catatan nilai kritis jika ada","basedOn: ServiceRequest ID","specimen: Specimen ID"],
+    note:"⚠️ Nilai kritis (critical value): gunakan interpretation: HH atau LL. Ini memicu alert di dashboard SATUSEHAT."},
+  diagrpt_lab_igd:{t:"16. DiagnosticReport — Laporan Lab Cito",phase:"Laboratorium",m:"POST /DiagnosticReport",s:"OPSIONAL",c:"#888",
+    desc:"Laporan hasil lab cito lengkap.",
+    fields:["status: final","category: LAB","code: LOINC panel","subject: Patient","encounter: Encounter ID (IGD)","basedOn: ServiceRequest ID","result: array Observation IDs","conclusion: kesimpulan cito","issued: waktu laporan keluar"],
+    note:"💡 Kirim sesegera mungkin setelah semua hasil lab tersedia — dokter IGD menunggu untuk keputusan tindakan."},
+  svcreq_rad_igd:{t:"17. ServiceRequest — Order Radiologi Cito",phase:"Radiologi",m:"POST /ServiceRequest",s:"OPSIONAL",c:"#888",
+    desc:"Order radiologi cito (X-Ray, CT Scan darurat).",
+    fields:["status: active","intent: order","priority: urgent (cito)","category: imaging","code: LOINC (24627-2 Chest X-Ray, 24558-9 Abdomen, 30799-1 Head CT)","subject: Patient","encounter: Encounter ID (IGD)","requester: Practitioner","reasonReference: Condition ID","bodySite: SNOMED lokasi"],
+    note:"💡 CT Scan kepala cito (stroke, trauma kepala) = prioritas tertinggi. Pastikan ServiceRequest ID tersimpan."},
+  imaging_igd:{t:"18. ImagingStudy — Metadata DICOM Cito",phase:"Radiologi",m:"POST /ImagingStudy (DICOM Router)",s:"OPSIONAL",c:"#888",
+    desc:"Dikirim oleh DICOM Router, bukan SIMRS. Alur sama seperti radiologi rajal/rajal namun dengan flag cito.",
+    fields:["status: available","modality: CR/CT/MR (cito)","subject: Patient","encounter: Encounter ID (IGD)","basedOn: ServiceRequest ID","series[].endpoint: Wado URL dari NIDR","reasonReference: Condition ID"],
+    note:"🔶 ImagingStudy TIDAK dikirim SIMRS/RME. Dikirim otomatis DICOM Router setelah citra tersimpan di PACS dan Wado URL diterima dari NIDR."},
+  obs_rad_igd:{t:"19. Observation — Ekspertise Radiologi",phase:"Radiologi",m:"POST /Observation",s:"OPSIONAL",c:"#888",
+    desc:"Bacaan dokter radiologi untuk hasil cito.",
+    fields:["status: final","category: imaging","derivedFrom: ImagingStudy ID (wajib)","valueString: temuan radiologi","performer: Practitioner (dokter radiologi)","encounter: Encounter ID (IGD)"],
+    note:"💡 Di IGD cito, sering dokter IGD sendiri yang membaca (preliminary read). Dokter radiologi konfirmasi belakangan."},
+  diagrpt_rad_igd:{t:"20. DiagnosticReport — Laporan Radiologi Cito",phase:"Radiologi",m:"POST /DiagnosticReport",s:"OPSIONAL",c:"#888",
+    desc:"Laporan radiologi cito. Kirim setelah ImagingStudy dan Observation bacaan tersedia.",
+    fields:["status: final","category: RAD","imagingStudy: ImagingStudy ID (wajib)","result: Observation ID (bacaan)","conclusion: kesan cito","encounter: Encounter ID (IGD)","basedOn: ServiceRequest ID"],
+    note:"⚠️ imagingStudy WAJIB diisi. Kirim sesegera mungkin — dokter IGD butuh hasil untuk keputusan tindakan."},
+  cond_final_igd:{t:"21. Condition — Diagnosa Final IGD",phase:"Disposisi",m:"POST /Condition",s:"WAJIB",c:"#C0392B",
+    desc:"Diagnosa akhir saat pasien keluar IGD. Bisa sama atau berbeda dari diagnosa awal (yang mungkin masih provisional).",
+    fields:["clinicalStatus: active / resolved","verificationStatus: confirmed (sudah pasti)","category: encounter-diagnosis","code: ICD-10 diagnosa final","encounter: Encounter ID","recorder: Practitioner (dokter IGD)"],
+    note:"⚠️ Jika diagnosa awal (resource #8) sudah confirmed, bisa diupdate dengan PATCH. Jika berbeda, POST Condition baru. Wajib sebelum Encounter finished."},
+  enc_finished_igd:{t:"22. Encounter — Update Status Finished (Keluar IGD)",phase:"Disposisi",m:"PUT /Encounter/{encounter-id}",s:"WAJIB",c:"#C0392B",
+    desc:"Menutup kunjungan IGD. Disposition menentukan kemana pasien pergi setelah IGD.",
+    fields:["status: finished","period.end: waktu keluar IGD (WAJIB)","hospitalization.dischargeDisposition: home (KRS) / other-hcf (ranap/rujuk) / exp (meninggal)","hospitalization.destination: Organization/Location tujuan (jika ranap atau rujuk)"],
+    note:"⚠️ PUT (bukan POST). period.end WAJIB. Jika pasien masuk ranap: Encounter IGD finished dulu, BARU buat Encounter BARU class IMP untuk ranap. Encounter ranap TIDAK mereplicate Encounter IGD."}
+};
+
+// Tambahkan animasi ke semua garis putus-putus (dashed lines)
+document.querySelectorAll('line[stroke-dasharray]').forEach(line => {
+  line.classList.add('animated-line');
+});
+
+
+attachResourceCards(D);
+
+window.showPhase = function(p,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.rn').forEach(el=>{
+    if(p==='all' || el.dataset.phase===p) {
+      el.style.opacity = '1';
+      el.style.pointerEvents = 'auto';
+    } else {
+      el.style.opacity = '0.08';
+      el.style.pointerEvents = 'none';
+    }
+  });
+};
+  });
+</script>
+
+</Layout>

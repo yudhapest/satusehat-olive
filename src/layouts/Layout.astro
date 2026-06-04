@@ -75,8 +75,32 @@ const currentPath = Astro.url.pathname;
         );
       }
 
+      // Desktop: collapse/expand sidebar so the diagram can be viewed full-width.
+      function initSidebarCollapse() {
+        const container = document.getElementById('app-container');
+        if (!container) return;
+
+        // Re-apply stored preference on every page (container is re-created on nav)
+        const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        container.classList.toggle('sidebar-collapsed', collapsed);
+
+        const btn = document.getElementById('sidebar-collapse');
+        // The header is persisted across view transitions, so bind only once.
+        if (!btn || btn.dataset.collapseBound) return;
+        btn.dataset.collapseBound = 'true';
+
+        btn.addEventListener('click', () => {
+          // Query fresh each click — the container element changes on navigation.
+          const c = document.getElementById('app-container');
+          if (!c) return;
+          const isCollapsed = c.classList.toggle('sidebar-collapsed');
+          localStorage.setItem('sidebarCollapsed', String(isCollapsed));
+        });
+      }
+
       // Run on initial load AND after every Astro view-transition
       document.addEventListener('astro:page-load', initSidebarToggle);
+      document.addEventListener('astro:page-load', initSidebarCollapse);
     </script>
 
     <style>

@@ -7,6 +7,9 @@ const { title, icon } = Astro.props;
     <button id="menu-toggle" class="menu-toggle" aria-label="Buka navigasi">
       <i class="fa-solid fa-bars"></i>
     </button>
+    <button id="sidebar-collapse" class="sidebar-collapse-btn" aria-label="Sembunyikan menu" title="Sembunyikan / tampilkan menu samping">
+      <i class="fa-solid fa-angles-left"></i>
+    </button>
     <div class="page-title">
       <div class="title-icon">
         <i class={`fa-solid ${icon}`}></i>
@@ -114,6 +117,34 @@ const { title, icon } = Astro.props;
     background: var(--color-primary-light);
     border-color: var(--color-primary);
     color: var(--color-primary);
+  }
+
+  /* Sidebar collapse — visible on desktop, hidden on mobile */
+  .sidebar-collapse-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border: 1.5px solid var(--color-border-secondary);
+    background: white;
+    border-radius: 10px;
+    cursor: pointer;
+    color: var(--color-text-main);
+    font-size: 14px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .sidebar-collapse-btn:hover {
+    background: var(--color-primary-light);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .sidebar-collapse-btn i {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .page-title {
@@ -382,6 +413,10 @@ const { title, icon } = Astro.props;
 
     .menu-toggle {
       display: flex;
+    }
+
+    .sidebar-collapse-btn {
+      display: none;
     }
 
     .page-title h2 {

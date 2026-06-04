@@ -77,6 +77,24 @@ body {
   height: 100vh;
 }
 
+/* Desktop: collapsible sidebar — lets diagrams render full-width */
+@media (min-width: 769px) {
+  #app-container.sidebar-collapsed .sidebar {
+    width: 0;
+    min-width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    border-right: none;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  #app-container.sidebar-collapsed .sidebar-collapse-btn i {
+    transform: rotate(180deg);
+  }
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;

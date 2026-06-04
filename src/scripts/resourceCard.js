@@ -2,11 +2,17 @@
 // SATUSEHAT flow page. Keeping it in one place guarantees a consistent,
 // modern look across Rajal, IGD, Ranap, Questionnaire, Immunization & Home.
 
+import { jenisBadgeColor, regulasiPerResource } from '../data/regulasi';
+
 function escapeHtml(str) {
   return String(str)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
+}
+
+function escapeAttr(str) {
+  return escapeHtml(str).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
 function getFieldIcon(name) {
@@ -77,6 +83,68 @@ function cleanNote(note) {
   return String(note).replace(/^[\s*⚠️💡🔴🔶🆕🟢ℹ️➡️•]+/u, '').trim();
 }
 
+function getRegulationResourceName(d) {
+  const text = `${d.t || ''} ${d.m || ''}`;
+  const knownResources = Object.keys(regulasiPerResource).sort((a, b) => b.length - a.length);
+  return knownResources.find((resource) => text.toLowerCase().includes(resource.toLowerCase())) || null;
+}
+
+function renderRegulationModal(d) {
+  const resourceName = getRegulationResourceName(d);
+  const data = resourceName ? regulasiPerResource[resourceName] : null;
+  if (!data) return { button: '', modal: '' };
+
+  const modalId = `reg-${resourceName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+  const statusClass = data.status.toUpperCase().includes('WAJIB') ? 'wajib' : 'opsional';
+  const list = data.regulasi.map((reg) => {
+    const badgeColor = jenisBadgeColor[reg.jenis] || '#64748b';
+    const pasal = reg.pasal
+      ? `<p class="rc-reg__pasal"><strong>${escapeHtml(reg.pasal)}</strong></p>`
+      : '';
+    const kutipan = reg.kutipan
+      ? `<blockquote class="rc-reg__quote">&ldquo;${escapeHtml(reg.kutipan)}&rdquo;</blockquote>`
+      : '';
+    const link = reg.link
+      ? `<a href="${escapeAttr(reg.link)}" target="_blank" rel="noopener noreferrer" class="rc-reg__link">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat regulasi resmi
+        </a>`
+      : '';
+
+    return `<li class="rc-reg__item">
+      <div class="rc-reg__itemhead">
+        <span class="rc-reg__type" style="--badge-color: ${escapeAttr(badgeColor)}">${escapeHtml(reg.jenis)}</span>
+        <span class="rc-reg__number">${escapeHtml(reg.nomor)}</span>
+      </div>
+      <p class="rc-reg__title">${escapeHtml(reg.judul)}</p>
+      ${pasal}
+      ${kutipan}
+      ${link}
+    </li>`;
+  }).join('');
+
+  return {
+    button: `<button class="rc__regbtn" type="button" onclick="document.getElementById('${modalId}').showModal()" aria-label="Lihat dasar hukum ${escapeAttr(resourceName)}">
+      <i class="fa-solid fa-scale-balanced"></i> Regulasi
+    </button>`,
+    modal: `<dialog id="${modalId}" class="rc-reg" onclick="if(event.target===this)this.close()">
+      <div class="rc-reg__inner">
+        <header class="rc-reg__head">
+          <div>
+            <span class="rc-reg__name">${escapeHtml(resourceName)}</span>
+            <span class="rc-reg__status rc-reg__status--${statusClass}">${escapeHtml(data.status)}</span>
+          </div>
+          <button class="rc-reg__close" type="button" onclick="document.getElementById('${modalId}').close()" aria-label="Tutup regulasi">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </header>
+        <p class="rc-reg__reason"><i class="fa-solid fa-book-open"></i> ${escapeHtml(data.alasan)}</p>
+        <ul class="rc-reg__list">${list}</ul>
+        <p class="rc-reg__foot">Sumber: Peraturan Kementerian Kesehatan RI dan Undang-Undang Kesehatan.</p>
+      </div>
+    </dialog>`
+  };
+}
+
 export function renderResourceCard(d) {
   if (!d) return '';
   const accent = d.c || '#C0392B';
@@ -114,6 +182,7 @@ export function renderResourceCard(d) {
         <p>${escapeHtml(note)}</p>
       </div>`
     : '';
+  const regulation = renderRegulationModal(d);
 
   return `<article class="rc" style="--accent: ${accent};">
     <header class="rc__head">
@@ -122,9 +191,12 @@ export function renderResourceCard(d) {
         <h3 class="rc__title">${titleDisplay}</h3>
         ${statusBadge}
       </div>
-      <span class="rc__badge ${isReq ? 'rc__badge--req' : 'rc__badge--opt'}">
-        <i class="fa-solid ${isReq ? 'fa-star' : 'fa-circle-info'}"></i> ${escapeHtml(d.s || '')}
-      </span>
+      <div class="rc__actions">
+        ${regulation.button}
+        <span class="rc__badge ${isReq ? 'rc__badge--req' : 'rc__badge--opt'}">
+          <i class="fa-solid ${isReq ? 'fa-star' : 'fa-circle-info'}"></i> ${escapeHtml(d.s || '')}
+        </span>
+      </div>
     </header>
 
     <div class="rc__meta">
@@ -145,6 +217,7 @@ export function renderResourceCard(d) {
     <div class="rc__fields">${fields}</div>
 
     ${noteHtml}
+    ${regulation.modal}
   </article>`;
 }
 

@@ -1,0 +1,353 @@
+---
+/**
+ * RegulationTooltip.astro
+ * Komponen popup dasar hukum per resource FHIR SATUSEHAT
+ * Tempatkan di: src/components/RegulationTooltip.astro
+ *
+ * Cara pakai di halaman Astro:
+ *   import RegulationTooltip from '../components/RegulationTooltip.astro';
+ *   <RegulationTooltip resourceName="AllergyIntolerance" />
+ */
+
+import { regulasiPerResource, jenisBadgeColor } from '../data/regulasi';
+
+interface Props {
+  resourceName: string;
+  /** Tampilkan sebagai ikon saja (default: false = tampilkan full badge) */
+  iconOnly?: boolean;
+}
+
+const { resourceName, iconOnly = false } = Astro.props;
+const data = regulasiPerResource[resourceName];
+const uid = `reg-${resourceName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Math.random().toString(36).slice(2,7)}`;
+---
+
+{data && (
+  <span class="reg-tooltip-wrap" data-uid={uid}>
+    <!-- Trigger Button -->
+    <button
+      class={`reg-trigger ${iconOnly ? 'icon-only' : ''}`}
+      onclick={`document.getElementById('${uid}').showModal()`}
+      title={`Lihat dasar hukum ${resourceName}`}
+      type="button"
+      aria-label={`Regulasi ${resourceName}`}
+    >
+      {iconOnly ? (
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+        </svg>
+      ) : (
+        <>
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+          </svg>
+          Regulasi
+        </>
+      )}
+    </button>
+
+    <!-- Modal Dialog -->
+    <dialog id={uid} class="reg-modal" onclick={`if(event.target===this)this.close()`}>
+      <div class="reg-modal-inner">
+
+        <!-- Header -->
+        <div class="reg-modal-header">
+          <div>
+            <span class="reg-resource-name">{resourceName}</span>
+            <span class={`reg-status-badge ${data.status.includes('WAJIB') ? 'wajib' : 'opsional'}`}>
+              {data.status}
+            </span>
+          </div>
+          <button class="reg-close" onclick={`document.getElementById('${uid}').close()`} aria-label="Tutup" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
+        </div>
+
+        <!-- Alasan -->
+        <p class="reg-alasan">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline;vertical-align:-2px;margin-right:5px;flex-shrink:0"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          {data.alasan}
+        </p>
+
+        <!-- Daftar Regulasi -->
+        <ul class="reg-list">
+          {data.regulasi.map((reg) => (
+            <li class="reg-item">
+              <div class="reg-item-header">
+                <span class="reg-jenis-badge" style={`background:${jenisBadgeColor[reg.jenis] ?? '#64748b'}`}>
+                  {reg.jenis}
+                </span>
+                <span class="reg-nomor">{reg.nomor}</span>
+              </div>
+              <p class="reg-judul">{reg.judul}</p>
+              {reg.pasal && (
+                <p class="reg-pasal">
+                  <strong>{reg.pasal}</strong>
+                </p>
+              )}
+              {reg.kutipan && (
+                <blockquote class="reg-kutipan">
+                  &ldquo;{reg.kutipan}&rdquo;
+                </blockquote>
+              )}
+              {reg.link && (
+                <a href={reg.link} target="_blank" rel="noopener noreferrer" class="reg-link">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  Lihat regulasi resmi
+                </a>
+              )}
+            </li>
+          ))}
+        </ul>
+
+        <!-- Footer -->
+        <p class="reg-footer">
+          Sumber: Peraturan Kementerian Kesehatan RI &amp; Undang-Undang Kesehatan
+        </p>
+      </div>
+    </dialog>
+  </span>
+)}
+
+<style>
+  /* Trigger button */
+  .reg-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    color: #3b82f6;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  .reg-trigger:hover {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border-color: #93c5fd;
+  }
+  .reg-trigger.icon-only {
+    padding: 3px;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    border-radius: 3px;
+  }
+  .reg-trigger.icon-only:hover {
+    background: #f1f5f9;
+    color: #3b82f6;
+  }
+
+  /* Modal backdrop + dialog */
+  .reg-modal {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    width: min(560px, calc(100vw - 32px));
+    max-height: min(640px, calc(100vh - 48px));
+    border: none;
+    border-radius: 12px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,.25), 0 4px 16px rgba(0,0,0,.12);
+    background: #fff;
+    z-index: 9999;
+  }
+  .reg-modal::backdrop {
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(3px);
+  }
+  .reg-modal[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .reg-modal-inner {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 20px 22px 18px;
+    gap: 14px;
+  }
+
+  /* Header */
+  .reg-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .reg-modal-header > div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .reg-resource-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+    font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', monospace;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 2px 8px;
+    border-radius: 5px;
+  }
+  .reg-status-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 99px;
+  }
+  .reg-status-badge.wajib {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+  }
+  .reg-status-badge.opsional {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+  }
+  .reg-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #94a3b8;
+    border-radius: 6px;
+    flex-shrink: 0;
+    transition: background 0.12s, color 0.12s;
+  }
+  .reg-close:hover { background: #f1f5f9; color: #0f172a; }
+
+  /* Alasan */
+  .reg-alasan {
+    margin: 0;
+    font-size: 12.5px;
+    color: #475569;
+    background: #f8fafc;
+    border-left: 3px solid #3b82f6;
+    padding: 9px 12px;
+    border-radius: 0 6px 6px 0;
+    line-height: 1.55;
+  }
+
+  /* List regulasi */
+  .reg-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .reg-item {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background: #fafafa;
+    transition: border-color 0.15s;
+  }
+  .reg-item:hover { border-color: #bfdbfe; background: #f8fafc; }
+
+  .reg-item-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .reg-jenis-badge {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fff;
+    padding: 2px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .reg-nomor {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1e293b;
+  }
+  .reg-judul {
+    margin: 0;
+    font-size: 12px;
+    color: #64748b;
+    font-style: italic;
+  }
+  .reg-pasal {
+    margin: 0;
+    font-size: 11.5px;
+    color: #475569;
+  }
+  .reg-pasal strong { color: #1e293b; font-weight: 600; }
+  .reg-kutipan {
+    margin: 0;
+    font-size: 11.5px;
+    color: #334155;
+    background: #fff;
+    border-left: 3px solid #e2e8f0;
+    padding: 7px 10px;
+    border-radius: 0 4px 4px 0;
+    line-height: 1.6;
+    font-style: italic;
+  }
+  .reg-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #3b82f6;
+    text-decoration: none;
+    margin-top: 2px;
+    width: fit-content;
+  }
+  .reg-link:hover { text-decoration: underline; color: #1d4ed8; }
+
+  /* Footer */
+  .reg-footer {
+    margin: 0;
+    font-size: 10.5px;
+    color: #94a3b8;
+    text-align: center;
+    padding-top: 4px;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  /* Dark mode */
+  @media (prefers-color-scheme: dark) {
+    .reg-modal { background: #1e293b; }
+    .reg-resource-name { background: #0f172a; border-color: #334155; color: #e2e8f0; }
+    .reg-alasan { background: #0f172a; color: #94a3b8; }
+    .reg-item { background: #0f172a; border-color: #334155; }
+    .reg-item:hover { border-color: #3b82f6; background: #1e293b; }
+    .reg-nomor { color: #e2e8f0; }
+    .reg-judul { color: #94a3b8; }
+    .reg-pasal { color: #cbd5e1; }
+    .reg-pasal strong { color: #e2e8f0; }
+    .reg-kutipan { background: #1e293b; border-color: #334155; color: #cbd5e1; }
+    .reg-footer { color: #475569; border-top-color: #334155; }
+    .reg-close:hover { background: #334155; color: #e2e8f0; }
+    .reg-trigger { background: #1e3a5f; border-color: #2563eb; color: #60a5fa; }
+    .reg-trigger:hover { background: #1e40af; color: #bfdbfe; }
+  }
+</style>

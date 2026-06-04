@@ -452,8 +452,9 @@ window.showPhase = function(p, btn){
   else if (event && event.target && event.target.classList.contains('tab')) event.target.classList.add('on');
 
   document.querySelectorAll('.rn').forEach(el=>{
-    const ep=el.dataset.phase;
-    if(p==='all' || ep===p) {
+    const targetPhase = arguments[0];
+    const elPhase = el.dataset.phase || el.dataset.mod;
+    if(targetPhase === 'all' || elPhase === targetPhase) {
       el.style.opacity = '1';
       el.style.pointerEvents = 'auto';
     } else {
@@ -461,6 +462,16 @@ window.showPhase = function(p, btn){
       el.style.pointerEvents = 'none';
     }
   });
+
+  const phase = arguments[0];
+  if (phase !== 'all') {
+    const firstEl = document.querySelector(`.rn[data-phase="${phase}"]`) || document.querySelector(`.rn[data-mod="${phase}"]`);
+    if (firstEl) {
+      firstEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 }
   });
 </script>

@@ -2,15 +2,15 @@
 const { currentPath } = Astro.props;
 
 const menuItems = [
-  { path: '/', title: 'Rawat Jalan (Rajal)', icon: 'fa-hospital-user' },
-  { path: '/igd', title: 'IGD', icon: 'fa-truck-medical' },
-  { path: '/ranap', title: 'Rawat Inap (Ranap)', icon: 'fa-bed-pulse' }
+  { path: "/", title: "Rawat Jalan (Rajal)", icon: "fa-hospital-user" },
+  { path: "/igd", title: "IGD", icon: "fa-truck-medical" },
+  { path: "/ranap", title: "Rawat Inap (Ranap)", icon: "fa-bed-pulse" },
 ];
 
 const resourceItems = [
-  { path: '/questionnaire', title: 'Questionnaire', icon: 'fa-list-check' },
-  { path: '/immunization', title: 'Immunization', icon: 'fa-syringe' },
-  { path: '/resources', title: 'Resource Pelengkap', icon: 'fa-puzzle-piece' }
+  { path: "/questionnaire", title: "Questionnaire", icon: "fa-list-check" },
+  { path: "/immunization", title: "Immunization", icon: "fa-syringe" },
+  { path: "/resources", title: "Resource Pelengkap", icon: "fa-puzzle-piece" },
 ];
 ---
 
@@ -30,29 +30,45 @@ const resourceItems = [
   <div class="menu-section">
     <div class="menu-title">MODUL UTAMA</div>
     <ul class="menu-list">
-      {menuItems.map((item) => (
-        <li class="menu-item">
-          <a href={item.path} class={`menu-link ${currentPath === item.path ? 'active' : ''}`}>
-            <i class={`fa-solid ${item.icon}`}></i>
-            <span>{item.title}</span>
-          </a>
-        </li>
-      ))}
+      {
+        menuItems.map((item) => (
+          <li class="menu-item">
+            <a
+              href={item.path}
+              class={`menu-link ${currentPath === item.path ? "active" : ""}`}
+            >
+              <i class={`fa-solid ${item.icon}`} />
+              <span>{item.title}</span>
+            </a>
+          </li>
+        ))
+      }
     </ul>
   </div>
 
   <div class="menu-section">
     <div class="menu-title">RESOURCE KHUSUS</div>
     <ul class="menu-list">
-      {resourceItems.map((item) => (
-        <li class="menu-item">
-          <a href={item.path} class={`menu-link ${currentPath === item.path ? 'active' : ''}`}>
-            <i class={`fa-solid ${item.icon}`}></i>
-            <span>{item.title}</span>
-          </a>
-        </li>
-      ))}
+      {
+        resourceItems.map((item) => (
+          <li class="menu-item">
+            <a
+              href={item.path}
+              class={`menu-link ${currentPath === item.path ? "active" : ""}`}
+            >
+              <i class={`fa-solid ${item.icon}`} />
+              <span>{item.title}</span>
+            </a>
+          </li>
+        ))
+      }
     </ul>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="version-info">
+      <span>Versi 1.0.1</span>
+    </div>
   </div>
 </aside>
 
@@ -75,7 +91,7 @@ const resourceItems = [
     gap: 16px;
     padding-bottom: 32px;
     margin-bottom: 24px;
-    border-bottom: 1px solid rgba(0,0,0,0.04);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
   }
 
   .sidebar-logo {
@@ -149,8 +165,8 @@ const resourceItems = [
   .menu-link.active {
     background: white;
     color: var(--color-primary);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    border: 1px solid rgba(255,255,255,1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(255, 255, 255, 1);
   }
 
   .menu-link.active i {
@@ -204,5 +220,19 @@ const resourceItems = [
     .sidebar-header {
       padding-right: 48px;
     }
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px dashed rgba(0, 0, 0, 0.08);
+    text-align: center;
+  }
+
+  .version-info {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    letter-spacing: 0.5px;
   }
 </style>

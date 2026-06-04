@@ -522,7 +522,9 @@ window.showPhase = function(p,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   btn.classList.add('on');
   document.querySelectorAll('.rn').forEach(el=>{
-    if(p==='all' || el.dataset.phase===p) {
+    const targetPhase = arguments[0];
+    const elPhase = el.dataset.phase || el.dataset.mod;
+    if(targetPhase === 'all' || elPhase === targetPhase) {
       el.style.opacity = '1';
       el.style.pointerEvents = 'auto';
     } else {
@@ -530,6 +532,16 @@ window.showPhase = function(p,btn){
       el.style.pointerEvents = 'none';
     }
   });
+
+  const phase = arguments[0];
+  if (phase !== 'all') {
+    const firstEl = document.querySelector(`.rn[data-phase="${phase}"]`) || document.querySelector(`.rn[data-mod="${phase}"]`);
+    if (firstEl) {
+      firstEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 };
   });
 </script>

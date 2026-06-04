@@ -30,10 +30,11 @@ const currentPath = Astro.url.pathname;
       <Sidebar currentPath={currentPath} />
       
       <main class="main-content">
-        <Header title={pageTitle} icon={icon} />
-        
-        <div class="page-content" transition:animate="fade">
-          <slot />
+        <div class="page-content">
+          <Header title={pageTitle} icon={icon} transition:persist />
+          <div class="page-inner" transition:animate="fade">
+            <slot />
+          </div>
         </div>
       </main>
     </div>
@@ -47,24 +48,29 @@ const currentPath = Astro.url.pathname;
 
         if (!toggle || !sidebar || !overlay) return;
 
+        // Re-assign with non-null assertion so TypeScript knows these are
+        // definitely defined inside the closures below (guard above ensures this).
+        const sb = sidebar!;
+        const ov = overlay!;
+
         function openSidebar() {
-          sidebar.classList.add('sidebar-open');
-          overlay.classList.add('active');
+          sb.classList.add('sidebar-open');
+          ov.classList.add('active');
           document.body.style.overflow = 'hidden';
         }
 
         function closeSidebar() {
-          sidebar.classList.remove('sidebar-open');
-          overlay.classList.remove('active');
+          sb.classList.remove('sidebar-open');
+          ov.classList.remove('active');
           document.body.style.overflow = '';
         }
 
         toggle.addEventListener('click', openSidebar);
-        overlay.addEventListener('click', closeSidebar);
+        ov.addEventListener('click', closeSidebar);
         closeBtn?.addEventListener('click', closeSidebar);
 
         // Auto-close when navigating via any sidebar link
-        sidebar.querySelectorAll('a').forEach(a =>
+        sb.querySelectorAll('a').forEach(a =>
           a.addEventListener('click', closeSidebar)
         );
       }
@@ -78,26 +84,32 @@ const currentPath = Astro.url.pathname;
         flex: 1;
         display: flex;
         flex-direction: column;
-        overflow: hidden;
-        position: relative;
         min-width: 0;
+        overflow: hidden;
       }
 
       .page-content {
         flex: 1;
         overflow-y: auto;
-        padding: 32px;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
         scroll-behavior: smooth;
       }
 
+      .page-inner {
+        flex: 1;
+        padding: 32px;
+      }
+
       @media (max-width: 768px) {
-        .page-content {
+        .page-inner {
           padding: 16px;
         }
       }
 
       @media (min-width: 769px) and (max-width: 1024px) {
-        .page-content {
+        .page-inner {
           padding: 20px;
         }
       }

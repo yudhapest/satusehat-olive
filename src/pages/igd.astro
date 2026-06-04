@@ -522,7 +522,7 @@ window.showPhase = function(p,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   btn.classList.add('on');
   document.querySelectorAll('.rn').forEach(el=>{
-    const targetPhase = arguments[0];
+    const targetPhase = p;
     const elPhase = el.dataset.phase || el.dataset.mod;
     if(targetPhase === 'all' || elPhase === targetPhase) {
       el.style.opacity = '1';
@@ -533,7 +533,7 @@ window.showPhase = function(p,btn){
     }
   });
 
-  const phase = arguments[0];
+  const phase = p;
   if (phase !== 'all') {
     const firstEl = document.querySelector(`.rn[data-phase="${phase}"]`) || document.querySelector(`.rn[data-mod="${phase}"]`);
     if (firstEl) {

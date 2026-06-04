@@ -1010,21 +1010,6 @@ body {
   line-height: 1.6;
 }
 
-.rc-reg__link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 4px;
-  color: #2563eb;
-  font-size: 12px;
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.rc-reg__link:hover {
-  text-decoration: underline;
-}
-
 .rc-reg__foot {
   margin: 2px 0 0;
   color: var(--color-text-tertiary);

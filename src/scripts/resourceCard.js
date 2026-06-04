@@ -104,11 +104,6 @@ function renderRegulationModal(d) {
     const kutipan = reg.kutipan
       ? `<blockquote class="rc-reg__quote">&ldquo;${escapeHtml(reg.kutipan)}&rdquo;</blockquote>`
       : '';
-    const link = reg.link
-      ? `<a href="${escapeAttr(reg.link)}" target="_blank" rel="noopener noreferrer" class="rc-reg__link">
-          <i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat regulasi resmi
-        </a>`
-      : '';
 
     return `<li class="rc-reg__item">
       <div class="rc-reg__itemhead">
@@ -118,7 +113,6 @@ function renderRegulationModal(d) {
       <p class="rc-reg__title">${escapeHtml(reg.judul)}</p>
       ${pasal}
       ${kutipan}
-      ${link}
     </li>`;
   }).join('');
 

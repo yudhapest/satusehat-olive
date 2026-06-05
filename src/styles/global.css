@@ -1175,3 +1175,172 @@ body {
     padding: 20px !important;
   }
 }
+
+/* =========================================================
+   FHIR payload example block (Organization / Location /
+   Practitioner / Patient master-data pages)
+   ========================================================= */
+.payload {
+  margin-top: 24px;
+  background: var(--color-bg-glass-darker);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+.payload-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.payload-head i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 13px;
+  box-shadow: 0 5px 14px rgba(192, 57, 43, 0.28);
+}
+
+.payload-head strong {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-text-main);
+}
+
+.payload-head small {
+  margin-left: auto;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  letter-spacing: 0.02em;
+}
+
+.payload-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 12px 20px 0;
+}
+
+.payload-tab {
+  padding: 7px 14px;
+  border: 1px solid var(--color-border-secondary);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.payload-tab:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.payload-tab.on {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 5px 14px rgba(192, 57, 43, 0.28);
+}
+
+.payload-body {
+  position: relative;
+  padding: 16px 20px 20px;
+}
+
+.payload-pane {
+  display: none;
+}
+
+.payload-pane.on {
+  display: block;
+}
+
+.payload-desc {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.payload-desc code {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 12px;
+}
+
+.payload-pre {
+  position: relative;
+  margin: 0;
+  padding: 18px 20px;
+  background: #0f172a;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.payload-pre code {
+  display: block;
+  font-family: ui-monospace, 'SFMono-Regular', 'Menlo', 'Consolas', monospace;
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: #4ade80;
+  text-shadow: 0 0 8px rgba(74, 222, 128, 0.45);
+  white-space: pre;
+  tab-size: 2;
+}
+
+.payload-copy {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.payload-copy:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.payload-copy.done {
+  border-color: #16a34a;
+  color: #4ade80;
+}
+
+@media (max-width: 768px) {
+  .payload-head small {
+    display: none;
+  }
+  .payload-pre code {
+    font-size: 11.5px;
+  }
+}

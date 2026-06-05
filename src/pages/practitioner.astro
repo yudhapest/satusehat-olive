@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import FhirPayload from '../components/FhirPayload.astro';
 import docsData from '../data/practitioners.json';
 
 interface Doc { name: string; spec: string; pid: string; }
@@ -109,6 +110,89 @@ const countByGroup = (key: string) => docs.filter((d) => groupOf(d.spec) === key
     <div class="info" id="info">
       <span class="hint"><i class="fa-solid fa-hand-pointer"></i> Klik salah satu dokter untuk melihat spesialisasi dan Practitioner ID-nya. Nama &amp; ID disamarkan (<code>**</code> / <code>****</code>).</span>
     </div>
+
+    <FhirPayload
+      title="Contoh Payload SATUSEHAT — Practitioner"
+      examples={[
+        {
+          label: 'Cari Practitioner (NIK)',
+          desc: 'Practitioner bersifat nasional (MNI). Faskes <b>tidak membuat</b> data dokter — cukup cari by NIK dengan format wajib <code>system|value</code>.',
+          code: `GET /Practitioner?identifier=https://fhir.kemkes.go.id/id/nik|3201xxxxxxxxxxxx
+Authorization: Bearer {access_token}
+Accept: application/json`,
+        },
+        {
+          label: 'Resource Practitioner',
+          desc: 'Bentuk resource <code>Practitioner</code> yang dikembalikan SATUSEHAT (sebagian field dipotong).',
+          code: `{
+  "resourceType": "Practitioner",
+  "id": "N10000001",
+  "identifier": [
+    {
+      "use": "official",
+      "system": "https://fhir.kemkes.go.id/id/nik",
+      "value": "3201xxxxxxxxxxxx"
+    }
+  ],
+  "active": true,
+  "name": [
+    { "use": "official", "text": "dr. Adnan Adit**" }
+  ],
+  "gender": "male"
+}`,
+        },
+        {
+          label: 'Referensi di Encounter',
+          desc: 'Practitioner dipakai sebagai peserta (DPJP) pada <code>Encounter.participant</code> melalui IHS-nya.',
+          code: `"participant": [
+  {
+    "type": [
+      {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+            "code": "ATND",
+            "display": "attender"
+          }
+        ]
+      }
+    ],
+    "individual": {
+      "reference": "Practitioner/N10000001",
+      "display": "dr. Adnan Adit**"
+    }
+  }
+]`,
+        },
+        {
+          label: 'Dokter berhenti praktek',
+          desc: 'Resource <code>Practitioner</code> adalah <b>data nasional</b> — faskes <b>tidak bisa</b> menonaktifkannya di SATUSEHAT. Cukup tandai <code>aktif: false</code> pada <b>mapping lokal (SIMRS)</b> agar tidak muncul di pemilihan DPJP. Encounter lama yang sudah terkirim tetap valid.',
+          code: `// Tidak ada PUT /Practitioner dari sisi RS.
+// Nonaktifkan di tabel mapping internal saja:
+{
+  "nik": "3201xxxxxxxxxxxx",
+  "practitioner_ihs": "N10000001",
+  "nama_lokal": "dr. Adnan Adit**",
+  "spesialis": "Radiologi",
+  "aktif": false,
+  "tgl_berhenti": "2026-06-05"
+}`,
+        },
+        {
+          label: 'Salah nama / salah dokter',
+          desc: 'Nama dokter mengikuti <b>data nasional</b> dan tidak bisa diubah faskes. Jika nama terlihat salah, biasanya <b>NIK yang ter-mapping salah</b> (tertukar dokter lain). Perbaiki dengan mencari ulang NIK yang benar lalu update <code>practitioner_ihs</code> di mapping lokal.',
+          code: `// 1) Cari ulang dengan NIK yang benar:
+GET /Practitioner?identifier=https://fhir.kemkes.go.id/id/nik|3201BENARxxxx
+
+// 2) Perbaiki mapping lokal -> IHS dokter yang benar:
+{
+  "nik": "3201BENARxxxx",
+  "practitioner_ihs": "N10000777",
+  "nama_lokal": "dr. Nama Yang Benar**"
+}`,
+        },
+      ]}
+    />
   </div>
 </Layout>
 

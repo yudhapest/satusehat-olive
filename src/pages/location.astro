@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import FhirPayload from '../components/FhirPayload.astro';
 import orgsData from '../data/locations.json';
 
 interface LocItem { name: string; kd: string; ss: string; }
@@ -101,6 +102,160 @@ const locByCat = (c: string) =>
     <div class="info" id="info">
       <span class="hint"><i class="fa-solid fa-hand-pointer"></i> Klik salah satu Location untuk melihat kode, idsatusehat, dan Organization induknya.</span>
     </div>
+
+    <FhirPayload
+      title="Contoh Payload SATUSEHAT — Location"
+      examples={[
+        {
+          label: 'Buat Location (kamar ranap)',
+          desc: 'Mandatory: <code>status</code>, <code>name</code>, <code>physicalType</code>, <code>managingOrganization</code>, <code>partOf</code>. Untuk kamar ranap tambahkan extension <code>LocationServiceClass</code> (kelas perawatan).',
+          code: `POST /Location
+Authorization: Bearer {access_token}
+Content-Type: application/json
+
+{
+  "resourceType": "Location",
+  "status": "active",
+  "name": "Kamar Mawar 3",
+  "mode": "instance",
+  "identifier": [
+    {
+      "system": "http://sys-ids.kemkes.go.id/location/{ihs_organization_id}",
+      "value": "MWR-03"
+    }
+  ],
+  "physicalType": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/location-physical-type",
+        "code": "ro",
+        "display": "Room"
+      }
+    ]
+  },
+  "extension": [
+    {
+      "url": "https://fhir.kemkes.go.id/r4/StructureDefinition/LocationServiceClass",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://terminology.kemkes.go.id/CodeSystem/locationServiceClass-Inpatient",
+            "code": "1",
+            "display": "Kelas 1"
+          }
+        ]
+      }
+    }
+  ],
+  "managingOrganization": {
+    "reference": "Organization/{ihs_organization_id}"
+  },
+  "partOf": {
+    "reference": "Location/{ihs_location_id_induk}"
+  }
+}`,
+        },
+        {
+          label: 'Respon (id)',
+          desc: 'SATUSEHAT mengembalikan <code>id</code> Location yang dipakai pada <code>Encounter.location[i].location</code>.',
+          code: `{
+  "resourceType": "Location",
+  "id": "1000000xyz-...-location",
+  "status": "active",
+  "name": "Kamar Mawar 3",
+  "managingOrganization": {
+    "reference": "Organization/{ihs_organization_id}"
+  }
+}`,
+        },
+        {
+          label: 'Edit (Update)',
+          desc: 'Untuk mengganti nama/atribut, gunakan <code>PUT</code> dengan <b>seluruh body</b> resource dan sertakan <code>id</code> yang sama dengan URL. PUT bersifat <i>replace</i> — field yang tidak dikirim akan hilang.',
+          code: `PUT /Location/{ihs_location_id}
+Authorization: Bearer {access_token}
+Content-Type: application/json
+
+{
+  "resourceType": "Location",
+  "id": "{ihs_location_id}",
+  "status": "active",
+  "name": "Kamar Mawar 3 (renovasi)",
+  "mode": "instance",
+  "identifier": [
+    {
+      "system": "http://sys-ids.kemkes.go.id/location/{ihs_organization_id}",
+      "value": "MWR-03"
+    }
+  ],
+  "physicalType": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/location-physical-type",
+        "code": "ro",
+        "display": "Room"
+      }
+    ]
+  },
+  "extension": [
+    {
+      "url": "https://fhir.kemkes.go.id/r4/StructureDefinition/LocationServiceClass",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://terminology.kemkes.go.id/CodeSystem/locationServiceClass-Inpatient",
+            "code": "2",
+            "display": "Kelas 2"
+          }
+        ]
+      }
+    }
+  ],
+  "managingOrganization": {
+    "reference": "Organization/{ihs_organization_id}"
+  },
+  "partOf": {
+    "reference": "Location/{ihs_location_id_induk}"
+  }
+}`,
+        },
+        {
+          label: 'Non-aktif (kamar tak dipakai)',
+          desc: 'Kamar/ruang yang sudah tidak dipakai <b>JANGAN dihapus</b> (riwayat Encounter lama tetap menunjuk ke sana). Cukup <code>PUT</code> dengan <code>"status": "inactive"</code>. Gunakan <code>"suspended"</code> bila hanya nonaktif sementara.',
+          code: `PUT /Location/{ihs_location_id}
+Authorization: Bearer {access_token}
+Content-Type: application/json
+
+{
+  "resourceType": "Location",
+  "id": "{ihs_location_id}",
+  "status": "inactive",
+  "name": "Kamar Mawar 3 (tidak digunakan)",
+  "mode": "instance",
+  "identifier": [
+    {
+      "system": "http://sys-ids.kemkes.go.id/location/{ihs_organization_id}",
+      "value": "MWR-03"
+    }
+  ],
+  "physicalType": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/location-physical-type",
+        "code": "ro",
+        "display": "Room"
+      }
+    ]
+  },
+  "managingOrganization": {
+    "reference": "Organization/{ihs_organization_id}"
+  },
+  "partOf": {
+    "reference": "Location/{ihs_location_id_induk}"
+  }
+}`,
+        },
+      ]}
+    />
   </div>
 </Layout>
 

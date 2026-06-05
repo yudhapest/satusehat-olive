@@ -1,0 +1,72 @@
+---
+interface Example { label: string; desc?: string; code: string; }
+interface Props { title?: string; note?: string; examples: Example[]; }
+
+const { title = 'Contoh Payload SATUSEHAT (FHIR)', note = 'FHIR R4 · /fhir-r4/v1', examples } = Astro.props;
+---
+
+<div class="payload">
+  <div class="payload-head">
+    <i class="fa-solid fa-code"></i>
+    <strong>{title}</strong>
+    <small>{note}</small>
+  </div>
+
+  {
+    examples.length > 1 && (
+      <div class="payload-tabs">
+        {examples.map((ex, i) => (
+          <button class={`payload-tab ${i === 0 ? 'on' : ''}`} type="button" data-target={i}>
+            {ex.label}
+          </button>
+        ))}
+      </div>
+    )
+  }
+
+  <div class="payload-body">
+    {
+      examples.map((ex, i) => (
+        <div class={`payload-pane ${i === 0 ? 'on' : ''}`} data-pane={i}>
+          {ex.desc && <p class="payload-desc" set:html={ex.desc} />}
+          <pre class="payload-pre"><button class="payload-copy" type="button"><i class="fa-regular fa-copy" /> Salin</button><code>{ex.code}</code></pre>
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('.payload').forEach((box) => {
+      const tabs = box.querySelectorAll<HTMLElement>('.payload-tab');
+      const panes = box.querySelectorAll<HTMLElement>('.payload-pane');
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const target = tab.dataset.target;
+          tabs.forEach((t) => t.classList.remove('on'));
+          tab.classList.add('on');
+          panes.forEach((p) => p.classList.toggle('on', p.dataset.pane === target));
+        });
+      });
+
+      box.querySelectorAll<HTMLButtonElement>('.payload-copy').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const code = btn.parentElement?.querySelector('code')?.textContent ?? '';
+          try {
+            await navigator.clipboard.writeText(code);
+            const orig = btn.innerHTML;
+            btn.classList.add('done');
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Tersalin';
+            setTimeout(() => {
+              btn.classList.remove('done');
+              btn.innerHTML = orig;
+            }, 1600);
+          } catch {
+            /* clipboard unavailable */
+          }
+        });
+      });
+    });
+  });
+</script>

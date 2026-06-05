@@ -1,0 +1,555 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+type Cat =
+  | 'direktur'
+  | 'komite'
+  | 'penunjang'
+  | 'penmedis'
+  | 'pennonmedis'
+  | 'pelayanan'
+  | 'pelmedis'
+  | 'keperawatan'
+  | 'admin';
+
+interface OrgDef {
+  id: number;
+  parent: number;
+  name: string;
+  ss: string;
+  div: string; // untuk filter tab
+  cat: Cat; // untuk warna
+}
+
+// Sumber data: tabel _ref_organisasi SIMRS (53 unit). idsatusehat disamarkan.
+// Urutan entri parent==1 menentukan urutan kiri→kanan pada chart.
+const defs: OrgDef[] = [
+  { id: 1, parent: 0, name: 'DIREKTUR', ss: '1000****', div: 'semua', cat: 'direktur' },
+
+  // Komite & Tim Fungsional (langsung di bawah Direktur)
+  { id: 2, parent: 1, name: 'Satuan Pengawas Internal', ss: '34fb65cf-****', div: 'direksi', cat: 'komite' },
+  { id: 3, parent: 1, name: 'Komite Medik', ss: 'b0455d7d-****', div: 'direksi', cat: 'komite' },
+  { id: 4, parent: 1, name: 'Komite Etik RS', ss: 'dc6d016d-****', div: 'direksi', cat: 'komite' },
+  { id: 5, parent: 1, name: 'Komite Keperawatan', ss: '9e009353-****', div: 'direksi', cat: 'komite' },
+  { id: 6, parent: 1, name: 'Komite Nakes Lain', ss: '29aba6c6-****', div: 'direksi', cat: 'komite' },
+  { id: 7, parent: 1, name: 'Komite PPI', ss: 'e1e3640e-****', div: 'direksi', cat: 'komite' },
+  { id: 8, parent: 1, name: 'Komite Mutu RS', ss: '3af18d31-****', div: 'direksi', cat: 'komite' },
+  { id: 9, parent: 1, name: 'Komite Farmasi & Terapi', ss: '884a2368-****', div: 'direksi', cat: 'komite' },
+  { id: 10, parent: 1, name: 'Tim PPRA', ss: '9b96c59a-****', div: 'direksi', cat: 'komite' },
+  { id: 11, parent: 1, name: 'Tim K3RS', ss: '8462a3d5-****', div: 'direksi', cat: 'komite' },
+  { id: 12, parent: 1, name: 'Tim PKRS', ss: 'd0979f49-****', div: 'direksi', cat: 'komite' },
+  { id: 13, parent: 1, name: 'Manager Pelayanan Pasien', ss: 'b18921a7-****', div: 'direksi', cat: 'komite' },
+
+  // Bidang Penunjang
+  { id: 14, parent: 1, name: 'Kepala Bidang Penunjang', ss: '7adb825a-****', div: 'penunjang', cat: 'penunjang' },
+  { id: 15, parent: 14, name: 'Kasi Penunjang Medis', ss: '2bb23f14-****', div: 'penunjang', cat: 'penmedis' },
+  { id: 16, parent: 15, name: 'Farmasi', ss: '8549e0fd-****', div: 'penunjang', cat: 'penmedis' },
+  { id: 17, parent: 15, name: 'Gizi', ss: '8134d9d5-****', div: 'penunjang', cat: 'penmedis' },
+  { id: 18, parent: 15, name: 'Admisi', ss: '7de63f09-****', div: 'penunjang', cat: 'penmedis' },
+  { id: 19, parent: 15, name: 'Rekam Medis', ss: '81648dd6-****', div: 'penunjang', cat: 'penmedis' },
+  { id: 20, parent: 15, name: 'PDE', ss: 'c6e4a1a0-****', div: 'penunjang', cat: 'penmedis' },
+  { id: 21, parent: 15, name: 'Laborat', ss: 'e74e1dce-****', div: 'penunjang', cat: 'penmedis' },
+  { id: 22, parent: 15, name: 'Radiologi', ss: '1834f24a-****', div: 'penunjang', cat: 'penmedis' },
+  { id: 23, parent: 15, name: 'IPSRS', ss: '40f9bcaf-****', div: 'penunjang', cat: 'penmedis' },
+  { id: 24, parent: 15, name: 'Sanitasi', ss: '92d29b17-****', div: 'penunjang', cat: 'penmedis' },
+  { id: 25, parent: 15, name: 'CSSD', ss: '95346bd0-****', div: 'penunjang', cat: 'penmedis' },
+  { id: 26, parent: 15, name: 'Loundry', ss: '9d8f1243-****', div: 'penunjang', cat: 'penmedis' },
+  { id: 27, parent: 15, name: 'Rehab Medik', ss: '5b13e93f-****', div: 'penunjang', cat: 'penmedis' },
+  { id: 28, parent: 14, name: 'Kasi Penunjang Non Medis', ss: '0847593a-****', div: 'penunjang', cat: 'pennonmedis' },
+  { id: 29, parent: 28, name: 'Security', ss: '7ef30084-****', div: 'penunjang', cat: 'pennonmedis' },
+  { id: 30, parent: 28, name: 'Driver', ss: '534deac2-****', div: 'penunjang', cat: 'pennonmedis' },
+  { id: 31, parent: 28, name: 'Parkir & Portal', ss: '9be63786-****', div: 'penunjang', cat: 'pennonmedis' },
+  { id: 32, parent: 28, name: 'Cleaning Service', ss: '6df84e15-****', div: 'penunjang', cat: 'pennonmedis' },
+  { id: 33, parent: 28, name: 'Pemulasaran Jenazah', ss: '56cfe104-****', div: 'penunjang', cat: 'pennonmedis' },
+
+  // Bidang Pelayanan
+  { id: 34, parent: 1, name: 'Kepala Bidang Pelayanan', ss: '34a94d79-****', div: 'pelayanan', cat: 'pelayanan' },
+  { id: 35, parent: 34, name: 'Kasi Pelayanan Medis', ss: '52076412-****', div: 'pelayanan', cat: 'pelmedis' },
+  { id: 36, parent: 35, name: 'IGD', ss: '7ff7797e-****', div: 'pelayanan', cat: 'pelmedis' },
+  { id: 37, parent: 35, name: 'PONEK', ss: 'ef2b3f42-****', div: 'pelayanan', cat: 'pelmedis' },
+  { id: 38, parent: 35, name: 'IBS', ss: '448f0ffc-****', div: 'pelayanan', cat: 'pelmedis' },
+  { id: 39, parent: 35, name: 'IKB', ss: '2c4243e1-****', div: 'pelayanan', cat: 'pelmedis' },
+  { id: 40, parent: 35, name: 'Nifas', ss: 'cbb9e2ae-****', div: 'pelayanan', cat: 'pelmedis' },
+  { id: 41, parent: 35, name: 'ICU', ss: '6fca9bcf-****', div: 'pelayanan', cat: 'pelmedis' },
+  { id: 42, parent: 34, name: 'Kasi Keperawatan', ss: 'c22d3cb1-****', div: 'pelayanan', cat: 'keperawatan' },
+  { id: 43, parent: 42, name: 'Rawat Jalan', ss: 'e85ca5f0-****', div: 'pelayanan', cat: 'keperawatan' },
+  { id: 44, parent: 42, name: 'Rawat Inap', ss: '96c5be6d-****', div: 'pelayanan', cat: 'keperawatan' },
+  { id: 45, parent: 42, name: 'Perinatal', ss: '80b6af56-****', div: 'pelayanan', cat: 'keperawatan' },
+  { id: 46, parent: 42, name: 'Dialisis', ss: '9ad9c3fd-****', div: 'pelayanan', cat: 'keperawatan' },
+
+  // Administrasi & Keuangan
+  { id: 47, parent: 1, name: 'Sekretariat', ss: 'af0ff599-****', div: 'administrasi', cat: 'admin' },
+  { id: 48, parent: 1, name: 'Rumah Tangga', ss: '5161fe85-****', div: 'administrasi', cat: 'admin' },
+  { id: 49, parent: 1, name: 'Perencanaan', ss: '7d0e9bac-****', div: 'administrasi', cat: 'admin' },
+  { id: 50, parent: 1, name: 'Keuangan / Verifikasi', ss: '68ebc302-****', div: 'administrasi', cat: 'admin' },
+  { id: 51, parent: 50, name: 'Kasir', ss: '2cd62aa9-****', div: 'administrasi', cat: 'admin' },
+  { id: 52, parent: 1, name: 'SDM & Diklat', ss: 'c39a0c83-****', div: 'administrasi', cat: 'admin' },
+  { id: 53, parent: 52, name: 'Handling Komplain', ss: 'ed1a861e-****', div: 'administrasi', cat: 'admin' },
+];
+
+const COLORS: Record<Cat, string> = {
+  direktur: '#C0392B',
+  komite: '#2C3E50',
+  penunjang: '#1F618D',
+  penmedis: '#1E8449',
+  pennonmedis: '#117A65',
+  pelayanan: '#6C3483',
+  pelmedis: '#6C3483',
+  keperawatan: '#7B241C',
+  admin: '#E67E22',
+};
+
+const DIV_LABEL: Record<string, string> = {
+  semua: 'Direktur',
+  direksi: 'Komite & Tim Fungsional',
+  penunjang: 'Bidang Penunjang',
+  pelayanan: 'Bidang Pelayanan',
+  administrasi: 'Administrasi & Keuangan',
+};
+
+// Node yang tampil "solid" (header jabatan), sisanya gaya kartu ringan
+const SOLID = new Set([1, 14, 34, 15, 28, 35, 42]);
+
+// Gradien lembut untuk node solid (selaras gaya glass codebase)
+function darken(hex: string, amt = 0.18): string {
+  const n = parseInt(hex.slice(1), 16);
+  const r = Math.round(((n >> 16) & 255) * (1 - amt));
+  const g = Math.round(((n >> 8) & 255) * (1 - amt));
+  const b = Math.round((n & 255) * (1 - amt));
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+}
+const gradId = (hex: string) => `grad-${hex.slice(1)}`;
+const uniqColors = [...new Set(Object.values(COLORS))];
+
+// Komite & Tim ditata sebagai grid (cluster) di kiri, bukan satu baris lebar
+const KOMITE_IDS = new Set([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
+
+// ----- Layout pohon (tidy tree, top-down) -----
+const W = 192;
+const H = 64;
+const HGAP = 18;
+const VGAP = 74;
+const PAD = 30;
+
+const GRID_COLS = 3;
+const GRID_VGAP = 14;
+const KOMITE_HEADER_H = 26;
+const KOMITE_HEADER_GAP = 8;
+
+const byId = new Map<number, OrgDef>(defs.map((d) => [d.id, d]));
+const childrenMap = new Map<number, OrgDef[]>();
+for (const d of defs) {
+  if (!childrenMap.has(d.parent)) childrenMap.set(d.parent, []);
+  childrenMap.get(d.parent)!.push(d);
+}
+
+const pos = new Map<number, { x: number; y: number }>();
+const root = defs.find((d) => d.parent === 0)!;
+
+// 1) Blok grid Komite & Tim di kiri
+const depth1Y = PAD + (H + VGAP);
+const komiteBlockW = GRID_COLS * W + (GRID_COLS - 1) * HGAP;
+const komiteGridTop = depth1Y + KOMITE_HEADER_H + KOMITE_HEADER_GAP;
+const komiteDefs = defs.filter((d) => KOMITE_IDS.has(d.id));
+komiteDefs.forEach((d, i) => {
+  const col = i % GRID_COLS;
+  const r = Math.floor(i / GRID_COLS);
+  pos.set(d.id, { x: PAD + col * (W + HGAP), y: komiteGridTop + r * (H + GRID_VGAP) });
+});
+const komiteRows = Math.ceil(komiteDefs.length / GRID_COLS);
+const komiteBlockH = KOMITE_HEADER_H + KOMITE_HEADER_GAP + komiteRows * H + (komiteRows - 1) * GRID_VGAP;
+const komiteHeaderCx = PAD + komiteBlockW / 2;
+
+// 2) Tidy tree untuk cabang operasional (komite dikecualikan)
+const opStartX = PAD + komiteBlockW + HGAP * 3;
+let cursor = 0;
+function layout(d: OrgDef, depth: number) {
+  const y = PAD + depth * (H + VGAP);
+  const kids = (childrenMap.get(d.id) ?? []).filter((k) => !KOMITE_IDS.has(k.id));
+  if (kids.length === 0) {
+    pos.set(d.id, { x: opStartX + cursor * (W + HGAP), y });
+    cursor++;
+  } else {
+    for (const k of kids) layout(k, depth + 1);
+    const first = pos.get(kids[0].id)!;
+    const last = pos.get(kids[kids.length - 1].id)!;
+    pos.set(d.id, { x: (first.x + last.x) / 2, y });
+  }
+}
+layout(root, 0);
+
+// 3) Direktur dipusatkan di atas seluruh lebar (komite + operasional)
+const fullLeft = PAD;
+const fullRight = opStartX + (cursor - 1) * (W + HGAP) + W;
+pos.set(root.id, { x: (fullLeft + fullRight) / 2 - W / 2, y: PAD });
+
+function depthOf(d: OrgDef): number {
+  let n = 0;
+  let cur = d;
+  while (cur.parent !== 0) {
+    cur = byId.get(cur.parent)!;
+    n++;
+  }
+  return n;
+}
+const maxDepth = Math.max(...defs.filter((d) => !KOMITE_IDS.has(d.id)).map(depthOf));
+
+const treeBottom = PAD + (maxDepth + 1) * (H + VGAP) - VGAP;
+const komiteBottom = depth1Y + komiteBlockH;
+const totalW = fullRight + PAD;
+const totalH = Math.max(treeBottom, komiteBottom) + 64;
+
+// ----- Konektor kurva halus (S-curve langsung parent → anak) -----
+interface Conn {
+  d: string;
+  div: string;
+  color: string;
+}
+const connectors: Conn[] = [];
+function link(p: { x: number; y: number }, cx: number, cy: number, div: string, color: string) {
+  const x1 = p.x + W / 2;
+  const y1 = p.y + H;
+  const my = (y1 + cy) / 2;
+  connectors.push({ d: `M${x1},${y1} C${x1},${my} ${cx},${my} ${cx},${cy}`, div, color });
+}
+
+for (const d of defs) {
+  const kids = (childrenMap.get(d.id) ?? []).filter((k) => !KOMITE_IDS.has(k.id));
+  const p = pos.get(d.id)!;
+  for (const k of kids) {
+    const c = pos.get(k.id)!;
+    link(p, c.x + W / 2, c.y, k.div, COLORS[k.cat]);
+  }
+}
+// Direktur → cluster Komite
+link(pos.get(root.id)!, komiteHeaderCx, depth1Y, 'direksi', COLORS.komite);
+
+const nameFs = (name: string) => (name.length > 22 ? 9.5 : 11.5);
+---
+
+<Layout title="Struktur Organisasi" pageTitle="Struktur Organisasi" icon="fa-sitemap">
+  <div class="wrap">
+    <div class="header">
+      <h2><i class="fa-solid fa-sitemap" style="color: #C0392B;"></i> Struktur Organisasi SATUSEHAT — RSU Sebening Kasih</h2>
+      <div class="sub">53 unit organisasi · Data dari tabel <code>_ref_organisasi</code> SIMRS · Klik node untuk detail · Klik tab untuk filter per divisi</div>
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab on" id="tab-semua" onclick="showDiv('semua', this)"><i class="fa-solid fa-border-all"></i> Semua</button>
+      <button class="tab" onclick="showDiv('direksi', this)"><i class="fa-solid fa-user-tie"></i> Komite & Tim</button>
+      <button class="tab" onclick="showDiv('penunjang', this)"><i class="fa-solid fa-gear"></i> Bid. Penunjang</button>
+      <button class="tab" onclick="showDiv('pelayanan', this)"><i class="fa-solid fa-hospital-user"></i> Bid. Pelayanan</button>
+      <button class="tab" onclick="showDiv('administrasi', this)"><i class="fa-solid fa-file-invoice"></i> Administrasi</button>
+    </div>
+
+    <div class="legend">
+      <div class="leg"><div class="leg-dot pulse" style="background:#C0392B"></div>Direktur</div>
+      <div class="leg"><div class="leg-dot pulse" style="background:#2C3E50"></div>Komite & Tim</div>
+      <div class="leg"><div class="leg-dot pulse" style="background:#1F618D"></div>Bid. Penunjang</div>
+      <div class="leg"><div class="leg-dot pulse" style="background:#1E8449"></div>Penunjang Medis</div>
+      <div class="leg"><div class="leg-dot pulse" style="background:#117A65"></div>Penunjang Non Medis</div>
+      <div class="leg"><div class="leg-dot pulse" style="background:#6C3483"></div>Pelayanan Medis</div>
+      <div class="leg"><div class="leg-dot pulse" style="background:#7B241C"></div>Keperawatan</div>
+      <div class="leg"><div class="leg-dot pulse" style="background:#E67E22"></div>Administrasi</div>
+    </div>
+
+    <div class="scroll" id="org-scroll">
+      <svg
+        id="svg-org"
+        viewBox={`0 0 ${totalW} ${totalH}`}
+        role="img"
+        style={`min-width:${totalW}px;width:100%;height:auto;`}
+      >
+        <title>Struktur Organisasi RSU Sebening Kasih</title>
+
+        <defs>
+          <filter id="cardShadow" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#1f2687" flood-opacity="0.10" />
+          </filter>
+          <filter id="solidShadow" x="-40%" y="-40%" width="180%" height="180%">
+            <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#1f2687" flood-opacity="0.22" />
+          </filter>
+          {uniqColors.map((hex) => (
+            <linearGradient id={gradId(hex)} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color={hex} />
+              <stop offset="100%" stop-color={darken(hex, 0.22)} />
+            </linearGradient>
+          ))}
+        </defs>
+
+        {/* ===== Kontainer cluster Komite & Tim ===== */}
+        <rect
+          x={PAD - 10}
+          y={depth1Y - 6}
+          width={komiteBlockW + 20}
+          height={komiteBlockH + 12}
+          rx="8"
+          fill={COLORS.komite}
+          fill-opacity="0.04"
+          stroke={COLORS.komite}
+          stroke-width="1"
+          stroke-opacity="0.25"
+          stroke-dasharray="4 3"
+        />
+
+        {/* ===== Konektor ===== */}
+        {connectors.map((c) => (
+          <path
+            class="org-line"
+            data-div={c.div}
+            d={c.d}
+            fill="none"
+            stroke={c.color}
+            stroke-width="1.75"
+            stroke-opacity="0.45"
+            stroke-linecap="round"
+            stroke-dasharray="1 7"
+          />
+        ))}
+
+        {/* ===== Header cluster Komite & Tim ===== */}
+        <g class="org-node" data-div="direksi" data-id="komite-box">
+          <rect
+            class="org-card"
+            x={PAD}
+            y={depth1Y}
+            width={komiteBlockW}
+            height={KOMITE_HEADER_H}
+            rx="6"
+            fill={`url(#${gradId(COLORS.komite)})`}
+            filter="url(#solidShadow)"
+          />
+          <text
+            x={komiteHeaderCx}
+            y={depth1Y + 17}
+            text-anchor="middle"
+            font-size="12"
+            font-weight="600"
+            fill="#ffffff"
+            font-family="var(--font-sans)"
+          >
+            Komite &amp; Tim Fungsional
+          </text>
+        </g>
+
+        {/* ===== Node ===== */}
+        {defs.map((d) => {
+          const p = pos.get(d.id)!;
+          const color = COLORS[d.cat];
+          const cx = p.x + W / 2;
+          const solid = SOLID.has(d.id);
+          const meta = `ID: ${d.id} | Parent: ${d.parent} · SS: ${d.ss}`;
+          return (
+            <g
+              class="org-node animated-node"
+              data-div={d.div}
+              data-id={`n${d.id}`}
+              data-name={d.name}
+              data-meta={meta}
+              data-color={color}
+              data-phase={DIV_LABEL[d.div] ?? d.div}
+            >
+              {solid ? (
+                <rect
+                  class="org-card"
+                  x={p.x}
+                  y={p.y}
+                  width={W}
+                  height={H}
+                  rx="9"
+                  fill={`url(#${gradId(color)})`}
+                  filter="url(#solidShadow)"
+                />
+              ) : (
+                <>
+                  <rect
+                    class="org-card"
+                    x={p.x}
+                    y={p.y}
+                    width={W}
+                    height={H}
+                    rx="9"
+                    fill="#ffffff"
+                    fill-opacity="0.92"
+                    stroke={color}
+                    stroke-width="1"
+                    stroke-opacity="0.18"
+                    filter="url(#cardShadow)"
+                  />
+                  <rect x={p.x + 8} y={p.y + 13} width="4" height={H - 26} rx="2" fill={color} />
+                </>
+              )}
+              <text
+                x={cx}
+                y={p.y + 21}
+                text-anchor="middle"
+                font-size="9"
+                fill={solid ? '#ffffff' : 'var(--color-text-tertiary)'}
+                fill-opacity={solid ? '0.8' : '1'}
+                font-family="var(--font-sans)"
+              >
+                ID: {d.id} | Parent: {d.parent}
+              </text>
+              <text
+                x={cx}
+                y={p.y + 39}
+                text-anchor="middle"
+                font-size={nameFs(d.name)}
+                font-weight={solid ? '700' : '600'}
+                fill={solid ? '#ffffff' : color}
+                font-family="var(--font-sans)"
+              >
+                {d.name}
+              </text>
+              <text
+                x={cx}
+                y={p.y + 55}
+                text-anchor="middle"
+                font-size="9"
+                fill={solid ? '#ffffff' : 'var(--color-text-tertiary)'}
+                fill-opacity={solid ? '0.75' : '1'}
+                font-family="var(--font-sans)"
+              >
+                SS: {d.ss}
+              </text>
+            </g>
+          );
+        })}
+
+        {/* Footer stats */}
+        <rect x="8" y={totalH - 46} width={totalW - 16} height="36" rx="10" fill="#ffffff" fill-opacity="0.55" stroke="var(--color-border-secondary)" stroke-width="1" filter="url(#cardShadow)" />
+        <text x="22" y={totalH - 23} font-size="10" font-weight="500" fill="var(--color-text-secondary)" font-family="var(--font-sans)">
+          📊 Struktur Organisasi RSU Sebening Kasih · Total 53 unit · Direktur → Komite & Tim (12) · Bid. Penunjang · Bid. Pelayanan · Administrasi · idsatusehat disamarkan (****)
+        </text>
+      </svg>
+    </div>
+
+    <div class="info" id="info">
+      <span class="hint"><i class="fa-solid fa-sitemap"></i> Struktur organisasi RSU Sebening Kasih · 53 unit terdaftar di SATUSEHAT · Gunakan tab di atas untuk fokus per divisi.</span>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  @keyframes nodeSlideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animated-node {
+    animation: nodeSlideIn 0.45s ease;
+  }
+
+  @keyframes dashFlow {
+    to { stroke-dashoffset: -40; }
+  }
+  .org-line-animated {
+    animation: dashFlow 2.2s linear infinite;
+  }
+
+  .org-node {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  .org-card {
+    transition: stroke-opacity 0.2s ease;
+  }
+  .org-node:hover {
+    transform: translateY(-4px);
+  }
+  .org-node:hover .org-card {
+    stroke-opacity: 0.5;
+  }
+
+  .org-node.dimmed {
+    opacity: 0.06;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  .org-line.dimmed {
+    opacity: 0.04;
+    transition: opacity 0.3s ease;
+  }
+</style>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll('.org-line').forEach((line) => {
+      line.classList.add('org-line-animated');
+    });
+
+    (window as any).showDiv = function (divName: string, btn: HTMLElement) {
+      document.querySelectorAll('.tab').forEach((t) => t.classList.remove('on'));
+      btn.classList.add('on');
+
+      const allNodes = document.querySelectorAll<HTMLElement>('.org-node');
+      const allLines = document.querySelectorAll<HTMLElement>('.org-line');
+
+      const matches = (el: HTMLElement) => {
+        const elDiv = el.dataset.div;
+        return divName === 'semua' || elDiv === divName || elDiv === 'semua';
+      };
+
+      allNodes.forEach((n) => {
+        if (matches(n)) {
+          n.classList.remove('dimmed');
+        } else {
+          n.classList.add('dimmed');
+        }
+      });
+      allLines.forEach((l) => {
+        if (matches(l)) {
+          l.classList.remove('dimmed');
+        } else {
+          l.classList.add('dimmed');
+        }
+      });
+
+      if (divName !== 'semua') {
+        const firstVisible = document.querySelector(`.org-node[data-div="${divName}"]`);
+        if (firstVisible) firstVisible.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    };
+
+    const infoPanel = document.getElementById('info');
+    document.querySelectorAll<HTMLElement>('.org-node').forEach((node) => {
+      node.addEventListener('click', () => {
+        const name = node.dataset.name || '';
+        if (!name) return;
+        const meta = node.dataset.meta || '';
+        const color = node.dataset.color || '#2C3E50';
+        const phaseName = node.dataset.phase || '';
+
+        if (infoPanel) {
+          infoPanel.innerHTML = `
+            <div class="rc" style="animation: rcFadeIn 0.35s ease both;">
+              <div class="rc__head">
+                <div class="rc__icon" style="background: ${color}; box-shadow: 0 6px 16px color-mix(in srgb, ${color} 35%, transparent);"><i class="fa-solid fa-users"></i></div>
+                <div class="rc__headtext">
+                  <h3 class="rc__title">${name}</h3>
+                  <div class="rc__status"><div class="rc__status-dot" style="background:${color}"></div>${phaseName}</div>
+                </div>
+              </div>
+              <div class="rc__section">
+                <div class="rc__section-ic"><i class="fa-solid fa-circle-info"></i></div>
+                <h4>Detail Organisasi</h4>
+              </div>
+              <div class="rc__fields">
+                <div class="rc-field">
+                  <div class="rc-field__name"><i class="fa-solid fa-hashtag"></i> ID & UUID</div>
+                  <span class="rc-field__sep">:</span>
+                  <div class="rc-field__val rc-field__val--solo">${meta}</div>
+                </div>
+                <div class="rc-field">
+                  <div class="rc-field__name"><i class="fa-solid fa-sitemap"></i> Divisi</div>
+                  <span class="rc-field__sep">:</span>
+                  <div class="rc-field__val">${phaseName}</div>
+                </div>
+              </div>
+            </div>
+          `;
+          infoPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
+    });
+  });
+</script>

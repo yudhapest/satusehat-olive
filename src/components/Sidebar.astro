@@ -1,16 +1,23 @@
 ---
 const { currentPath } = Astro.props;
 
+// Normalisasi path: buang trailing slash supaya cocok di Vercel
+// (Astro static memakai trailingSlash 'ignore', mis. "/igd/" vs "/igd").
+const stripSlash = (p: string) => (p.length > 1 && p.endsWith("/") ? p.slice(0, -1) : p);
+const here = stripSlash(currentPath ?? "/");
+const isActive = (path: string) => stripSlash(path) === here;
+
 const menuItems = [
   { path: "/", title: "Rawat Jalan (Rajal)", icon: "fa-hospital-user" },
   { path: "/igd", title: "IGD", icon: "fa-truck-medical" },
   { path: "/ranap", title: "Rawat Inap (Ranap)", icon: "fa-bed-pulse" },
-];
-
-const resourceItems = [
   { path: "/questionnaire", title: "Questionnaire", icon: "fa-list-check" },
   { path: "/immunization", title: "Immunization", icon: "fa-syringe" },
   { path: "/resources", title: "Resource Pelengkap", icon: "fa-puzzle-piece" },
+];
+
+const resourceItems = [
+  { path: "/organisasi", title: "Organization", icon: "fa-sitemap" },
 ];
 ---
 
@@ -35,7 +42,7 @@ const resourceItems = [
           <li class="menu-item">
             <a
               href={item.path}
-              class={`menu-link ${currentPath === item.path ? "active" : ""}`}
+              class={`menu-link ${isActive(item.path) ? "active" : ""}`}
             >
               <i class={`fa-solid ${item.icon}`} />
               <span>{item.title}</span>
@@ -47,14 +54,14 @@ const resourceItems = [
   </div>
 
   <div class="menu-section">
-    <div class="menu-title">RESOURCE KHUSUS</div>
+    <div class="menu-title">Resources - Prerequisites</div>
     <ul class="menu-list">
       {
         resourceItems.map((item) => (
           <li class="menu-item">
             <a
               href={item.path}
-              class={`menu-link ${currentPath === item.path ? "active" : ""}`}
+              class={`menu-link ${isActive(item.path) ? "active" : ""}`}
             >
               <i class={`fa-solid ${item.icon}`} />
               <span>{item.title}</span>
@@ -67,7 +74,7 @@ const resourceItems = [
 
   <div class="sidebar-footer">
     <div class="version-info">
-      <span>Versi 1.2.0</span>
+      <span>Versi 1.3.0</span>
     </div>
   </div>
 </aside>

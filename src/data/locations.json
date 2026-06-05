@@ -1,0 +1,684 @@
+[
+  {
+    "idorg": 16,
+    "name": "Farmasi",
+    "ss": "8549e0fd-****",
+    "cat": "penunjang",
+    "locations": [
+      {
+        "name": "Apotek",
+        "kd": "B0001",
+        "ss": "1db2fb52-****"
+      }
+    ]
+  },
+  {
+    "idorg": 17,
+    "name": "Gizi",
+    "ss": "8134d9d5-****",
+    "cat": "penunjang",
+    "locations": [
+      {
+        "name": "GIZI",
+        "kd": "B0069",
+        "ss": "48270d02-****"
+      }
+    ]
+  },
+  {
+    "idorg": 21,
+    "name": "Laborat",
+    "ss": "e74e1dce-****",
+    "cat": "penunjang",
+    "locations": [
+      {
+        "name": "LABORAT",
+        "kd": "B0046",
+        "ss": "e181a32e-****"
+      }
+    ]
+  },
+  {
+    "idorg": 22,
+    "name": "Radiologi",
+    "ss": "1834f24a-****",
+    "cat": "penunjang",
+    "locations": [
+      {
+        "name": "RADIOLOGI",
+        "kd": "B0067",
+        "ss": "66018d3b-****"
+      }
+    ]
+  },
+  {
+    "idorg": 25,
+    "name": "CSSD",
+    "ss": "95346bd0-****",
+    "cat": "penunjang",
+    "locations": [
+      {
+        "name": "CSSD",
+        "kd": "B0063",
+        "ss": "dd45ed7f-****"
+      }
+    ]
+  },
+  {
+    "idorg": 26,
+    "name": "Loundry",
+    "ss": "9d8f1243-****",
+    "cat": "penunjang",
+    "locations": [
+      {
+        "name": "Linen",
+        "kd": "B0070",
+        "ss": "3df13d2e-****"
+      }
+    ]
+  },
+  {
+    "idorg": 36,
+    "name": "IGD",
+    "ss": "7ff7797e-****",
+    "cat": "pelayanan",
+    "locations": [
+      {
+        "name": "IGD",
+        "kd": "B0062",
+        "ss": "88c5e1bb-****"
+      }
+    ]
+  },
+  {
+    "idorg": 38,
+    "name": "IBS",
+    "ss": "448f0ffc-****",
+    "cat": "pelayanan",
+    "locations": [
+      {
+        "name": "IBS",
+        "kd": "B0065",
+        "ss": "95f7ee16-****"
+      },
+      {
+        "name": "OK",
+        "kd": "B0064",
+        "ss": "a6ae02df-****"
+      },
+      {
+        "name": "Ruang Operasi",
+        "kd": "B0011",
+        "ss": "692a0754-****"
+      }
+    ]
+  },
+  {
+    "idorg": 39,
+    "name": "IKB",
+    "ss": "2c4243e1-****",
+    "cat": "pelayanan",
+    "locations": [
+      {
+        "name": "IKB",
+        "kd": "B0042",
+        "ss": "8a31f8d5-****"
+      }
+    ]
+  },
+  {
+    "idorg": 41,
+    "name": "ICU",
+    "ss": "6fca9bcf-****",
+    "cat": "pelayanan",
+    "locations": [
+      {
+        "name": "HCU",
+        "kd": "B0038",
+        "ss": "299b9a20-****"
+      },
+      {
+        "name": "PICU",
+        "kd": "B0073",
+        "ss": "c30cd201-****"
+      },
+      {
+        "name": "RUANG ICU",
+        "kd": "B0012",
+        "ss": "530b23b1-****"
+      }
+    ]
+  },
+  {
+    "idorg": 43,
+    "name": "Rawat Jalan",
+    "ss": "e85ca5f0-****",
+    "cat": "keperawatan",
+    "locations": [
+      {
+        "name": "ANAK",
+        "kd": "U0002",
+        "ss": "0e320fab-****"
+      },
+      {
+        "name": "BEDAH",
+        "kd": "U0004",
+        "ss": "ec00f038-****"
+      },
+      {
+        "name": "FISIOTERAPI",
+        "kd": "U0006",
+        "ss": "b5ec3eba-****"
+      },
+      {
+        "name": "GIGI",
+        "kd": "U0005",
+        "ss": "f98837c4-****"
+      },
+      {
+        "name": "HEMODIALISA",
+        "kd": "B0057",
+        "ss": "a76bec97-****"
+      },
+      {
+        "name": "JANTUNG",
+        "kd": "J0001",
+        "ss": "a2d2eb48-****"
+      },
+      {
+        "name": "KESEHATAN JIWA",
+        "kd": "U0015",
+        "ss": "46b15cda-****"
+      },
+      {
+        "name": "MATA",
+        "kd": "U0012",
+        "ss": "b9549824-****"
+      },
+      {
+        "name": "OBGYN",
+        "kd": "U0001",
+        "ss": "ddac2be4-****"
+      },
+      {
+        "name": "ORTOPEDI",
+        "kd": "U0009",
+        "ss": "280560f0-****"
+      },
+      {
+        "name": "PARU",
+        "kd": "U0014",
+        "ss": "40a29712-****"
+      },
+      {
+        "name": "PENYAKIT DALAM",
+        "kd": "U0003",
+        "ss": "ce3261cd-****"
+      },
+      {
+        "name": "POLI UMUM",
+        "kd": "P0001",
+        "ss": "76836c1d-****"
+      },
+      {
+        "name": "PSIKOLOGI",
+        "kd": "U0007",
+        "ss": "69989d4f-****"
+      },
+      {
+        "name": "REHABILITASI MEDIK",
+        "kd": "U0008",
+        "ss": "d772383d-****"
+      },
+      {
+        "name": "SARAF",
+        "kd": "U0011",
+        "ss": "a7f9390b-****"
+      },
+      {
+        "name": "TERAPI OKUPASI",
+        "kd": "U0017",
+        "ss": "5a9f63fb-****"
+      },
+      {
+        "name": "TERAPI WICARA",
+        "kd": "B0061",
+        "ss": "56b10c38-****"
+      },
+      {
+        "name": "THT",
+        "kd": "U0013",
+        "ss": "9e9ba599-****"
+      },
+      {
+        "name": "UMUM",
+        "kd": "U0010",
+        "ss": "9a90e3a5-****"
+      },
+      {
+        "name": "VCT",
+        "kd": "U0016",
+        "ss": "ef6e3f17-****"
+      }
+    ]
+  },
+  {
+    "idorg": 44,
+    "name": "Rawat Inap",
+    "ss": "96c5be6d-****",
+    "cat": "keperawatan",
+    "locations": [
+      {
+        "name": "AQUAMARINE",
+        "kd": "B0053",
+        "ss": "c4ca88f2-****"
+      },
+      {
+        "name": "AQUAMARINE 1",
+        "kd": "AQ01",
+        "ss": "93f05dfb-****"
+      },
+      {
+        "name": "AQUAMARINE 10",
+        "kd": "AQ10",
+        "ss": "f5ce9f6c-****"
+      },
+      {
+        "name": "AQUAMARINE 10 X",
+        "kd": "AQ10X",
+        "ss": "f5ce9f6c-****"
+      },
+      {
+        "name": "AQUAMARINE 2",
+        "kd": "AQ02",
+        "ss": "e88b00a3-****"
+      },
+      {
+        "name": "AQUAMARINE 3",
+        "kd": "AQ03",
+        "ss": "5b07ebf0-****"
+      },
+      {
+        "name": "AQUAMARINE 4",
+        "kd": "AQ04",
+        "ss": "42ab0003-****"
+      },
+      {
+        "name": "AQUAMARINE 5",
+        "kd": "AQ05",
+        "ss": "066dbeff-****"
+      },
+      {
+        "name": "AQUAMARINE 6",
+        "kd": "AQ06",
+        "ss": "24c2aee0-****"
+      },
+      {
+        "name": "AQUAMARINE 7",
+        "kd": "AQ07",
+        "ss": "0316e6ed-****"
+      },
+      {
+        "name": "AQUAMARINE 8",
+        "kd": "AQ08",
+        "ss": "3d2b3aee-****"
+      },
+      {
+        "name": "AQUAMARINE 9",
+        "kd": "AQ09",
+        "ss": "ad92593d-****"
+      },
+      {
+        "name": "BERLIAN 1",
+        "kd": "B0003",
+        "ss": "a6b3dd0b-****"
+      },
+      {
+        "name": "BERLIAN 10",
+        "kd": "B0101",
+        "ss": "e4e5360c-****"
+      },
+      {
+        "name": "BERLIAN 11",
+        "kd": "B0102",
+        "ss": "18a620a6-****"
+      },
+      {
+        "name": "BERLIAN 12",
+        "kd": "BXII",
+        "ss": "ace6b363-****"
+      },
+      {
+        "name": "BERLIAN 13",
+        "kd": "BXIII",
+        "ss": "3c79ec78-****"
+      },
+      {
+        "name": "BERLIAN 14",
+        "kd": "BXIV",
+        "ss": "e91d016d-****"
+      },
+      {
+        "name": "BERLIAN 15",
+        "kd": "BXV",
+        "ss": "4b9f27bb-****"
+      },
+      {
+        "name": "BERLIAN 16",
+        "kd": "BXVI",
+        "ss": "260d94d2-****"
+      },
+      {
+        "name": "BERLIAN 2",
+        "kd": "B0004",
+        "ss": "f4e3b5b2-****"
+      },
+      {
+        "name": "BERLIAN 3",
+        "kd": "B0052",
+        "ss": "b9e63f3d-****"
+      },
+      {
+        "name": "BERLIAN 4",
+        "kd": "B0058",
+        "ss": "5861c0c1-****"
+      },
+      {
+        "name": "BERLIAN 5",
+        "kd": "B0059",
+        "ss": "bf7306d2-****"
+      },
+      {
+        "name": "BERLIAN 6",
+        "kd": "B0043",
+        "ss": "35bdbdaf-****"
+      },
+      {
+        "name": "BERLIAN 7",
+        "kd": "B0044",
+        "ss": "5a0bd6c7-****"
+      },
+      {
+        "name": "BERLIAN 8",
+        "kd": "B0071",
+        "ss": "b0efe010-****"
+      },
+      {
+        "name": "BERLIAN 9",
+        "kd": "B0100",
+        "ss": "7c313bdd-****"
+      },
+      {
+        "name": "EMERALD 1",
+        "kd": "E001",
+        "ss": "4645b77f-****"
+      },
+      {
+        "name": "EMERALD 2",
+        "kd": "E002",
+        "ss": "8b8edf98-****"
+      },
+      {
+        "name": "EMERALD 3",
+        "kd": "E003",
+        "ss": "8318b08d-****"
+      },
+      {
+        "name": "EMERALD 4",
+        "kd": "E004",
+        "ss": "f4bfb70e-****"
+      },
+      {
+        "name": "IGD",
+        "kd": "B0054",
+        "ss": "5abbccb1-****"
+      },
+      {
+        "name": "INTAN",
+        "kd": "B0055",
+        "ss": "df00e472-****"
+      },
+      {
+        "name": "INTAN 1",
+        "kd": "IN1",
+        "ss": "a9c8408a-****"
+      },
+      {
+        "name": "INTAN 2",
+        "kd": "IN2",
+        "ss": "2abea2f0-****"
+      },
+      {
+        "name": "INTAN 3",
+        "kd": "IN3",
+        "ss": "c88dc950-****"
+      },
+      {
+        "name": "INTAN 4",
+        "kd": "IN4",
+        "ss": "22da7baa-****"
+      },
+      {
+        "name": "INTAN 5",
+        "kd": "IN5",
+        "ss": "2eab70ad-****"
+      },
+      {
+        "name": "ISOLASI COVID",
+        "kd": "B0080",
+        "ss": "7d96512f-****"
+      },
+      {
+        "name": "ISOLASI IMMUNOSUPRESI",
+        "kd": "B0019",
+        "ss": "7e89facf-****"
+      },
+      {
+        "name": "KECUBUNG I",
+        "kd": "B0005",
+        "ss": "27d04ef8-****"
+      },
+      {
+        "name": "KECUBUNG II",
+        "kd": "B0034",
+        "ss": "267a42e9-****"
+      },
+      {
+        "name": "KECUBUNG III",
+        "kd": "B0037",
+        "ss": "dde6835b-****"
+      },
+      {
+        "name": "KECUBUNG IV",
+        "kd": "B0007",
+        "ss": "19dd1081-****"
+      },
+      {
+        "name": "KECUBUNG V",
+        "kd": "B0104",
+        "ss": "3d87a757-****"
+      },
+      {
+        "name": "KECUBUNG VI",
+        "kd": "B0077",
+        "ss": "c341f314-****"
+      },
+      {
+        "name": "KECUBUNG VII",
+        "kd": "B0103",
+        "ss": "3b55dc0e-****"
+      },
+      {
+        "name": "MIRAH DELIMA I",
+        "kd": "B0048",
+        "ss": "0a3aac04-****"
+      },
+      {
+        "name": "MIRAH DELIMA II",
+        "kd": "B0023",
+        "ss": "c5916f99-****"
+      },
+      {
+        "name": "MIRAH DELIMA III",
+        "kd": "B0028",
+        "ss": "b91f6871-****"
+      },
+      {
+        "name": "MIRAH DELIMA IV",
+        "kd": "B0039",
+        "ss": "19f6e1b6-****"
+      },
+      {
+        "name": "MIRAH DELIMA V",
+        "kd": "B0049",
+        "ss": "51abfd4c-****"
+      },
+      {
+        "name": "MIRAH DELIMA VI",
+        "kd": "B0050",
+        "ss": "4c8e1c31-****"
+      },
+      {
+        "name": "MIRAH DELIMA VII",
+        "kd": "B0051",
+        "ss": "57e7197a-****"
+      },
+      {
+        "name": "MUTIARA",
+        "kd": "B0029",
+        "ss": "09223d4e-****"
+      },
+      {
+        "name": "MUTIARA 1",
+        "kd": "M1",
+        "ss": "6a709f5d-****"
+      },
+      {
+        "name": "MUTIARA 10",
+        "kd": "M10",
+        "ss": "bda9af80-****"
+      },
+      {
+        "name": "MUTIARA 2",
+        "kd": "M2",
+        "ss": "14d8d634-****"
+      },
+      {
+        "name": "MUTIARA 3",
+        "kd": "M3",
+        "ss": "6a1ed2e3-****"
+      },
+      {
+        "name": "MUTIARA 4",
+        "kd": "M4",
+        "ss": "46549758-****"
+      },
+      {
+        "name": "MUTIARA 5",
+        "kd": "M5",
+        "ss": "5ece8b8a-****"
+      },
+      {
+        "name": "MUTIARA 6",
+        "kd": "M6",
+        "ss": "0b0ef649-****"
+      },
+      {
+        "name": "MUTIARA 7",
+        "kd": "M7",
+        "ss": "f3206da1-****"
+      },
+      {
+        "name": "MUTIARA 8",
+        "kd": "M8",
+        "ss": "a668b76e-****"
+      },
+      {
+        "name": "MUTIARA 9",
+        "kd": "M9",
+        "ss": "1aeda992-****"
+      },
+      {
+        "name": "NICU",
+        "kd": "B0074",
+        "ss": "e14bf67c-****"
+      },
+      {
+        "name": "SAFIR 1",
+        "kd": "S1",
+        "ss": "077d83e9-****"
+      },
+      {
+        "name": "SAFIR 2",
+        "kd": "S2",
+        "ss": "7b4b0353-****"
+      },
+      {
+        "name": "SAFIR 3",
+        "kd": "S3",
+        "ss": "e8cacd6b-****"
+      },
+      {
+        "name": "SAFIR 4",
+        "kd": "S4",
+        "ss": "81f00088-****"
+      },
+      {
+        "name": "SAFIR 5",
+        "kd": "S5",
+        "ss": "37b13a2e-****"
+      },
+      {
+        "name": "SAFIR 6",
+        "kd": "S6",
+        "ss": "20d26d23-****"
+      },
+      {
+        "name": "ZAMRUD 1",
+        "kd": "Z1",
+        "ss": "0981df84-****"
+      },
+      {
+        "name": "ZAMRUD 2",
+        "kd": "Z2",
+        "ss": "6244a660-****"
+      },
+      {
+        "name": "ZAMRUD 3",
+        "kd": "Z3",
+        "ss": "d3c01267-****"
+      },
+      {
+        "name": "ZAMRUD 4",
+        "kd": "Z4",
+        "ss": "fa64a8b0-****"
+      }
+    ]
+  },
+  {
+    "idorg": 45,
+    "name": "Perinatal",
+    "ss": "80b6af56-****",
+    "cat": "keperawatan",
+    "locations": [
+      {
+        "name": "PERINATAL",
+        "kd": "B0030",
+        "ss": "6cea5d6e-****"
+      }
+    ]
+  },
+  {
+    "idorg": 46,
+    "name": "Dialisis",
+    "ss": "9ad9c3fd-****",
+    "cat": "keperawatan",
+    "locations": [
+      {
+        "name": "HD",
+        "kd": "hd",
+        "ss": "03e161a8-****"
+      }
+    ]
+  }
+]

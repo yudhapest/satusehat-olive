@@ -1,0 +1,815 @@
+---
+import Layout from '../layouts/Layout.astro';
+import {
+  groups,
+  tabs,
+  priorityMeta,
+  type Priority,
+} from '../data/petaResource';
+
+const totalResources = groups.reduce((acc, g) => acc + g.items.length, 0);
+const countByPriority = (p: Priority) =>
+  groups.reduce((acc, g) => acc + g.items.filter((i) => i.priority === p).length, 0);
+---
+
+<Layout title="Peta Resource & SIMRS" pageTitle="Peta Resource & Mapping SIMRS" icon="fa-diagram-project">
+  <div class="wrap" id="pr-page">
+    <div class="page-intro">
+      <p class="eyebrow">Peta lengkap interoperabilitas</p>
+      <h2>Resource SATUSEHAT FHIR &amp; Mapping ke Tabel SIMRS</h2>
+      <p>
+        {totalResources} resource FHIR untuk integrasi SATUSEHAT — ringkasan, mapping kolom SIMRS → field FHIR,
+        dan contoh payload JSON siap kirim. Klik kartu untuk membuka detail lengkap.
+      </p>
+    </div>
+
+    <div class="resource-summary-grid">
+      <div class="summary-card">
+        <strong>{countByPriority('setup')}</strong>
+        <span>Setup awal (prasyarat)</span>
+      </div>
+      <div class="summary-card">
+        <strong>{countByPriority('wajib')}</strong>
+        <span>Wajib implementasi akhir 2025 (6 modul)</span>
+      </div>
+      <div class="summary-card">
+        <strong>{countByPriority('penting')}</strong>
+        <span>Penting untuk kelengkapan, keselamatan pasien, dan kesiapan layanan</span>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      {
+        tabs.map((t, i) => (
+          <button class={`tab ${i === 0 ? 'on' : ''}`} type="button" data-filter={t.key}>
+            <i class={`fa-solid ${t.icon}`} /> {t.label}
+          </button>
+        ))
+      }
+    </div>
+
+    {
+      groups.map((group) => (
+        <section class="pr-group" data-priority={group.color}>
+          <div class={`pr-group-hdr pr-accent--${group.color}`}>
+            <span class="pr-group-bar" aria-hidden="true" />
+            <span class="pr-group-ic">
+              <i class={`fa-solid ${group.groupIcon}`} />
+            </span>
+            <div class="pr-group-text">
+              <h3>{group.group}</h3>
+              <span class="pr-group-count" data-count>
+                {group.items.length} resource
+              </span>
+            </div>
+          </div>
+
+          <div class="pr-grid">
+            {group.items.map((item) => (
+              <button
+                class={`pr-card pr-accent--${item.priority}`}
+                type="button"
+                data-detail={item.id}
+                data-priority={item.priority}
+              >
+                <span class="pr-card-ic">
+                  <i class={`fa-solid ${item.icon}`} />
+                </span>
+                <span class="pr-card-body">
+                  <span class="pr-card-top">
+                    <span class="pr-card-title">{item.id}</span>
+                    <span class={`pr-badge pr-badge--${item.priority}`}>{priorityMeta[item.priority].label}</span>
+                  </span>
+                  <span class="pr-card-sub">{item.sub}</span>
+                  <span class="pr-tags">
+                    {item.simrs.slice(0, 3).map((s) => (
+                      <span class="pr-tag">{s}</span>
+                    ))}
+                    {item.simrs.length > 3 && (
+                      <span class="pr-tag pr-tag--more">+{item.simrs.length - 3}</span>
+                    )}
+                  </span>
+                  <span class="pr-card-cta">
+                    Lihat mapping &amp; payload
+                    <i class="fa-solid fa-arrow-right" aria-hidden="true" />
+                  </span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+
+    <div class="pr-empty" hidden>
+      <i class="fa-solid fa-circle-info" /> Tidak ada resource pada kategori ini.
+    </div>
+
+    {
+      groups.flatMap((g) => g.items).map((item) => (
+        <template id={`pr-src-${item.id}`}>
+          <div class={`pr-modal-head pr-accent--${item.priority}`}>
+            <span class="pr-modal-ic">
+              <i class={`fa-solid ${item.icon}`} />
+            </span>
+            <div class="pr-modal-headtext">
+              <h3 id="pr-modal-title">{item.id}</h3>
+              <p>{item.sub}</p>
+            </div>
+            <span class={`pr-badge pr-badge--${item.priority}`}>{priorityMeta[item.priority].label}</span>
+          </div>
+
+          <div class="pr-modal-meta">
+            <span class="pr-meta-chip">
+              <i class="fa-solid fa-arrow-right-to-bracket" />
+              <span><b>Method</b> {item.method}</span>
+            </span>
+            <span class="pr-meta-chip pr-meta-chip--mono">
+              <i class="fa-solid fa-link" />
+              <span><b>Endpoint</b> {item.endpoint}</span>
+            </span>
+            <span class="pr-meta-chip">
+              <i class="fa-solid fa-clock" />
+              <span><b>Trigger</b> {item.trigger}</span>
+            </span>
+          </div>
+
+          <div class="pr-modal-section">
+            <h4><i class="fa-solid fa-database" /> Sumber tabel SIMRS</h4>
+            <div class="pr-tags pr-tags--modal">
+              {item.simrs.map((s) => (
+                <span class="pr-tag">{s}</span>
+              ))}
+            </div>
+          </div>
+
+          <div class="pr-modal-tabs">
+            <button class="pr-modal-tab on" type="button" data-pane="mapping">Mapping SIMRS → FHIR</button>
+            <button class="pr-modal-tab" type="button" data-pane="json">Contoh JSON payload</button>
+          </div>
+
+          <div class="pr-modal-pane on" data-pane="mapping">
+            <div class="pr-map-wrap">
+              <table class="pr-map-table">
+                <thead>
+                  <tr>
+                    <th>Field FHIR</th>
+                    <th>Kolom SIMRS</th>
+                    <th>Keterangan</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {item.mapping.map((m) => (
+                    <tr>
+                      <td><code class="pr-map-fhir">{m.fhir}</code></td>
+                      <td><code class="pr-map-simrs">{m.simrs}</code></td>
+                      <td>{m.desc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="pr-modal-pane" data-pane="json">
+            <div class="pr-json-wrap">
+              <pre class="pr-json-pre"><button class="pr-json-copy" type="button" data-json-id={item.id}><i class="fa-regular fa-copy" /> Salin</button><code>{item.json}</code></pre>
+            </div>
+          </div>
+
+          <div class="pr-modal-note">
+            <span class="pr-modal-note-ic"><i class="fa-solid fa-lightbulb" /></span>
+            <p>{item.note}</p>
+          </div>
+        </template>
+      ))
+    }
+
+    <dialog id="pr-modal" class="pr-modal" aria-labelledby="pr-modal-title">
+      <div class="pr-modal-shell">
+        <button class="pr-modal-close" type="button" aria-label="Tutup detail">
+          <i class="fa-solid fa-xmark" />
+        </button>
+        <div class="pr-modal-body" id="pr-modal-body" />
+      </div>
+    </dialog>
+  </div>
+</Layout>
+
+<style>
+  .resource-summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pr-group { margin-bottom: 30px; }
+
+  /* Section heading — intentionally flat so it is NOT mistaken for a button */
+  .pr-group-hdr {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 16px;
+    padding: 0 0 12px;
+    border-bottom: 1px solid var(--color-border-secondary);
+  }
+
+  .pr-group-bar {
+    width: 4px;
+    align-self: stretch;
+    min-height: 34px;
+    border-radius: 999px;
+    background: var(--accent, var(--color-primary));
+    flex-shrink: 0;
+  }
+
+  .pr-group-ic {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--accent-soft, var(--color-primary-light));
+    color: var(--accent, var(--color-primary));
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  .pr-group-text {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+  }
+
+  .pr-group-text h3 {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--color-text-main);
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+
+  .pr-group-count {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-tertiary);
+  }
+
+  .pr-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+
+  .pr-card {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    align-items: start;
+    gap: 12px;
+    width: 100%;
+    padding: 16px;
+    text-align: left;
+    background: #ffffff;
+    border: 1px solid var(--color-border-secondary);
+    border-radius: 16px;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    color: var(--color-text-main);
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+
+  .pr-card:hover,
+  .pr-card:focus-visible {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--accent, var(--color-primary)) 35%, white);
+    box-shadow: var(--shadow-hover);
+    outline: none;
+  }
+
+  .pr-card.active {
+    border-color: var(--accent, var(--color-primary));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--color-primary)) 14%, transparent);
+  }
+
+  .pr-card-ic {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+    background: var(--accent-soft, var(--color-primary-light));
+    color: var(--accent, var(--color-primary));
+    font-size: 18px;
+  }
+
+  .pr-card-body { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+  .pr-card-top { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }
+  .pr-card-title { font-size: 15px; font-weight: 800; line-height: 1.2; letter-spacing: -0.01em; }
+  .pr-card-sub { font-size: 12.5px; font-weight: 600; color: var(--color-text-muted); line-height: 1.45; }
+
+  .pr-card-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 9px;
+    border-top: 1px dashed var(--color-border-secondary);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent, var(--color-primary));
+  }
+
+  .pr-card-cta i {
+    font-size: 10px;
+    transition: transform 0.18s ease;
+  }
+
+  .pr-card:hover .pr-card-cta i,
+  .pr-card.active .pr-card-cta i {
+    transform: translateX(3px);
+  }
+
+  .pr-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px; }
+
+  .pr-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    line-height: 1.4;
+  }
+
+  .pr-tag--more {
+    background: #f8fafc;
+    color: var(--color-text-muted);
+    border-color: var(--color-border-secondary);
+  }
+
+  .pr-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .pr-badge--setup { background: #eff6ff; color: #1d4ed8; }
+  .pr-badge--wajib { background: #fee2e2; color: #b91c1c; }
+  .pr-badge--penting { background: #fff7ed; color: #c2410c; }
+
+  .pr-accent--setup { --accent: #1d4ed8; --accent-soft: #eff6ff; }
+  .pr-accent--wajib { --accent: #C0392B; --accent-soft: rgba(192, 57, 43, 0.1); }
+  .pr-accent--penting { --accent: #E67E22; --accent-soft: #fff7ed; }
+
+  .pr-empty {
+    padding: 28px;
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: 14px;
+    background: var(--color-bg-glass-darker);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .pr-empty i { color: var(--color-primary); margin-right: 6px; }
+
+  /* Modal */
+  .pr-modal {
+    position: fixed;
+    inset: 0;
+    width: min(860px, calc(100vw - 32px));
+    max-height: min(90vh, 960px);
+    margin: auto;
+    padding: 0;
+    border: none;
+    border-radius: 22px;
+    background: #fff;
+    color: var(--color-text-main);
+    box-shadow: 0 24px 80px rgba(15, 23, 42, 0.28);
+    overflow: hidden;
+    z-index: 9999;
+  }
+
+  .pr-modal::backdrop {
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(4px);
+  }
+
+  .pr-modal[open] {
+    display: flex;
+    flex-direction: column;
+    animation: prModalIn 0.22s ease both;
+  }
+
+  @keyframes prModalIn {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .pr-modal-shell {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    max-height: inherit;
+  }
+
+  .pr-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 2;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border-secondary);
+    border-radius: 11px;
+    background: #fff;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .pr-modal-close:hover {
+    background: var(--color-primary-light);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .pr-modal-body {
+    overflow-y: auto;
+    padding: 24px 24px 28px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .pr-modal-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding-right: 44px;
+    margin-bottom: 18px;
+  }
+
+  .pr-modal-ic {
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background: var(--accent-soft, var(--color-primary-light));
+    color: var(--accent, var(--color-primary));
+    font-size: 22px;
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--accent, var(--color-primary)) 22%, transparent);
+  }
+
+  .pr-modal-headtext { flex: 1; min-width: 0; }
+  .pr-modal-headtext h3 { margin: 0 0 4px; font-size: 22px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; }
+  .pr-modal-headtext p { margin: 0; font-size: 14px; font-weight: 600; color: var(--color-text-muted); line-height: 1.45; }
+  .pr-modal-head .pr-badge { align-self: flex-start; margin-top: 4px; }
+
+  .pr-modal-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .pr-meta-chip {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 14px;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid var(--color-border-secondary);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+  }
+
+  .pr-meta-chip--mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; }
+  .pr-meta-chip i { margin-top: 2px; color: var(--accent, var(--color-primary)); flex-shrink: 0; }
+  .pr-meta-chip b { color: var(--color-text-main); font-weight: 800; margin-right: 4px; }
+
+  .pr-modal-section { margin-bottom: 16px; }
+  .pr-modal-section h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 10px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .pr-modal-section h4 i { color: var(--accent, var(--color-primary)); font-size: 14px; }
+  .pr-tags--modal { margin-top: 0; }
+
+  /* Modal inner tabs */
+  .pr-modal-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .pr-modal-tab {
+    padding: 8px 14px;
+    border: 1px solid var(--color-border-secondary);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-text-muted);
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .pr-modal-tab:hover { border-color: var(--color-primary); color: var(--color-primary); }
+  .pr-modal-tab.on {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+    box-shadow: 0 5px 14px rgba(192, 57, 43, 0.28);
+  }
+
+  .pr-modal-pane { display: none; margin-bottom: 16px; }
+  .pr-modal-pane.on { display: block; }
+
+  /* Mapping table */
+  .pr-map-wrap {
+    border: 1px solid var(--color-border-secondary);
+    border-radius: 14px;
+    overflow: auto;
+    max-height: 340px;
+  }
+
+  .pr-map-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 520px;
+  }
+
+  .pr-map-table th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    text-align: left;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border-bottom: 1px solid var(--color-border-secondary);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .pr-map-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: top;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+  }
+
+  .pr-map-table tr:last-child td { border-bottom: none; }
+
+  .pr-map-fhir {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: #eff6ff;
+    color: #1e40af;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    word-break: break-all;
+  }
+
+  .pr-map-simrs {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: #f0fdf4;
+    color: #15803d;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    word-break: break-all;
+  }
+
+  /* JSON payload */
+  .pr-json-wrap { border-radius: 14px; overflow: hidden; border: 1px solid var(--color-border-secondary); }
+
+  .pr-json-pre {
+    position: relative;
+    margin: 0;
+    padding: 18px 20px;
+    background: #0f172a;
+    overflow-x: auto;
+    max-height: 420px;
+    overflow-y: auto;
+  }
+
+  .pr-json-pre code {
+    display: block;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 11.5px;
+    line-height: 1.65;
+    color: #4ade80;
+    white-space: pre;
+    tab-size: 2;
+  }
+
+  .pr-json-copy {
+    position: sticky;
+    top: 0;
+    float: right;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 11px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #cbd5e1;
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .pr-json-copy:hover { background: rgba(255, 255, 255, 0.14); color: #fff; }
+  .pr-json-copy.done { border-color: #16a34a; color: #4ade80; }
+
+  .pr-modal-note {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: #fefce8;
+    border: 1px solid #fef08a;
+    margin-top: 4px;
+  }
+
+  .pr-modal-note-ic {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: #fde047;
+    color: #ca8a04;
+    font-size: 14px;
+  }
+
+  .pr-modal-note p {
+    margin: 0;
+    padding-top: 4px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #854d0e;
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .pr-grid { grid-template-columns: 1fr; }
+    .pr-modal { width: calc(100vw - 20px); max-height: calc(100vh - 20px); border-radius: 18px; }
+    .pr-modal-body { padding: 20px 18px 24px; }
+    .pr-modal-headtext h3 { font-size: 19px; }
+    .pr-group-hdr { flex-wrap: wrap; }
+    .pr-group-count { margin-left: 0; }
+  }
+</style>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const page = document.getElementById('pr-page');
+    if (!page) return;
+
+    const modal = document.getElementById('pr-modal') as HTMLDialogElement | null;
+    const modalBody = document.getElementById('pr-modal-body');
+    const closeBtn = page.querySelector<HTMLButtonElement>('.pr-modal-close');
+    let activeCard: HTMLButtonElement | null = null;
+
+    function bindModalInteractions(root: ParentNode) {
+      root.querySelectorAll<HTMLButtonElement>('.pr-modal-tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const pane = tab.dataset.pane;
+          const container = tab.closest('.pr-modal-body') || root;
+          container.querySelectorAll('.pr-modal-tab').forEach((t) => t.classList.remove('on'));
+          tab.classList.add('on');
+          container.querySelectorAll('.pr-modal-pane').forEach((p) => {
+            p.classList.toggle('on', p.getAttribute('data-pane') === pane);
+          });
+        });
+      });
+
+      root.querySelectorAll<HTMLButtonElement>('.pr-json-copy').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const code = btn.parentElement?.querySelector('code')?.textContent ?? '';
+          try {
+            await navigator.clipboard.writeText(code);
+            const orig = btn.innerHTML;
+            btn.classList.add('done');
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Tersalin';
+            setTimeout(() => {
+              btn.classList.remove('done');
+              btn.innerHTML = orig;
+            }, 1600);
+          } catch { /* clipboard unavailable */ }
+        });
+      });
+    }
+
+    function openDetail(id: string, card: HTMLButtonElement) {
+      const src = document.getElementById(`pr-src-${id}`) as HTMLTemplateElement | null;
+      if (!modal || !modalBody || !src) return;
+
+      modalBody.innerHTML = '';
+      modalBody.appendChild(src.content.cloneNode(true));
+      bindModalInteractions(modalBody);
+
+      activeCard?.classList.remove('active');
+      card.classList.add('active');
+      activeCard = card;
+
+      if (!modal.open) modal.showModal();
+    }
+
+    function closeModal() {
+      modal?.close();
+      activeCard?.classList.remove('active');
+      activeCard = null;
+    }
+
+    page.querySelectorAll<HTMLButtonElement>('.pr-card[data-detail]').forEach((card) => {
+      card.addEventListener('click', () => {
+        const id = card.dataset.detail;
+        if (id) openDetail(id, card);
+      });
+    });
+
+    closeBtn?.addEventListener('click', closeModal);
+    modal?.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    modal?.addEventListener('close', () => {
+      activeCard?.classList.remove('active');
+      activeCard = null;
+    });
+
+    const tabs = page.querySelectorAll<HTMLButtonElement>('.tab[data-filter]');
+    const groups = page.querySelectorAll<HTMLElement>('.pr-group');
+    const empty = page.querySelector<HTMLElement>('.pr-empty');
+
+    function applyFilter(filter: string) {
+      let visibleTotal = 0;
+      groups.forEach((group) => {
+        const cards = group.querySelectorAll<HTMLElement>('.pr-card');
+        let visible = 0;
+        cards.forEach((card) => {
+          const match = filter === 'all' || card.dataset.priority === filter;
+          card.style.display = match ? '' : 'none';
+          if (match) visible++;
+        });
+        group.style.display = visible ? '' : 'none';
+        const count = group.querySelector<HTMLElement>('[data-count]');
+        if (count) count.textContent = `${visible} resource`;
+        visibleTotal += visible;
+      });
+      if (empty) empty.hidden = visibleTotal > 0;
+      closeModal();
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((t) => t.classList.remove('on'));
+        tab.classList.add('on');
+        applyFilter(tab.dataset.filter || 'all');
+      });
+    });
+  });
+</script>

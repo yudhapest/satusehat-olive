@@ -1,0 +1,578 @@
+  .sim-page {
+    max-width: 1120px;
+    /* unified semantic palette (no more clashing bright blue) */
+    --s-sent: #0f9d6e;
+    --s-sent-bg: rgba(15, 157, 110, 0.1);
+    --s-pending: #c2770b;
+    --s-pending-bg: rgba(194, 119, 11, 0.12);
+    --s-failed: #e11d48;
+    --s-failed-bg: rgba(225, 29, 72, 0.1);
+    --s-retry: #2f70c9;
+    --s-retry-bg: rgba(47, 112, 201, 0.1);
+    --s-ink: #475569;
+    --s-ink-bg: rgba(71, 85, 105, 0.08);
+  }
+
+  .sim-card {
+    background: var(--color-bg-glass-darker);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 22px;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .sim-card-hdr {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 24px;
+  }
+
+  .sim-card-hdr-main { flex: 1; min-width: 0; }
+
+  .sim-ic {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-size: 17px;
+  }
+
+  .sim-ic--info { background: var(--color-primary-light); color: var(--color-primary); }
+  .sim-ic--neutral { background: rgba(100, 116, 139, 0.1); color: var(--color-text-secondary); }
+
+  .sim-card-title { font-size: 15px; font-weight: 600; color: var(--color-text-main); line-height: 1.45; }
+  .sim-card-title code { font-size: 13px; }
+  .sim-card-sub { font-size: 13px; color: var(--color-text-muted); margin-top: 3px; }
+
+  .sim-card-body { padding: 4px 24px 24px; }
+
+  .sim-desc { font-size: 14px; color: var(--color-text-secondary); line-height: 1.65; margin-bottom: 16px; }
+
+  .sim-page code {
+    font-family: ui-monospace, 'Cascadia Code', monospace;
+    font-size: 0.88em;
+    padding: 1px 6px;
+    border-radius: 5px;
+    background: rgba(15, 23, 42, 0.06);
+    color: var(--color-text-secondary);
+  }
+
+  /* ---- Tables ---- */
+  .sim-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    background: #fff;
+  }
+
+  .sim-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    table-layout: fixed;
+  }
+
+  .sim-table th {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    text-align: left;
+    padding: 11px 14px;
+    background: rgba(248, 250, 252, 0.9);
+    border-bottom: 1px solid var(--color-border-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .sim-table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.55);
+    vertical-align: middle;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--color-text-secondary);
+  }
+
+  .sim-table tbody tr:last-child td { border-bottom: none; }
+  .sim-table tbody tr:nth-child(even) td { background: rgba(248, 250, 252, 0.5); }
+  .sim-table tbody tr:hover td { background: var(--color-primary-light); }
+  .sim-table tr.sim-hl td,
+  .sim-table tbody tr.sim-hl:nth-child(even) td { background: var(--s-ink-bg); }
+
+  .sim-mono { font-family: ui-monospace, 'Cascadia Code', monospace; font-size: 12px; color: var(--color-text-secondary); }
+  .sim-ok { color: var(--s-sent); font-weight: 600; }
+  .sim-info { color: var(--s-ink); font-weight: 600; }
+  .sim-td-desc { font-size: 12.5px; color: var(--color-text-muted); white-space: normal; line-height: 1.55; }
+  .sim-json-preview { color: #64748b; }
+
+  .sim-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    font-size: 13px;
+    background: var(--s-pending-bg);
+    color: #8a560a;
+    padding: 12px 14px;
+    border-radius: 12px;
+    margin-top: 14px;
+    line-height: 1.55;
+  }
+
+  .sim-noreg {
+    display: inline-flex;
+    align-items: center;
+    background: var(--s-ink-bg);
+    color: var(--s-ink);
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    padding: 2px 9px;
+    border-radius: 7px;
+    font-weight: 600;
+  }
+
+  /* ---- Patient scenario facts ---- */
+  .sim-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    padding: 0 24px 20px;
+  }
+
+  .sim-meta-cell {
+    background: rgba(248, 250, 252, 0.7);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 12px 16px;
+  }
+
+  .sim-meta-lbl { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+  .sim-meta-val { font-size: 14px; font-weight: 600; color: var(--color-text-main); }
+
+  /* ---- Stepper control ---- */
+  .sim-control {
+    margin: 0 24px 22px;
+    padding: 22px;
+    border-radius: 16px;
+    background: rgba(248, 250, 252, 0.6);
+    border: 1px solid var(--color-border);
+  }
+
+  .sim-phases {
+    position: relative;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+  }
+
+  @media (min-width: 721px) {
+    .sim-phases::before {
+      content: '';
+      position: absolute;
+      top: 21px;
+      left: 9%;
+      right: 9%;
+      height: 2px;
+      background: var(--color-border-secondary);
+      z-index: 0;
+    }
+  }
+
+  .sim-phase {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    min-width: 92px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .sim-phase-ic {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 15px;
+    background: #fff;
+    border: 2px solid var(--color-border-secondary);
+    color: var(--color-text-tertiary);
+    transition: all 0.25s ease;
+  }
+
+  .sim-phase-txt { min-width: 0; line-height: 1.25; }
+  .sim-phase-name { font-size: 12px; font-weight: 600; color: var(--color-text-muted); }
+  .sim-phase-count { font-size: 10px; color: var(--color-text-tertiary); margin-top: 1px; }
+
+  .sim-phase--active .sim-phase-ic {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(192, 57, 43, 0.3);
+    transform: scale(1.06);
+  }
+  .sim-phase--active .sim-phase-name { color: var(--color-primary); }
+
+  .sim-phase--done .sim-phase-ic { background: var(--s-sent); border-color: var(--s-sent); color: #fff; }
+  .sim-phase--done .sim-phase-name { color: var(--s-sent); }
+
+  .sim-control-bar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .sim-progress { flex: 1; min-width: 200px; }
+
+  .sim-progress-track {
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(226, 232, 240, 0.9);
+    overflow: hidden;
+  }
+
+  .sim-progress-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--color-primary), #e05c4d);
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sim-progress-text { font-size: 12px; color: var(--color-text-muted); margin-top: 7px; font-weight: 600; }
+
+  .sim-control-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .sim-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    font-family: var(--font-sans);
+    transition: all 0.18s ease;
+  }
+
+  .sim-btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+
+  .sim-btn--primary { background: var(--color-primary); color: #fff; box-shadow: 0 4px 14px rgba(192, 57, 43, 0.28); }
+  .sim-btn--primary:hover:not(:disabled) { background: var(--color-primary-hover); transform: translateY(-1px); box-shadow: 0 7px 20px rgba(192, 57, 43, 0.34); }
+
+  .sim-btn--ghost { background: #fff; color: var(--color-text-secondary); border-color: var(--color-border-secondary); }
+  .sim-btn--ghost:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
+
+  .sim-btn--reset { background: transparent; color: var(--color-text-muted); }
+  .sim-btn--reset:hover:not(:disabled) { background: rgba(15, 23, 42, 0.04); color: var(--color-text-secondary); }
+
+  .sim-current {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 18px;
+    padding: 13px 16px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+
+  .sim-current--done { background: var(--s-sent-bg); border-color: rgba(15, 157, 110, 0.25); color: var(--s-sent); }
+  .sim-current-step {
+    flex-shrink: 0;
+    font-weight: 700;
+    color: var(--color-primary);
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    background: var(--color-primary-light);
+    padding: 3px 9px;
+    border-radius: 7px;
+  }
+  .sim-current--done .sim-current-step { color: var(--s-sent); background: transparent; font-size: 16px; padding: 0; }
+  .sim-current b { color: var(--color-text-main); font-weight: 700; }
+
+  /* ---- Tabs + data ---- */
+  .sim-tab-row {
+    display: flex;
+    gap: 6px;
+    margin: 0 24px;
+    padding: 5px;
+    background: rgba(241, 245, 249, 0.7);
+    border-radius: 12px;
+    width: fit-content;
+    flex-wrap: wrap;
+  }
+
+  .sim-tab {
+    font-size: 12.5px;
+    padding: 7px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted);
+    font-family: ui-monospace, monospace;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+
+  .sim-tab:hover { color: var(--color-text-main); }
+
+  .sim-tab.on {
+    background: #fff;
+    color: var(--color-primary);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+  }
+
+  .sim-tab-pane { padding: 16px 24px 0; }
+
+  .sim-empty {
+    text-align: center;
+    padding: 28px 16px;
+    color: var(--color-text-tertiary);
+    font-size: 13px;
+  }
+
+  .sim-pill {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .sim-pill--pending { background: var(--s-pending-bg); color: var(--s-pending); }
+  .sim-pill--sent { background: var(--s-sent-bg); color: var(--s-sent); }
+  .sim-pill--failed { background: var(--s-failed-bg); color: var(--s-failed); }
+  .sim-pill--retrying { background: var(--s-retry-bg); color: var(--s-retry); }
+
+  .sim-log-entry {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13px;
+    padding: 11px 16px;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.55);
+    line-height: 1.5;
+  }
+
+  .sim-log-entry:last-child { border-bottom: none; }
+  .sim-log-time { font-family: ui-monospace, monospace; font-size: 11px; color: var(--color-text-tertiary); white-space: nowrap; padding-top: 1px; }
+  .sim-log-text { flex: 1; color: var(--color-text-secondary); }
+  .sim-log-text i { margin-right: 6px; }
+  .sim-log-text--success { color: var(--s-sent); }
+  .sim-log-text--danger { color: var(--s-failed); }
+
+  /* activity pane shares the rounded table container look */
+  #tab-activity > div { border: 1px solid var(--color-border); border-radius: 14px; background: #fff; overflow: hidden; }
+
+  .sim-payload-list {
+    display: grid;
+    gap: 14px;
+  }
+
+  .sim-payload-card {
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    background: #fff;
+    overflow: hidden;
+  }
+
+  .sim-payload-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    background: rgba(248, 250, 252, 0.9);
+    border-bottom: 1px solid var(--color-border-secondary);
+  }
+
+  .sim-payload-title {
+    min-width: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-text-main);
+  }
+
+  .sim-payload-endpoint {
+    display: block;
+    margin-top: 3px;
+    font-family: ui-monospace, 'Cascadia Code', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sim-http {
+    flex-shrink: 0;
+    font-family: ui-monospace, 'Cascadia Code', monospace;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 9px;
+    border-radius: 999px;
+  }
+
+  .sim-http--ok { background: var(--s-sent-bg); color: var(--s-sent); }
+  .sim-http--err { background: var(--s-failed-bg); color: var(--s-failed); }
+
+  .sim-payload-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--color-border-secondary);
+  }
+
+  .sim-payload-pane {
+    min-width: 0;
+    background: #fff;
+  }
+
+  .sim-payload-label {
+    padding: 9px 12px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    background: rgba(248, 250, 252, 0.75);
+    border-bottom: 1px solid var(--color-border-secondary);
+  }
+
+  .sim-payload-code {
+    margin: 0;
+    padding: 12px;
+    max-height: 240px;
+    overflow: auto;
+    font-family: ui-monospace, 'Cascadia Code', monospace;
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    background: #fff;
+    white-space: pre;
+  }
+
+  .sim-payload-error {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--s-failed);
+    background: var(--s-failed-bg);
+    border-bottom: 1px solid var(--color-border-secondary);
+  }
+
+  .sim-sql {
+    margin: 0 24px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: ui-monospace, 'Cascadia Code', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    white-space: pre;
+  }
+
+  .sim-ihs { font-size: 11px; color: var(--s-sent); }
+  .sim-bad { color: var(--s-failed); font-weight: 700; }
+  .sim-bad-txt { color: var(--s-failed); font-size: 11px; }
+  .sim-row-fail td { background: rgba(225, 29, 72, 0.06); }
+  .sim-row-ok td { background: var(--s-sent-bg); }
+
+  .sim-pane-note {
+    margin: 0 0 14px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--color-text-muted);
+  }
+  .sim-pane-note code { font-size: 0.86em; }
+
+  .sim-subhead {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 4px 24px 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-text-main);
+  }
+  .sim-subhead code { font-size: 0.86em; }
+  .sim-subhead--gap { margin-top: 26px; }
+  .sim-subhead-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--color-text-tertiary);
+    flex-shrink: 0;
+  }
+  .sim-subhead-dot--accent { background: var(--color-primary); }
+
+  .sim-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    padding: 22px 24px;
+  }
+
+  .sim-stat-cell {
+    padding: 16px;
+    text-align: center;
+    border-radius: 14px;
+    border: 1px solid var(--color-border);
+    background: rgba(248, 250, 252, 0.7);
+  }
+
+  .sim-stat-num { font-size: 26px; font-weight: 700; line-height: 1; }
+  .sim-stat-lbl { font-size: 12px; color: var(--color-text-muted); margin-top: 6px; font-weight: 600; }
+  .sim-stat--sent { color: var(--s-sent); }
+  .sim-stat--pending { color: var(--s-pending); }
+  .sim-stat--failed { color: var(--s-failed); }
+  .sim-stat--retrying { color: var(--s-retry); }
+
+  .sim-index-wrap {
+    margin: 4px 24px 24px;
+    padding: 16px 18px;
+    border-radius: 12px;
+    background: rgba(248, 250, 252, 0.7);
+    border: 1px solid var(--color-border);
+  }
+  .sim-index-title { font-size: 12.5px; font-weight: 700; color: var(--color-text-secondary); margin-bottom: 8px; }
+  .sim-index-list { font-family: ui-monospace, monospace; font-size: 12px; color: var(--color-text-muted); line-height: 2; }
+
+  @media (max-width: 640px) {
+    .sim-card-hdr, .sim-card-body { padding-left: 16px; padding-right: 16px; }
+    .sim-meta-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); padding-left: 16px; padding-right: 16px; }
+    .sim-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); padding-left: 16px; padding-right: 16px; }
+    .sim-control { margin-left: 16px; margin-right: 16px; }
+    .sim-tab-row { margin-left: 16px; margin-right: 16px; }
+    .sim-tab-pane { padding-left: 16px; padding-right: 16px; }
+    .sim-payload-grid { grid-template-columns: 1fr; }
+  }

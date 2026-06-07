@@ -22,6 +22,9 @@ const resourceItems = [
   { path: "/practitioner", title: "Practitioner", icon: "fa-user-doctor" },
   { path: "/patient", title: "Patient", icon: "fa-user" },
   { path: "/peta-resource", title: "Peta Resource & SIMRS", icon: "fa-diagram-project" },
+  { path: "/simulasi-igd", title: "Simulasi IGD & noreg", icon: "fa-database" },
+  { path: "/simulasi-rajal", title: "Simulasi Rawat Jalan & noreg", icon: "fa-hospital-user" },
+  { path: "/simulasi-ranap", title: "Simulasi Rawat Inap & noreg", icon: "fa-bed-pulse" },
 ];
 ---
 
@@ -94,6 +97,7 @@ const resourceItems = [
     z-index: 20;
     padding: 24px 16px;
     flex-shrink: 0;
+    overflow-y: auto;
     transition:
       width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
       padding 0.3s cubic-bezier(0.4, 0, 0.2, 1),

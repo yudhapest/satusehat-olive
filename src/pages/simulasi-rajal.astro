@@ -1,0 +1,640 @@
+---
+import Layout from '../layouts/Layout.astro';
+import '../styles/simulasi.css';
+
+const ddlSql = `-- 1) Tabel master: 1 baris per resource (status terkini)
+CREATE TABLE satusehat_log (
+  id               BIGINT UNSIGNED   NOT NULL AUTO_INCREMENT,
+  module           ENUM('igd','rajal','ranap') NOT NULL,
+  resource_type    VARCHAR(50)       NOT NULL,
+  noreg            VARCHAR(20)       NULL,   -- VARCHAR(12) → VARCHAR(20); NULL hanya untuk Patient
+  source_table     VARCHAR(50)       NOT NULL,
+  source_id        VARCHAR(20)       NOT NULL,
+  observation_code VARCHAR(20)       NULL,
+  encounter_status ENUM('arrived','in-progress','finished','cancelled') NULL,  -- VARCHAR → ENUM cegah typo
+  status           ENUM('pending','retrying','sent','failed') NOT NULL DEFAULT 'pending',
+  ihs_id           VARCHAR(100)      NULL,
+  retry_count      TINYINT UNSIGNED  NOT NULL DEFAULT 0,   -- hitungan retry untuk RetryService (batas maksimal)
+  last_error       VARCHAR(500)      NULL,                 -- ringkasan error terakhir (dashboard tanpa JOIN)
+  sent_at          DATETIME          NULL,
+  created_at       DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at       DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX idx_noreg_status    (noreg, status),
+  INDEX idx_module_status   (module, status),
+  INDEX idx_source          (source_table, source_id),
+  INDEX idx_resource_lookup (noreg, resource_type),
+  INDEX idx_status_retry    (status, retry_count)   -- RetryService: "failed AND retry_count < 3"
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 2) Tabel detail: 1 baris per attempt + audit request/response (Opsi A)
+CREATE TABLE satusehat_log_detail (
+  id              BIGINT UNSIGNED   NOT NULL AUTO_INCREMENT,
+  log_id          BIGINT UNSIGNED   NOT NULL,
+  noreg           VARCHAR(20)       NULL,   -- redundan (= satusehat_log.noreg) → query tanpa JOIN
+  attempt_no      SMALLINT UNSIGNED NOT NULL DEFAULT 1,
+  http_method     VARCHAR(8)        NOT NULL,
+  endpoint        VARCHAR(255)      NOT NULL,
+  request_body    JSON              NULL,
+  response_status SMALLINT UNSIGNED NULL,
+  response_body   JSON              NULL,
+  error_message   TEXT              NULL,
+  duration_ms     INT UNSIGNED      NULL,
+  triggered_by    VARCHAR(64)       NULL,
+  created_at      DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_detail_log FOREIGN KEY (log_id)
+      REFERENCES satusehat_log(id) ON DELETE CASCADE,
+  INDEX idx_log_attempt    (log_id, attempt_no),
+  INDEX idx_noreg_detail   (noreg, created_at),   -- ganti idx_status_created: "semua attempt kunjungan X"
+  INDEX idx_log_created    (log_id, created_at)    -- ambil attempt terbaru 1 log (ORDER BY created_at DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`;
+
+const querySql = `-- Semua attempt + payload satu resource, urut percobaan
+-- (log_id = 4 = Observation tekanan darah; lihat attempt 1 gagal lalu retry sukses)
+SELECT attempt_no, http_method, endpoint, response_status,
+       error_message, duration_ms, triggered_by, created_at
+FROM   satusehat_log_detail
+WHERE  log_id = 4
+ORDER  BY attempt_no;
+
+-- Ambil HANYA attempt terakhir tiap resource untuk satu kunjungan
+SELECT l.resource_type, l.ihs_id, d.response_status, d.created_at
+FROM   satusehat_log l
+JOIN   satusehat_log_detail d ON d.log_id = l.id
+WHERE  l.noreg = '2606060042'
+  AND  d.attempt_no = (SELECT MAX(d2.attempt_no)
+                       FROM satusehat_log_detail d2
+                       WHERE d2.log_id = l.id);
+
+-- RetryService: cari resource gagal yang masih boleh diretry (pakai idx_status_retry)
+-- retry_count & last_error langsung dari master → tanpa JOIN ke tabel detail
+SELECT id, resource_type, noreg, retry_count, last_error
+FROM   satusehat_log
+WHERE  status = 'failed' AND retry_count < 3
+ORDER  BY updated_at;
+
+-- Query ke dalam JSON (MySQL 8) — cari attempt dengan kode LOINC tertentu
+SELECT id, log_id, response_status
+FROM   satusehat_log_detail
+WHERE  request_body->>'$.code.coding[0].code' = '55284-5';`;
+
+const payloadFail = {
+  request_body: {
+    resourceType: 'Observation',
+    status: 'final',
+    category: [{ coding: [{ system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'vital-signs' }] }],
+    code: { coding: [{ system: 'http://loinc.org', code: '55284-5', display: 'Blood pressure systolic and diastolic' }] },
+    subject: { reference: 'Patient/N10000420' },
+    encounter: { reference: 'Encounter/enc-rajal-2606060042' },
+    effectiveDateTime: '2026-06-06T09:05:00+07:00',
+    valueQuantity: { value: 150, unit: 'mmHg', system: 'http://unitsofmeasure.org', code: 'mm[Hg]' },
+  },
+  response_body: {
+    resourceType: 'OperationOutcome',
+    issue: [{ severity: 'error', code: 'invalid', diagnostics: 'Blood pressure must use component (systolic 8480-6 + diastolic 8462-4), not valueQuantity' }],
+  },
+};
+
+const payloadRetry = {
+  request_body: {
+    resourceType: 'Observation',
+    status: 'final',
+    category: [{ coding: [{ system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'vital-signs' }] }],
+    code: { coding: [{ system: 'http://loinc.org', code: '55284-5', display: 'Blood pressure systolic and diastolic' }] },
+    subject: { reference: 'Patient/N10000420' },
+    encounter: { reference: 'Encounter/enc-rajal-2606060042' },
+    effectiveDateTime: '2026-06-06T09:05:00+07:00',
+    component: [
+      { code: { coding: [{ system: 'http://loinc.org', code: '8480-6', display: 'Systolic blood pressure' }] }, valueQuantity: { value: 150, unit: 'mm[Hg]', system: 'http://unitsofmeasure.org', code: 'mm[Hg]' } },
+      { code: { coding: [{ system: 'http://loinc.org', code: '8462-4', display: 'Diastolic blood pressure' }] }, valueQuantity: { value: 95, unit: 'mm[Hg]', system: 'http://unitsofmeasure.org', code: 'mm[Hg]' } },
+    ],
+  },
+  response_body: {
+    resourceType: 'Observation',
+    id: 'obs-rj-005',
+    meta: { versionId: '1', lastUpdated: '2026-06-06T09:20:00+07:00' },
+    status: 'final',
+  },
+};
+
+const payloadCI = {
+  request_body: {
+    resourceType: 'ClinicalImpression',
+    identifier: [{ system: 'http://sys-ids.kemkes.go.id/clinicalimpression/10000004', value: 'CI-RJ-2026-0042' }],
+    status: 'completed',
+    description: 'S: kontrol hipertensi, kadang nyeri kepala belakang. O: TD 150/95 mmHg, nadi 84x/mnt.',
+    subject: { reference: 'Patient/N10000420', display: 'Dewi Lestari' },
+    encounter: { reference: 'Encounter/enc-rajal-2606060042' },
+    effectiveDateTime: '2026-06-06T09:15:00+07:00',
+    assessor: { reference: 'Practitioner/N10000001', display: 'dr. Andi Wijaya, Sp.PD' },
+    summary: 'A: Hipertensi esensial terkontrol sebagian. P: lanjut Amlodipine 10 mg 1x1, cek elektrolit, kontrol 1 bulan.',
+    finding: [{ itemReference: { reference: 'Condition/cond-rajal-001', display: 'Hipertensi esensial' } }],
+    note: [{ text: 'Edukasi diet rendah garam, aktivitas fisik teratur, pemantauan TD mandiri.' }],
+  },
+  response_body: {
+    resourceType: 'ClinicalImpression',
+    id: 'ci-rajal-001',
+    meta: { versionId: '1', lastUpdated: '2026-06-06T09:16:00+07:00' },
+    status: 'completed',
+  },
+};
+
+const NOREG = '2606060042';
+
+// Snapshot lengkap satusehat_log (master) untuk 1 kunjungan rawat jalan
+const masterRows = [
+  { id: 1,  type: 'Patient',            noreg: null,  obs: '—',       enc: '—',        ihs: 'N10000420',            sent: '08:56', created: '08:55' },
+  { id: 2,  type: 'Encounter',          noreg: NOREG, obs: '—',       enc: 'arrived',  ihs: 'enc-rajal-2606060042', sent: '09:01', created: '09:00' },
+  { id: 3,  type: 'Observation',        noreg: NOREG, obs: '8310-5',  enc: '—',        ihs: 'obs-rj-001',           sent: '09:06', created: '09:05' },
+  { id: 4,  type: 'Observation',        noreg: NOREG, obs: '55284-5', enc: '—',        ihs: 'obs-rj-005',           sent: '09:20', created: '09:05' },
+  { id: 5,  type: 'Observation',        noreg: NOREG, obs: '29463-7', enc: '—',        ihs: 'obs-rj-002',           sent: '09:06', created: '09:05' },
+  { id: 6,  type: 'Observation',        noreg: NOREG, obs: '8302-2',  enc: '—',        ihs: 'obs-rj-003',           sent: '09:06', created: '09:05' },
+  { id: 7,  type: 'Observation',        noreg: NOREG, obs: '59408-5', enc: '—',        ihs: 'obs-rj-004',           sent: '09:06', created: '09:05' },
+  { id: 8,  type: 'AllergyIntolerance', noreg: NOREG, obs: '—',       enc: '—',        ihs: 'alg-rajal-001',        sent: '09:08', created: '09:07' },
+  { id: 9,  type: 'FamilyMemberHistory',noreg: NOREG, obs: '—',       enc: '—',        ihs: 'fmh-rajal-001',        sent: '09:10', created: '09:09' },
+  { id: 10, type: 'MedicationStatement',noreg: NOREG, obs: '—',       enc: '—',        ihs: 'medstat-rajal-001',    sent: '09:12', created: '09:11' },
+  { id: 11, type: 'ClinicalImpression', noreg: NOREG, obs: '—',       enc: '—',        ihs: 'ci-rajal-001',         sent: '09:16', created: '09:15' },
+  { id: 12, type: 'Condition',          noreg: NOREG, obs: '—',       enc: '—',        ihs: 'cond-rajal-001',       sent: '09:18', created: '09:17' },
+  { id: 13, type: 'Procedure',          noreg: NOREG, obs: '—',       enc: '—',        ihs: 'proc-rajal-001',       sent: '09:20', created: '09:19' },
+  { id: 14, type: 'MedicationRequest',  noreg: NOREG, obs: '—',       enc: '—',        ihs: 'medrq-rajal-001',      sent: '09:31', created: '09:30' },
+  { id: 15, type: 'MedicationDispense', noreg: NOREG, obs: '—',       enc: '—',        ihs: 'meddisp-rajal-001',    sent: '09:46', created: '09:45' },
+  { id: 16, type: 'ServiceRequest',     noreg: NOREG, obs: '—',       enc: '—',        ihs: 'sr-lab-rj-001',        sent: '09:26', created: '09:25' },
+  { id: 17, type: 'Specimen',           noreg: NOREG, obs: '—',       enc: '—',        ihs: 'spec-rj-001',          sent: '09:28', created: '09:27' },
+  { id: 18, type: 'Observation',        noreg: NOREG, obs: '2951-2',  enc: '—',        ihs: 'obs-lab-rj-001',       sent: '09:51', created: '09:50' },
+  { id: 19, type: 'Observation',        noreg: NOREG, obs: '2823-3',  enc: '—',        ihs: 'obs-lab-rj-002',       sent: '09:51', created: '09:50' },
+  { id: 20, type: 'Observation',        noreg: NOREG, obs: '2075-0',  enc: '—',        ihs: 'obs-lab-rj-003',       sent: '09:51', created: '09:50' },
+  { id: 21, type: 'DiagnosticReport',   noreg: NOREG, obs: '—',       enc: '—',        ihs: 'dr-lab-rj-001',        sent: '10:01', created: '10:00' },
+  { id: 22, type: 'ServiceRequest',     noreg: NOREG, obs: '—',       enc: '—',        ihs: 'sr-rad-rj-001',        sent: '09:36', created: '09:35' },
+  { id: 23, type: 'ImagingStudy',       noreg: NOREG, obs: '—',       enc: '—',        ihs: 'imgstudy-rj-001',      sent: '10:12', created: '10:10' },
+  { id: 24, type: 'Observation',        noreg: NOREG, obs: '18782-3', enc: '—',        ihs: 'obs-rad-rj-001',       sent: '10:16', created: '10:15' },
+  { id: 25, type: 'DiagnosticReport',   noreg: NOREG, obs: '—',       enc: '—',        ihs: 'dr-rad-rj-001',        sent: '10:21', created: '10:20' },
+  { id: 26, type: 'Encounter',          noreg: NOREG, obs: '—',       enc: 'finished', ihs: 'enc-rajal-2606060042', sent: '10:31', created: '10:30' },
+];
+
+// Snapshot lengkap satusehat_log_detail (1 baris per attempt; perhatikan retry log_id 4 = tekanan darah)
+const detailRows = [
+  { id: 1,  log: 1,  att: 1, m: 'POST', ep: '/Patient',                          st: 201, err: null,                                            dur: 243, by: 'system:KirimPatientJob',             at: '08:56' },
+  { id: 2,  log: 2,  att: 1, m: 'POST', ep: '/Encounter',                        st: 201, err: null,                                            dur: 318, by: 'system:KirimEncounterJob',           at: '09:01' },
+  { id: 3,  log: 4,  att: 1, m: 'POST', ep: '/Observation',                      st: 422, err: 'Blood pressure must use component, not valueQuantity', dur: 102, by: 'system:KirimObservationJob',         at: '09:06' },
+  { id: 4,  log: 3,  att: 1, m: 'POST', ep: '/Observation',                      st: 201, err: null,                                            dur: 178, by: 'system:KirimObservationJob',         at: '09:06' },
+  { id: 5,  log: 5,  att: 1, m: 'POST', ep: '/Observation',                      st: 201, err: null,                                            dur: 165, by: 'system:KirimObservationJob',         at: '09:06' },
+  { id: 6,  log: 6,  att: 1, m: 'POST', ep: '/Observation',                      st: 201, err: null,                                            dur: 159, by: 'system:KirimObservationJob',         at: '09:06' },
+  { id: 7,  log: 7,  att: 1, m: 'POST', ep: '/Observation',                      st: 201, err: null,                                            dur: 171, by: 'system:KirimObservationJob',         at: '09:06' },
+  { id: 8,  log: 4,  att: 2, m: 'POST', ep: '/Observation',                      st: 201, err: null,                                            dur: 198, by: 'system:RetryService',               at: '09:20' },
+  { id: 9,  log: 8,  att: 1, m: 'POST', ep: '/AllergyIntolerance',               st: 201, err: null,                                            dur: 194, by: 'system:KirimAllergyJob',             at: '09:08' },
+  { id: 10, log: 9,  att: 1, m: 'POST', ep: '/FamilyMemberHistory',              st: 201, err: null,                                            dur: 221, by: 'system:KirimFamilyMemberHistoryJob', at: '09:10' },
+  { id: 11, log: 10, att: 1, m: 'POST', ep: '/MedicationStatement',              st: 201, err: null,                                            dur: 207, by: 'system:KirimMedicationStatementJob', at: '09:12' },
+  { id: 12, log: 11, att: 1, m: 'POST', ep: '/ClinicalImpression',               st: 201, err: null,                                            dur: 276, by: 'system:KirimClinicalImpressionJob',  at: '09:16' },
+  { id: 13, log: 12, att: 1, m: 'POST', ep: '/Condition',                        st: 201, err: null,                                            dur: 264, by: 'system:KirimConditionJob',           at: '09:18' },
+  { id: 14, log: 13, att: 1, m: 'POST', ep: '/Procedure',                        st: 201, err: null,                                            dur: 231, by: 'system:KirimProcedureJob',           at: '09:20' },
+  { id: 15, log: 14, att: 1, m: 'POST', ep: '/MedicationRequest',                st: 201, err: null,                                            dur: 401, by: 'system:KirimMedicationRequestJob',   at: '09:31' },
+  { id: 16, log: 15, att: 1, m: 'POST', ep: '/MedicationDispense',               st: 201, err: null,                                            dur: 289, by: 'system:KirimMedicationDispenseJob',  at: '09:46' },
+  { id: 17, log: 16, att: 1, m: 'POST', ep: '/ServiceRequest',                   st: 201, err: null,                                            dur: 176, by: 'system:KirimServiceRequestJob',      at: '09:26' },
+  { id: 18, log: 17, att: 1, m: 'POST', ep: '/Specimen',                         st: 201, err: null,                                            dur: 148, by: 'system:KirimSpecimenJob',            at: '09:28' },
+  { id: 19, log: 18, att: 1, m: 'POST', ep: '/Observation',                      st: 201, err: null,                                            dur: 172, by: 'system:KirimObservationJob',         at: '09:51' },
+  { id: 20, log: 19, att: 1, m: 'POST', ep: '/Observation',                      st: 201, err: null,                                            dur: 169, by: 'system:KirimObservationJob',         at: '09:51' },
+  { id: 21, log: 20, att: 1, m: 'POST', ep: '/Observation',                      st: 201, err: null,                                            dur: 181, by: 'system:KirimObservationJob',         at: '09:51' },
+  { id: 22, log: 21, att: 1, m: 'POST', ep: '/DiagnosticReport',                 st: 201, err: null,                                            dur: 312, by: 'system:KirimDiagnosticReportJob',    at: '10:01' },
+  { id: 23, log: 22, att: 1, m: 'POST', ep: '/ServiceRequest',                   st: 201, err: null,                                            dur: 163, by: 'system:KirimServiceRequestJob',      at: '09:36' },
+  { id: 24, log: 23, att: 1, m: 'POST', ep: '/ImagingStudy (NIDR)',              st: 201, err: null,                                            dur: 524, by: 'system:DICOMRouter',                at: '10:12' },
+  { id: 25, log: 24, att: 1, m: 'POST', ep: '/Observation',                      st: 201, err: null,                                            dur: 177, by: 'system:KirimObservationJob',         at: '10:16' },
+  { id: 26, log: 25, att: 1, m: 'POST', ep: '/DiagnosticReport',                 st: 201, err: null,                                            dur: 298, by: 'system:KirimDiagnosticReportJob',    at: '10:21' },
+  { id: 27, log: 26, att: 1, m: 'PUT',  ep: '/Encounter/enc-rajal-2606060042',   st: 200, err: null,                                            dur: 356, by: 'system:KirimEncounterJob',           at: '10:31' },
+];
+
+const sourceMeta = (r: any) => {
+  if (r.type === 'Patient') return { table: 'patient', id: 'P-004277' };
+  if (r.type === 'Encounter') return { table: 'regpas', id: NOREG };
+  if (r.type === 'Observation') {
+    if (['2951-2', '2823-3', '2075-0'].includes(r.obs)) return { table: 'hasil_lab', id: 'LAB-5820' };
+    if (r.obs === '18782-3') return { table: 'bacaan_radiologi', id: 'RAD-5910' };
+    return { table: 'vitalsign', id: 'VS-7781' };
+  }
+  if (r.type === 'AllergyIntolerance') return { table: 'alergi', id: 'ALG-441' };
+  if (r.type === 'FamilyMemberHistory') return { table: 'riwayat_keluarga', id: 'FMH-220' };
+  if (r.type === 'MedicationStatement') return { table: 'obat_rutin', id: 'MST-318' };
+  if (r.type === 'ClinicalImpression') return { table: 'catatan_soap', id: 'SOAP-901' };
+  if (r.type === 'Condition') return { table: 'diagnosa', id: 'DX-2042' };
+  if (r.type === 'Procedure') return { table: 'tindakan', id: 'PRC-8810' };
+  if (r.type === 'MedicationRequest') return { table: 'resep', id: 'RX-5520' };
+  if (r.type === 'MedicationDispense') return { table: 'penyerahan_obat', id: 'DSP-5520' };
+  if (r.type === 'ServiceRequest') return r.ihs.includes('rad') ? { table: 'order_radiologi', id: 'SRR-9401' } : { table: 'order_lab', id: 'SRL-9301' };
+  if (r.type === 'Specimen') return { table: 'spesimen_lab', id: 'SPC-4710' };
+  if (r.type === 'DiagnosticReport') return r.ihs.includes('rad') ? { table: 'laporan_radiologi', id: 'DRR-6930' } : { table: 'laporan_lab', id: 'DRL-6920' };
+  if (r.type === 'ImagingStudy') return { table: 'pacs', id: 'IMG-7210' };
+  return { table: '—', id: '—' };
+};
+
+const resourceFromEndpoint = (endpoint: string) => endpoint.replace('/Encounter/enc-rajal-2606060042', '/Encounter').replace(' (NIDR)', '').replace('/', '');
+const jsonPreview = (d: any, type: 'request' | 'response') => {
+  const resourceType = resourceFromEndpoint(d.ep);
+  if (type === 'request') return `{"resourceType":"${resourceType}","...":"lihat payload lengkap"}`;
+  if (d.err) return '{"resourceType":"OperationOutcome","issue":[...]}';
+  return `{"resourceType":"${resourceType}","id":"${masterRows.find((r) => r.id === d.log)?.ihs || 'generated-id'}"}`;
+};
+
+---
+
+<Layout title="Simulasi Rawat Jalan & noreg" pageTitle="Simulasi Alur Rawat Jalan & noreg" icon="fa-database">
+  <div id="sim-rajal" class="sim-page">
+    <div class="page-intro">
+      <p class="eyebrow">Simulasi interaktif</p>
+      <h2>Alur Pengiriman SatuSehat Rawat Jalan (Rajal) dengan noreg</h2>
+      <p>
+        Simulasi langkah demi langkah alur pasien poliklinik (rawat jalan) secara lengkap — pendaftaran poli,
+        asesmen perawat, pemeriksaan dokter, farmasi (e-resep &amp; penyerahan obat), penunjang laboratorium,
+        penunjang radiologi, hingga kunjungan ditutup. Berbeda dengan IGD: <code>Encounter</code> memakai
+        class <code>AMB</code> (ambulatory) + <code>serviceType</code> poli, <code>ClinicalImpression</code>
+        bersifat <b>opsional</b> (catatan SOAP, bukan triase wajib), dan ada <code>FamilyMemberHistory</code>
+        serta <code>MedicationStatement</code> yang khas rawat jalan. Klik <b>Langkah berikutnya</b> atau
+        <b>Jalankan semua</b> untuk melihat perubahan tabel <code>satusehat_log</code>,
+        <code>satusehat_log_detail</code>, dan log aktivitas secara langsung.
+      </p>
+    </div>
+
+    <!-- Card 1: Penyesuaian noreg -->
+    <div class="sim-card">
+      <div class="sim-card-hdr">
+        <span class="sim-ic sim-ic--info"><i class="fa-solid fa-id-badge" /></span>
+        <div>
+          <div class="sim-card-title">Penyesuaian: <code>noreg</code> sebagai primary key pengganti <code>id</code></div>
+          <div class="sim-card-sub">Format: YYMMDDNNNN — contoh 2606060042 = tgl 06 Jun 2026 pasien ke-42</div>
+        </div>
+      </div>
+      <div class="sim-card-body">
+        <p class="sim-desc">
+          Karena <code>regpas</code> tidak punya kolom <code>id</code>, semua referensi ke regpas di
+          <code>satusehat_log</code> pakai <code>noreg</code>. Kolom <code>regpas_id</code> diganti menjadi <code>noreg</code>.
+        </p>
+        <div class="sim-table-wrap">
+          <table class="sim-table">
+            <thead><tr>
+              <th style="width:130px;">Sebelum</th>
+              <th style="width:130px;">Sesudah</th>
+              <th style="width:80px;">Tipe data</th>
+              <th>Penjelasan</th>
+            </tr></thead>
+            <tbody>
+              <tr><td class="sim-mono">regpas_id BIGINT</td><td class="sim-mono sim-ok">noreg VARCHAR(12)</td><td class="sim-mono">VARCHAR(12)</td><td class="sim-td-desc">Ganti nama kolom dan tipe — noreg bukan integer, ini string seperti "2606060001"</td></tr>
+              <tr><td class="sim-mono">source_id = regpas.id</td><td class="sim-mono sim-ok">source_id = regpas.noreg</td><td class="sim-mono">VARCHAR(12)</td><td class="sim-td-desc">source_id juga diubah tipe menjadi VARCHAR(12) karena nilainya noreg bukan integer</td></tr>
+              <tr><td class="sim-mono">WHERE regpas_id = 88</td><td class="sim-mono sim-ok">WHERE noreg = '2606060042'</td><td>—</td><td class="sim-td-desc">Semua query yang sebelumnya pakai regpas_id sekarang pakai noreg dengan tanda kutip</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="sim-note"><i class="fa-solid fa-lightbulb" /> Index tetap perlu dibuat di kolom noreg agar query dashboard dan retry service tetap cepat. Tambah: <code>INDEX idx_noreg_status (noreg, status)</code></div>
+      </div>
+    </div>
+
+    <!-- Card 2: Simulasi interaktif -->
+    <div class="sim-card">
+      <div class="sim-card-hdr">
+        <span class="sim-ic sim-ic--neutral"><i class="fa-solid fa-user-injured" /></span>
+        <div class="sim-card-hdr-main">
+          <div class="sim-card-title">Skenario: Pasien Dewi Lestari — Poli Penyakit Dalam (Rawat Jalan)</div>
+          <div class="sim-card-sub">NIK: 3315014203780002 &nbsp;·&nbsp; <span class="sim-noreg">noreg: 2606060042</span> &nbsp;·&nbsp; Tgl kunjungan: 06 Jun 2026 09:00</div>
+        </div>
+      </div>
+
+      <div class="sim-meta-grid">
+        <div class="sim-meta-cell"><div class="sim-meta-lbl">No. RM</div><div class="sim-meta-val">RM-004277</div></div>
+        <div class="sim-meta-cell"><div class="sim-meta-lbl">Poli</div><div class="sim-meta-val">Penyakit Dalam</div></div>
+        <div class="sim-meta-cell"><div class="sim-meta-lbl">Penjamin</div><div class="sim-meta-val">BPJS</div></div>
+        <div class="sim-meta-cell"><div class="sim-meta-lbl">Dokter</div><div class="sim-meta-val">dr. Andi Sp.PD</div></div>
+      </div>
+
+      <div class="sim-control">
+        <div class="sim-phases" id="sim-phases"></div>
+
+        <div class="sim-control-bar">
+          <div class="sim-progress">
+            <div class="sim-progress-track"><div class="sim-progress-fill" id="sim-progress-fill"></div></div>
+            <div class="sim-progress-text" id="sim-progress-text">Langkah 0 dari 0</div>
+          </div>
+          <div class="sim-control-btns">
+            <button class="sim-btn sim-btn--primary" type="button" id="sim-next">
+              <i class="fa-solid fa-play" /> <span id="sim-next-label">Mulai simulasi</span>
+            </button>
+            <button class="sim-btn sim-btn--ghost" type="button" id="sim-run-all">
+              <i class="fa-solid fa-forward-fast" /> Jalankan semua
+            </button>
+            <button class="sim-btn sim-btn--reset" type="button" id="sim-reset">
+              <i class="fa-solid fa-rotate-left" /> Reset
+            </button>
+          </div>
+        </div>
+
+        <div class="sim-current" id="sim-current"></div>
+      </div>
+
+      <div class="sim-tab-row">
+        <button class="sim-tab on" type="button" data-tab="log">satusehat_log</button>
+        <button class="sim-tab" type="button" data-tab="detail">satusehat_log_detail (req/res)</button>
+        <button class="sim-tab" type="button" data-tab="activity">log aktivitas</button>
+      </div>
+
+      <div id="tab-log" class="sim-tab-pane">
+        <div class="sim-table-wrap">
+          <table class="sim-table" style="min-width:900px;">
+            <thead><tr>
+              <th style="width:30px;">id</th>
+              <th style="width:110px;">resource_type</th>
+              <th style="width:100px;">noreg</th>
+              <th style="width:80px;">source_table</th>
+              <th style="width:80px;">source_id</th>
+              <th style="width:110px;">observation_code</th>
+              <th style="width:80px;">encounter_status</th>
+              <th style="width:72px;">status</th>
+              <th style="width:90px;">ihs_id</th>
+              <th style="width:54px;">retry_count</th>
+              <th style="width:130px;">last_error</th>
+            </tr></thead>
+            <tbody id="log-tbody"><tr><td colspan="11" class="sim-empty">Belum ada data — klik tombol di atas untuk mulai simulasi</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="tab-detail" class="sim-tab-pane" hidden>
+        <p class="sim-pane-note">
+          Setiap baris = satu <em>attempt</em> pengiriman. Kolom <code>request_body</code> dan
+          <code>response_body</code> menyimpan payload FHIR mentah (Opsi A — disimpan langsung di
+          <code>satusehat_log_detail</code>), jadi audit trail-nya per-percobaan.
+        </p>
+        <div id="detail-body" class="sim-payload-list">
+          <div class="sim-empty">Belum ada attempt — baris muncul di satusehat_log_detail saat job mengirim payload ke SatuSehat</div>
+        </div>
+      </div>
+
+      <div id="tab-activity" class="sim-tab-pane" hidden>
+        <div id="activity-body"><div class="sim-empty">Belum ada aktivitas</div></div>
+      </div>
+
+      <div class="sim-stat-grid">
+        <div class="sim-stat-cell"><div class="sim-stat-num sim-stat--sent" id="cnt-sent">0</div><div class="sim-stat-lbl">Terkirim</div></div>
+        <div class="sim-stat-cell"><div class="sim-stat-num sim-stat--pending" id="cnt-pending">0</div><div class="sim-stat-lbl">Pending</div></div>
+        <div class="sim-stat-cell"><div class="sim-stat-num sim-stat--failed" id="cnt-failed">0</div><div class="sim-stat-lbl">Gagal</div></div>
+        <div class="sim-stat-cell"><div class="sim-stat-num sim-stat--retrying" id="cnt-retrying">0</div><div class="sim-stat-lbl">Retrying</div></div>
+      </div>
+    </div>
+
+    <!-- Card 3: Struktur tabel -->
+    <div class="sim-card">
+      <div class="sim-card-hdr">
+        <span class="sim-ic sim-ic--neutral"><i class="fa-solid fa-table" /></span>
+        <div class="sim-card-title">Struktur tabel — <code>satusehat_log</code> (master) &amp; <code>satusehat_log_detail</code> (attempt + audit)</div>
+      </div>
+      <div class="sim-subhead"><span class="sim-subhead-dot"></span>1. <code>satusehat_log</code> — satu baris per resource (status terkini)</div>
+      <div class="sim-table-wrap">
+        <table class="sim-table" style="min-width:580px;">
+          <thead><tr><th style="width:140px;">Nama kolom</th><th style="width:100px;">Tipe data</th><th style="width:110px;">Contoh nilai</th><th>Keterangan untuk developer</th></tr></thead>
+          <tbody>
+            <tr><td class="sim-mono">id</td><td class="sim-mono">BIGINT AUTO</td><td class="sim-mono">1, 2, 3...</td><td class="sim-td-desc">Primary key tabel log ini sendiri — bukan dari regpas</td></tr>
+            <tr><td class="sim-mono">module</td><td class="sim-mono">ENUM</td><td class="sim-mono">rajal</td><td class="sim-td-desc">Diambil dari <code>regpas.modul</code> — nilai: igd, rajal, ranap</td></tr>
+            <tr><td class="sim-mono">resource_type</td><td class="sim-mono">VARCHAR(50)</td><td class="sim-mono">Encounter</td><td class="sim-td-desc">Tipe FHIR: Patient, Encounter, Observation, Condition, Procedure, dll</td></tr>
+            <tr class="sim-hl"><td class="sim-mono sim-info">noreg</td><td class="sim-mono">VARCHAR(20)</td><td class="sim-mono">2606060042</td><td class="sim-td-desc sim-info">Pengganti regpas_id — nomor registrasi pasien format YYMMDDNNNN. Dilebarkan ke VARCHAR(20) untuk antisipasi perubahan format. NULL hanya untuk Patient</td></tr>
+            <tr><td class="sim-mono">source_table</td><td class="sim-mono">VARCHAR(50)</td><td class="sim-mono">vitalsign</td><td class="sim-td-desc">Nama tabel asal data di SIMRS — dipakai job untuk ambil data saat retry</td></tr>
+            <tr class="sim-hl"><td class="sim-mono sim-info">source_id</td><td class="sim-mono">VARCHAR(12)</td><td class="sim-mono">2606060042</td><td class="sim-td-desc sim-info">ID baris di source_table. Untuk Encounter: isinya noreg juga. Untuk vitalsign: ID integer vitalsign. Tipe VARCHAR agar bisa menampung noreg maupun integer</td></tr>
+            <tr><td class="sim-mono">observation_code</td><td class="sim-mono">VARCHAR(20) NULL</td><td class="sim-mono">55284-5</td><td class="sim-td-desc">Kode LOINC — hanya diisi untuk resource_type = Observation. NULL untuk resource lain</td></tr>
+            <tr><td class="sim-mono">encounter_status</td><td class="sim-mono">ENUM NULL</td><td class="sim-mono">arrived</td><td class="sim-td-desc">Status fase Encounter — hanya diisi untuk resource_type = Encounter. Diganti VARCHAR → <code>ENUM('arrived','in-progress','finished','cancelled')</code> agar tidak ada typo saat insert. NULL untuk resource lain</td></tr>
+            <tr><td class="sim-mono">status</td><td class="sim-mono">ENUM</td><td class="sim-mono">pending</td><td class="sim-td-desc">Status pengiriman: pending, retrying, sent, failed</td></tr>
+            <tr><td class="sim-mono">ihs_id</td><td class="sim-mono">VARCHAR(100) NULL</td><td class="sim-mono">enc-rajal-999</td><td class="sim-td-desc">ID dari SatuSehat setelah berhasil terkirim — diisi otomatis oleh job saat response 201/200</td></tr>
+            <tr class="sim-hl"><td class="sim-mono sim-info">retry_count</td><td class="sim-mono">TINYINT</td><td class="sim-mono">0, 1, 2</td><td class="sim-td-desc sim-info">Kolom baru — hitungan retry. Di-increment tiap kali RetryService kirim ulang, jadi cek batas maksimal ("retry_count &lt; 3") tanpa perlu COUNT ke tabel detail</td></tr>
+            <tr class="sim-hl"><td class="sim-mono sim-info">last_error</td><td class="sim-mono">VARCHAR(500) NULL</td><td class="sim-mono">Invalid LOINC code</td><td class="sim-td-desc sim-info">Kolom baru — ringkasan error terakhir langsung di master. Dashboard bisa tampilkan error tanpa JOIN ke <code>satusehat_log_detail</code>. NULL saat belum pernah gagal</td></tr>
+            <tr><td class="sim-mono">sent_at</td><td class="sim-mono">DATETIME NULL</td><td class="sim-mono">2026-06-06 08:01</td><td class="sim-td-desc">Waktu berhasil terkirim — NULL sampai status berubah jadi sent</td></tr>
+            <tr><td class="sim-mono">created_at</td><td class="sim-mono">DATETIME</td><td class="sim-mono">2026-06-06 08:00</td><td class="sim-td-desc">Waktu baris dibuat oleh Observer — otomatis diisi database</td></tr>
+            <tr><td class="sim-mono">updated_at</td><td class="sim-mono">DATETIME</td><td class="sim-mono">2026-06-06 08:01</td><td class="sim-td-desc">Waktu terakhir baris ini diubah — auto update setiap kali status berubah</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="sim-index-wrap">
+        <div class="sim-index-title">Index yang wajib dibuat:</div>
+        <div class="sim-index-list">
+          INDEX idx_noreg_status (noreg, status) — untuk dashboard: filter per kunjungan + status<br>
+          INDEX idx_module_status (module, status) — untuk dashboard: ringkasan per modul<br>
+          INDEX idx_source (source_table, source_id) — untuk retry: cari log dari tabel sumber<br>
+          INDEX idx_resource_lookup (noreg, resource_type) — untuk ambil ihs_id Encounter/Patient<br>
+          INDEX idx_status_retry (status, retry_count) — index baru: RetryService query "failed AND retry_count &lt; 3"
+        </div>
+      </div>
+      <div class="sim-subhead sim-subhead--gap"><span class="sim-subhead-dot sim-subhead-dot--accent"></span>2. <code>satusehat_log_detail</code> — satu baris per attempt (request + response disimpan di sini)</div>
+      <p class="sim-desc" style="margin: 8px 24px 16px;">
+        Opsi yang dipakai: <b>menyimpan payload langsung di tabel detail</b> (bukan tabel terpisah). Satu
+        <code>satusehat_log</code> bisa punya banyak attempt saat retry, jadi tiap attempt butuh jejak
+        request/response sendiri. Relasi: <code>satusehat_log_detail.log_id → satusehat_log.id</code> (one-to-many).
+      </p>
+      <div class="sim-table-wrap">
+        <table class="sim-table" style="min-width:600px;">
+          <thead><tr><th style="width:140px;">Nama kolom</th><th style="width:120px;">Tipe data</th><th style="width:120px;">Contoh nilai</th><th>Keterangan untuk developer</th></tr></thead>
+          <tbody>
+            <tr><td class="sim-mono">id</td><td class="sim-mono">BIGINT AUTO</td><td class="sim-mono">1, 2, 3...</td><td class="sim-td-desc">Primary key tabel detail</td></tr>
+            <tr class="sim-hl"><td class="sim-mono sim-info">log_id</td><td class="sim-mono">BIGINT FK</td><td class="sim-mono">42</td><td class="sim-td-desc sim-info">Foreign key ke <code>satusehat_log.id</code>. ON DELETE CASCADE</td></tr>
+            <tr class="sim-hl"><td class="sim-mono sim-info">noreg</td><td class="sim-mono">VARCHAR(20) NULL</td><td class="sim-mono">2606060042</td><td class="sim-td-desc sim-info">Kolom baru — redundan (disalin dari <code>satusehat_log.noreg</code> saat insert) agar query "semua attempt untuk kunjungan X" cepat tanpa JOIN</td></tr>
+            <tr><td class="sim-mono">attempt_no</td><td class="sim-mono">SMALLINT</td><td class="sim-mono">1, 2</td><td class="sim-td-desc">Urutan percobaan kirim. Naik tiap kali RetryService dispatch ulang</td></tr>
+            <tr><td class="sim-mono">http_method</td><td class="sim-mono">VARCHAR(8)</td><td class="sim-mono">POST, PUT</td><td class="sim-td-desc">Verb HTTP yang dipakai. PUT dipakai untuk update Encounter finished</td></tr>
+            <tr><td class="sim-mono">endpoint</td><td class="sim-mono">VARCHAR(255)</td><td class="sim-mono">/Observation</td><td class="sim-td-desc">Path relatif yang dipanggil. ImagingStudy memakai base URL NIDR, bukan base FHIR biasa</td></tr>
+            <tr class="sim-hl"><td class="sim-mono sim-info">request_body</td><td class="sim-mono">JSON / LONGTEXT</td><td class="sim-mono">&#123;"resourceType":…&#125;</td><td class="sim-td-desc sim-info">Payload FHIR mentah yang dikirim. Pakai tipe <code>JSON</code> (MySQL 5.7+/Postgres <code>JSONB</code>) agar bisa di-query</td></tr>
+            <tr><td class="sim-mono">response_status</td><td class="sim-mono">SMALLINT</td><td class="sim-mono">201, 422, 500</td><td class="sim-td-desc">HTTP status code dari response SatuSehat</td></tr>
+            <tr class="sim-hl"><td class="sim-mono sim-info">response_body</td><td class="sim-mono">JSON / LONGTEXT</td><td class="sim-mono">&#123;"resourceType":…&#125;</td><td class="sim-td-desc sim-info">Body response: resource lengkap saat sukses, atau <code>OperationOutcome</code> saat error</td></tr>
+            <tr><td class="sim-mono">error_message</td><td class="sim-mono">TEXT NULL</td><td class="sim-mono">Invalid LOINC code</td><td class="sim-td-desc">Ringkasan error (diambil dari <code>OperationOutcome.issue.diagnostics</code>). NULL saat sukses</td></tr>
+            <tr><td class="sim-mono">duration_ms</td><td class="sim-mono">INT NULL</td><td class="sim-mono">248</td><td class="sim-td-desc">Latensi request dalam milidetik — berguna untuk monitoring performa</td></tr>
+            <tr class="sim-hl"><td class="sim-mono sim-info">triggered_by</td><td class="sim-mono">VARCHAR(64)</td><td class="sim-mono">system:RetryService</td><td class="sim-td-desc sim-info">Aktor yang memicu attempt. Format <code>system:&lt;NamaJob&gt;</code> untuk job otomatis, atau <code>user:&lt;NIP/username&gt;</code> bila resend manual dari dashboard</td></tr>
+            <tr><td class="sim-mono">created_at</td><td class="sim-mono">DATETIME</td><td class="sim-mono">2026-06-06 08:31</td><td class="sim-td-desc">Waktu attempt dieksekusi — otomatis diisi database</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="sim-index-wrap">
+        <div class="sim-index-title">Index &amp; constraint untuk <code>satusehat_log_detail</code>:</div>
+        <div class="sim-index-list">
+          FOREIGN KEY (log_id) REFERENCES satusehat_log(id) ON DELETE CASCADE<br>
+          INDEX idx_log_attempt (log_id, attempt_no) — ambil semua attempt satu resource secara urut<br>
+          INDEX idx_noreg_detail (noreg, created_at) — pengganti idx_status_created: "semua attempt untuk kunjungan X" tanpa JOIN<br>
+          INDEX idx_log_created (log_id, created_at) — ambil attempt terbaru dari 1 log (ORDER BY created_at DESC)
+        </div>
+      </div>
+      <div class="sim-note" style="margin: 14px 24px 24px;">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span><b>Catatan privasi &amp; retensi:</b> <code>request_body</code>/<code>response_body</code> berisi data pasien.
+        Pertimbangkan masking NIK pada log, enkripsi at-rest, akses terbatas, dan job pembersih yang menghapus
+        payload attempt sukses setelah retensi tertentu (mis. 90 hari) sambil tetap menyimpan baris audit ringkas.</span>
+      </div>
+    </div>
+
+    <!-- Card 4: Contoh isi database -->
+    <div class="sim-card">
+      <div class="sim-card-hdr">
+        <span class="sim-ic sim-ic--neutral"><i class="fa-solid fa-database" /></span>
+        <div class="sim-card-title">Contoh isi database — 1 kunjungan rawat jalan (<code>noreg 2606060042</code>)</div>
+      </div>
+
+      <div class="sim-subhead"><span class="sim-subhead-dot"></span>SQL — buat kedua tabel (MySQL 8)</div>
+      <pre class="sim-sql">{ddlSql}</pre>
+
+      <div class="sim-subhead sim-subhead--gap"><span class="sim-subhead-dot"></span>Isi <code>satusehat_log</code> (master) — {masterRows.length} baris, kolom sama persis dengan DDL</div>
+      <div class="sim-table-wrap">
+        <table class="sim-table" style="min-width:1680px;">
+          <thead><tr>
+            <th style="width:30px;">id</th>
+            <th style="width:70px;">module</th>
+            <th style="width:130px;">resource_type</th>
+            <th style="width:90px;">noreg</th>
+            <th style="width:120px;">source_table</th>
+            <th style="width:90px;">source_id</th>
+            <th style="width:120px;">observation_code</th>
+            <th style="width:120px;">encounter_status</th>
+            <th style="width:60px;">status</th>
+            <th style="width:140px;">ihs_id</th>
+            <th style="width:54px;">retry_count</th>
+            <th style="width:150px;">last_error</th>
+            <th style="width:92px;">sent_at</th>
+            <th style="width:92px;">created_at</th>
+            <th style="width:92px;">updated_at</th>
+          </tr></thead>
+          <tbody>
+            {masterRows.map((r) => {
+              const meta = sourceMeta(r);
+              const attempts = detailRows.filter((d) => d.log === r.id);
+              const retryCount = Math.max(0, attempts.length - 1);
+              const lastErr = attempts.find((a) => a.err)?.err || null;
+              return (
+                <tr>
+                  <td class="sim-mono">{r.id}</td>
+                  <td class="sim-mono">rajal</td>
+                  <td>{r.type}</td>
+                  <td class={r.noreg ? 'sim-mono sim-info' : 'sim-mono'}>{r.noreg || 'NULL'}</td>
+                  <td class="sim-mono">{meta.table}</td>
+                  <td class="sim-mono">{meta.id}</td>
+                  <td class="sim-mono">{r.obs}</td>
+                  <td>{r.enc}</td>
+                  <td><span class="sim-pill sim-pill--sent">sent</span></td>
+                  <td class="sim-mono sim-ihs">{r.ihs}</td>
+                  <td class="sim-mono">{retryCount}</td>
+                  <td class={lastErr ? 'sim-bad-txt' : 'sim-mono'}>{lastErr || 'NULL'}</td>
+                  <td class="sim-mono">{r.sent}</td>
+                  <td class="sim-mono">{r.created}</td>
+                  <td class="sim-mono">{r.sent}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sim-subhead sim-subhead--gap"><span class="sim-subhead-dot sim-subhead-dot--accent"></span>Isi <code>satusehat_log_detail</code> — {detailRows.length} baris, kolom sama persis dengan DDL (JSON dipadatkan)</div>
+      <div class="sim-table-wrap">
+        <table class="sim-table" style="min-width:1820px;">
+          <thead><tr>
+            <th style="width:26px;">id</th>
+            <th style="width:50px;">log_id</th>
+            <th style="width:90px;">noreg</th>
+            <th style="width:54px;">attempt_no</th>
+            <th style="width:80px;">http_method</th>
+            <th style="width:170px;">endpoint</th>
+            <th style="width:240px;">request_body</th>
+            <th style="width:100px;">response_status</th>
+            <th style="width:220px;">response_body</th>
+            <th style="width:170px;">error_message</th>
+            <th style="width:90px;">duration_ms</th>
+            <th style="width:185px;">triggered_by</th>
+            <th style="width:92px;">created_at</th>
+          </tr></thead>
+          <tbody>
+            {detailRows.map((d) => {
+              const ok = d.st >= 200 && d.st < 300;
+              const rowClass = !ok ? 'sim-row-fail' : d.att > 1 ? 'sim-row-ok' : '';
+              const dnoreg = masterRows.find((m) => m.id === d.log)?.noreg;
+              return (
+                <tr class={rowClass}>
+                  <td class="sim-mono">{d.id}</td>
+                  <td class="sim-mono">{d.log}</td>
+                  <td class={dnoreg ? 'sim-mono sim-info' : 'sim-mono'}>{dnoreg || 'NULL'}</td>
+                  <td class="sim-mono">{d.att}</td>
+                  <td class="sim-mono">{d.m}</td>
+                  <td class="sim-mono">{d.ep}</td>
+                  <td class="sim-mono sim-json-preview">{jsonPreview(d, 'request')}</td>
+                  <td class={ok ? 'sim-mono sim-ok' : 'sim-mono sim-bad'}>{d.st}</td>
+                  <td class="sim-mono sim-json-preview">{jsonPreview(d, 'response')}</td>
+                  <td class={d.err ? 'sim-bad-txt' : ''}>{d.err || '—'}</td>
+                  <td class="sim-mono">{d.dur}</td>
+                  <td class="sim-mono">{d.by}</td>
+                  <td class="sim-mono">{d.at}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sim-subhead sim-subhead--gap"><span class="sim-subhead-dot sim-subhead-dot--accent"></span>Contoh isi kolom <code>request_body</code> &amp; <code>response_body</code></div>
+      <div class="sim-payload-list" style="margin: 0 24px;">
+        <article class="sim-payload-card">
+          <div class="sim-payload-head">
+            <div class="sim-payload-title">
+              ClinicalImpression SOAP (OPSIONAL di rajal)
+              <span class="sim-mono">detail id: 12 · log_id: 11 · triggered_by: system:KirimClinicalImpressionJob · 2026-06-06 09:16</span>
+              <span class="sim-payload-endpoint">POST /ClinicalImpression</span>
+            </div>
+            <span class="sim-http sim-http--ok">201</span>
+          </div>
+          <div class="sim-payload-grid">
+            <div class="sim-payload-pane"><div class="sim-payload-label">request_body</div><pre class="sim-payload-code">{JSON.stringify(payloadCI.request_body, null, 2)}</pre></div>
+            <div class="sim-payload-pane"><div class="sim-payload-label">response_body</div><pre class="sim-payload-code">{JSON.stringify(payloadCI.response_body, null, 2)}</pre></div>
+          </div>
+        </article>
+        <article class="sim-payload-card">
+          <div class="sim-payload-head">
+            <div class="sim-payload-title">
+              Observation tekanan darah — attempt_no 1 — GAGAL
+              <span class="sim-mono">detail id: 3 · log_id: 4 · triggered_by: system:KirimObservationJob · 2026-06-06 09:06</span>
+              <span class="sim-payload-endpoint">POST /Observation</span>
+            </div>
+            <span class="sim-http sim-http--err">422</span>
+          </div>
+          <div class="sim-payload-error"><i class="fa-solid fa-circle-exclamation"></i> error_message: Blood pressure must use component (8480-6 + 8462-4), not valueQuantity</div>
+          <div class="sim-payload-grid">
+            <div class="sim-payload-pane"><div class="sim-payload-label">request_body</div><pre class="sim-payload-code">{JSON.stringify(payloadFail.request_body, null, 2)}</pre></div>
+            <div class="sim-payload-pane"><div class="sim-payload-label">response_body</div><pre class="sim-payload-code">{JSON.stringify(payloadFail.response_body, null, 2)}</pre></div>
+          </div>
+        </article>
+        <article class="sim-payload-card">
+          <div class="sim-payload-head">
+            <div class="sim-payload-title">
+              Observation tekanan darah — attempt_no 2 — SUKSES (format component dibetulkan)
+              <span class="sim-mono">detail id: 8 · log_id: 4 · triggered_by: system:RetryService · 2026-06-06 09:20</span>
+              <span class="sim-payload-endpoint">POST /Observation</span>
+            </div>
+            <span class="sim-http sim-http--ok">201</span>
+          </div>
+          <div class="sim-payload-grid">
+            <div class="sim-payload-pane"><div class="sim-payload-label">request_body</div><pre class="sim-payload-code">{JSON.stringify(payloadRetry.request_body, null, 2)}</pre></div>
+            <div class="sim-payload-pane"><div class="sim-payload-label">response_body</div><pre class="sim-payload-code">{JSON.stringify(payloadRetry.response_body, null, 2)}</pre></div>
+          </div>
+        </article>
+      </div>
+
+      <div class="sim-subhead sim-subhead--gap"><span class="sim-subhead-dot"></span>Query yang sering dipakai</div>
+      <pre class="sim-sql">{querySql}</pre>
+
+      <div class="sim-note" style="margin: 14px 24px 10px;">
+        <i class="fa-solid fa-clock" />
+        <span><b>Soal <code>created_at</code>:</b> kolom ini ada di <u>kedua</u> tabel dan diisi otomatis oleh
+        database (<code>DEFAULT CURRENT_TIMESTAMP</code>) — Anda tidak perlu mengisinya manual. Di master ada juga
+        <code>updated_at</code> (auto-update tiap status berubah) dan <code>sent_at</code> (waktu sukses terkirim),
+        sedangkan tiap baris detail punya <code>created_at</code> sendiri sehingga jejak waktu per-attempt tetap akurat.</span>
+      </div>
+      <div class="sim-note" style="margin: 0 24px 24px;">
+        <i class="fa-solid fa-user-shield" />
+        <span><b>Soal username:</b> tidak wajib, tapi <b>disarankan</b> lewat kolom <code>triggered_by</code> di
+        <code>satusehat_log_detail</code>. Mayoritas attempt dipicu job otomatis (<code>system:NamaJob</code>), jadi
+        username manusia sering kosong. Nilainya jadi penting saat ada <b>resend manual</b> dari dashboard —
+        di situ simpan <code>user:&lt;NIP/username&gt;</code> agar jelas siapa yang menekan tombol kirim ulang.
+        Identitas pasien/perawat klinis sendiri sudah tercatat di tabel sumber SIMRS (mis. <code>vitalsign.created_by</code>),
+        bukan tanggung jawab tabel log ini.</span>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+
+<script>
+  import '../scripts/simulasiRajal.js';
+</script>
